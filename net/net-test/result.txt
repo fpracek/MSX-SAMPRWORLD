@@ -1,0 +1,6 @@
+done=55 tries=6
+ping=55
+ip=192.168.1.107
+net=2 send=0 got=1
+reply=8 8 8 8 117 52 18 1 0 32 0
+frames=0

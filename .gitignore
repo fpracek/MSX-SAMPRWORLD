@@ -1,0 +1,7 @@
+*.rom
+*.lst
+*.sym
+__pycache__/
+store/
+server.log
+*.log

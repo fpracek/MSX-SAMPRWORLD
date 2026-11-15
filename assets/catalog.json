@@ -1,0 +1,410 @@
+[
+ {
+  "id": 0,
+  "key": "EMPTY",
+  "nome": "Vuoto",
+  "categoria": "base",
+  "classe": "vuoto",
+  "descrizione": "Cielo / nessun blocco"
+ },
+ {
+  "id": 1,
+  "key": "GRASS",
+  "nome": "Terra erbosa",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Terreno con erba in cima"
+ },
+ {
+  "id": 2,
+  "key": "DIRT",
+  "nome": "Terra",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Riempimento sotto l'erba"
+ },
+ {
+  "id": 3,
+  "key": "STONE",
+  "nome": "Pietra",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Blocco di roccia grezza"
+ },
+ {
+  "id": 4,
+  "key": "BRICK",
+  "nome": "Mattone del castello",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Muri e torri"
+ },
+ {
+  "id": 5,
+  "key": "MOSSY",
+  "nome": "Pietra muschiosa",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Rovine antiche"
+ },
+ {
+  "id": 6,
+  "key": "CRATE",
+  "nome": "Cassa di legno",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Solida, decorativa"
+ },
+ {
+  "id": 7,
+  "key": "CRYST",
+  "nome": "Blocco di cristallo",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Caverne magiche"
+ },
+ {
+  "id": 8,
+  "key": "GOLDB",
+  "nome": "Blocco d'oro",
+  "categoria": "terreno",
+  "classe": "solido",
+  "descrizione": "Solido e lucente"
+ },
+ {
+  "id": 9,
+  "key": "CWALL",
+  "nome": "Parete del castello",
+  "categoria": "sfondo",
+  "classe": "decorazione",
+  "descrizione": "Sfondo non solido"
+ },
+ {
+  "id": 10,
+  "key": "WOODP",
+  "nome": "Piattaforma di legno",
+  "categoria": "piattaforme",
+  "classe": "piattaforma",
+  "descrizione": "Si salta da sotto"
+ },
+ {
+  "id": 11,
+  "key": "BRIDGE",
+  "nome": "Ponte di corda",
+  "categoria": "piattaforme",
+  "classe": "piattaforma",
+  "descrizione": "Si salta da sotto"
+ },
+ {
+  "id": 12,
+  "key": "LEDGE",
+  "nome": "Cornice di pietra",
+  "categoria": "piattaforme",
+  "classe": "piattaforma",
+  "descrizione": "Si salta da sotto"
+ },
+ {
+  "id": 13,
+  "key": "RUNE",
+  "nome": "Blocco runico",
+  "categoria": "speciali",
+  "classe": "colpibile",
+  "descrizione": "Colpito da sotto rilascia un oggetto"
+ },
+ {
+  "id": 14,
+  "key": "RUNEU",
+  "nome": "Blocco runico usato",
+  "categoria": "speciali",
+  "classe": "solido",
+  "descrizione": "Dopo l'uso"
+ },
+ {
+  "id": 15,
+  "key": "BREAK",
+  "nome": "Mattone rosso",
+  "categoria": "speciali",
+  "classe": "colpibile",
+  "descrizione": "Si rompe da sotto"
+ },
+ {
+  "id": 16,
+  "key": "CRUMB",
+  "nome": "Blocco friabile",
+  "categoria": "speciali",
+  "classe": "colpibile",
+  "descrizione": "Crolla dopo il passaggio"
+ },
+ {
+  "id": 17,
+  "key": "SPRING",
+  "nome": "Fungo molla",
+  "categoria": "speciali",
+  "classe": "marcatore",
+  "descrizione": "Rimbalzo alto"
+ },
+ {
+  "id": 18,
+  "key": "SPIKES",
+  "nome": "Spuntoni",
+  "categoria": "pericoli",
+  "classe": "pericolo",
+  "descrizione": "Uccidono al contatto"
+ },
+ {
+  "id": 19,
+  "key": "LAVAT",
+  "nome": "Lava (superficie)",
+  "categoria": "pericoli",
+  "classe": "pericolo",
+  "descrizione": "Uccide al contatto"
+ },
+ {
+  "id": 20,
+  "key": "LAVA",
+  "nome": "Lava",
+  "categoria": "pericoli",
+  "classe": "pericolo",
+  "descrizione": "Riempimento"
+ },
+ {
+  "id": 21,
+  "key": "WATERT",
+  "nome": "Acqua (superficie)",
+  "categoria": "liquidi",
+  "classe": "liquido",
+  "descrizione": "Nuoto, movimento lento"
+ },
+ {
+  "id": 22,
+  "key": "WATER",
+  "nome": "Acqua",
+  "categoria": "liquidi",
+  "classe": "liquido",
+  "descrizione": "Riempimento"
+ },
+ {
+  "id": 23,
+  "key": "LADDER",
+  "nome": "Scala di legno",
+  "categoria": "scalabili",
+  "classe": "scalabile",
+  "descrizione": "Su e giu'"
+ },
+ {
+  "id": 24,
+  "key": "VINE",
+  "nome": "Rampicante",
+  "categoria": "scalabili",
+  "classe": "scalabile",
+  "descrizione": "Su e giu'"
+ },
+ {
+  "id": 25,
+  "key": "DOORT",
+  "nome": "Portone (alto)",
+  "categoria": "speciali",
+  "classe": "marcatore",
+  "descrizione": "Si apre con la chiave"
+ },
+ {
+  "id": 26,
+  "key": "DOORB",
+  "nome": "Portone (basso)",
+  "categoria": "speciali",
+  "classe": "marcatore",
+  "descrizione": "Si apre con la chiave"
+ },
+ {
+  "id": 27,
+  "key": "COIN",
+  "nome": "Moneta d'oro",
+  "categoria": "oggetti",
+  "classe": "oggetto",
+  "descrizione": "Punti"
+ },
+ {
+  "id": 28,
+  "key": "GEM",
+  "nome": "Gemma",
+  "categoria": "oggetti",
+  "classe": "oggetto",
+  "descrizione": "Molti punti"
+ },
+ {
+  "id": 29,
+  "key": "KEY",
+  "nome": "Chiave",
+  "categoria": "oggetti",
+  "classe": "oggetto",
+  "descrizione": "Apre i portoni"
+ },
+ {
+  "id": 30,
+  "key": "POTION",
+  "nome": "Pozione",
+  "categoria": "oggetti",
+  "classe": "oggetto",
+  "descrizione": "Ricarica un cuore"
+ },
+ {
+  "id": 31,
+  "key": "CHEST",
+  "nome": "Forziere",
+  "categoria": "oggetti",
+  "classe": "colpibile",
+  "descrizione": "Contiene un tesoro"
+ },
+ {
+  "id": 32,
+  "key": "CHKPT",
+  "nome": "Stendardo checkpoint",
+  "categoria": "marcatori",
+  "classe": "marcatore",
+  "descrizione": "Punto di ripresa"
+ },
+ {
+  "id": 33,
+  "key": "PORTT",
+  "nome": "Portale (alto)",
+  "categoria": "marcatori",
+  "classe": "marcatore",
+  "descrizione": "Fine del livello"
+ },
+ {
+  "id": 34,
+  "key": "PORTB",
+  "nome": "Portale (basso)",
+  "categoria": "marcatori",
+  "classe": "marcatore",
+  "descrizione": "Fine del livello"
+ },
+ {
+  "id": 35,
+  "key": "START",
+  "nome": "Partenza",
+  "categoria": "marcatori",
+  "classe": "marcatore",
+  "descrizione": "Dove inizia l'eroe"
+ },
+ {
+  "id": 36,
+  "key": "TORCH",
+  "nome": "Torcia",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": "Animata in gioco"
+ },
+ {
+  "id": 37,
+  "key": "TRUNK",
+  "nome": "Tronco",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": "Albero"
+ },
+ {
+  "id": 38,
+  "key": "LEAVES",
+  "nome": "Chioma",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": "Albero"
+ },
+ {
+  "id": 39,
+  "key": "BUSH",
+  "nome": "Cespuglio",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 40,
+  "key": "FENCE",
+  "nome": "Staccionata",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 41,
+  "key": "FLOWER",
+  "nome": "Fiori",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 42,
+  "key": "BONES",
+  "nome": "Teschio e ossa",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 43,
+  "key": "BANNER",
+  "nome": "Arazzo",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": "Su parete del castello"
+ },
+ {
+  "id": 44,
+  "key": "WINDOW",
+  "nome": "Finestra ad arco",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": "Su parete del castello"
+ },
+ {
+  "id": 45,
+  "key": "CRYDEC",
+  "nome": "Cristalli",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 46,
+  "key": "SHROOM",
+  "nome": "Fungo",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 47,
+  "key": "SIGN",
+  "nome": "Cartello",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 48,
+  "key": "CLOUD",
+  "nome": "Nuvola",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 49,
+  "key": "PILLAR",
+  "nome": "Colonna",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ },
+ {
+  "id": 50,
+  "key": "DRAGON",
+  "nome": "Statua del drago",
+  "categoria": "decorazioni",
+  "classe": "decorazione",
+  "descrizione": ""
+ }
+]

@@ -1,0 +1,4 @@
+done=55 tries=6 count=1 slot=01 page2slot=02
+ip=192.168.1.107 errsend=0 errrcv=0
+bank_checks=4 bank_errors=0
+reply=8 8 8 8 117 52 18 1 0 32 0

@@ -1,0 +1,6 @@
+ciclo 1: done=55 prev_idx=255 free_idx=0 progerr=0 verify=1 newseq=0 erased=0 slot=0
+ciclo 2: done=55 prev_idx=0 free_idx=1 progerr=0 verify=1 newseq=1 erased=0 slot=1
+ciclo 3: done=55 prev_idx=1 free_idx=2 progerr=0 verify=1 newseq=2 erased=0 slot=2
+ciclo 4: done=55 prev_idx=2 free_idx=0 progerr=0 verify=1 newseq=3 erased=1 slot=0
+ciclo 5: done=55 prev_idx=0 free_idx=1 progerr=0 verify=1 newseq=4 erased=0 slot=1
+ciclo 6: done=55 prev_idx=1 free_idx=2 progerr=0 verify=1 newseq=5 erased=0 slot=2

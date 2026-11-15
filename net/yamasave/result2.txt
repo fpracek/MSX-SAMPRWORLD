@@ -1,0 +1,1 @@
+ciclo 1: done=55 prev_idx=2 free_idx=0 progerr=0 verify=1 newseq=6 erased=1 slot=0
