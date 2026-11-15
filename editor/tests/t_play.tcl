@@ -1,5 +1,5 @@
 # prova di gioco con un "bot": livello con buca, muro e portale; il bot corre a destra e salta nei punti giusti
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory [expr {$a}]] }

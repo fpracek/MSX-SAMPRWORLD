@@ -1,5 +1,5 @@
 # pubblicazione: richiede server UDP su 127.0.0.1:9100 e il driver UNAPI in slot A
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory $a] }

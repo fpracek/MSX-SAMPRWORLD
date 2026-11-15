@@ -1,5 +1,5 @@
 # morte nella buca + ripartenza dal punto di partenza + uscita con ESC (senza validare)
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory [expr {$a}]] }

@@ -6,7 +6,11 @@
 ;
 ; Schermo: mappa 16x12 tile (256x192) + barra di stato (20 righe). Il tileset sta in pagina 1 di VRAM
 ; (y=256..), la mappa si ridisegna con HMMM pagina1->pagina0.
+        IFDEF TESTBUILD
+        output "editor_test.rom"        ; per i test automatici: senza menu all'avvio
+        ELSE
         output "editor.rom"
+        ENDIF
 
 CHGMOD  equ 0x005F
 GRPPRT  equ 0x008D
@@ -78,6 +82,8 @@ v_sfound equ V+0x92
 v_msgnum equ V+0x93             ; 2 byte: numero da accodare al messaggio
 v_msgnf equ V+0x95
 v_prev3 equ V+0x9E
+v_prev6 equ V+0x9C
+v_e6    equ V+0x9D
 v_e3    equ V+0x9F
 v_valid equ V+0x96              ; 1 = il creatore ha superato questo livello (vale solo finche' non lo modifica)
 v_conf  equ V+0x97              ; conferma di SELECT: frame residui
@@ -148,6 +154,9 @@ start:  di
         ld a,10
         ld (v_cury),a
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
+        IFNDEF TESTBUILD
+        call do_menu
+        ENDIF
         call redraw_map
         call sprite_update
         call draw_status
@@ -192,6 +201,10 @@ mcf:    ld hl,v_frame
         ld hl,v_prev3
         call edge
         ld (v_e3),a
+        ld a,6
+        ld hl,v_prev6
+        call edge
+        ld (v_e6),a
         ld a,8
         ld hl,v_prev8
         call edge
@@ -290,7 +303,10 @@ nnext:  ld a,(v_e4)
         ld (v_tile),a
         ld a,1
         ld (v_dirty),a
-nopick: ld a,(v_e4)
+nopick: ld a,(v_e6)
+        bit 5,a                 ; F1 = menu
+        call nz,do_menu
+        ld a,(v_e4)
         bit 3,a                 ; N = impostazioni di rete
         call nz,do_netset
         ld a,(v_e3)
@@ -912,6 +928,7 @@ utn:    pop bc
         include "audio.asm"
         include "netui.asm"
         include "netset.asm"
+        include "menu.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"

@@ -1,5 +1,5 @@
 # audio SCC: registra l'uscita sonora durante la prova e legge i registri (se esposti)
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc cell {col row t} { debug write memory [expr {0xC000 + $row*128 + $col}] $t }

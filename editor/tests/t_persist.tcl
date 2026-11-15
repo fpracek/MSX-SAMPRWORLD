@@ -1,6 +1,6 @@
 # uso: variabile d'ambiente FASE = a | b | c  (a: modifica+valida, b: riavvio+pubblica, c: riavvio dopo la pubblicazione)
 set fase $::env(FASE)
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory $a] }

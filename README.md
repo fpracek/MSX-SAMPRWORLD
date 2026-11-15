@@ -14,6 +14,9 @@ integrato, livelli scaricabili/caricabili da un server via **UNAPI** (UDP). Cart
 Fase 0 (rete/banking/flash) verificata in emulazione. Ora: blocchi e oggetti per i livelli.
 Ancora da fare: formato livello, motore (da soccerlg), editor, SCC, prove su hardware reale.
 
+## Avvio
+`editor/build.sh` produce `editor.rom` (gioco, con menu iniziale: crea/continua bozza, livelli del server, impostazioni; F1 riapre il menu) e `editor_test.rom` (senza menu, usata dai test in `editor/tests`).
+
 ## Editor (v0) - `editor/editor.asm`
 Assemblare con sjasmplus, provare con `openmsx -machine Panasonic_FS-A1ST -cart editor/editor.rom`.
 Frecce = muovi, SPAZIO = piazza (tenuto premuto = pittura), X/DEL = cancella, `,` `.` = tile precedente/successivo,

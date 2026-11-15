@@ -1,5 +1,5 @@
 # blocchi interattivi: runico (moneta), pietra fessurata, friabile, chiave + portone, portale
-cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor.rom -romtype Yamanooto
+cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_test.rom -romtype Yamanooto
 reset
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory [expr {$a}]] }
