@@ -115,7 +115,7 @@ mn_t:   ld a,15
         ld (FORCLR),a
         ld a,1
         ld (BAKCLR),a
-        ld hl,84
+        ld hl,72
         ld (GRPACX),hl
         ld hl,116
         ld (GRPACY),hl
@@ -188,7 +188,7 @@ mn_scene:
         db 4,1,T_CLOUD, 8,1,T_CLOUD, 15,0,T_CLOUD
         db 0xFF
 
-s_mtitle: db "SAMPR WORLD",0
+s_mtitle: db "SAMPR WORLD  r8",0
 s_msub:   db "Fantasy platformer for MSX2",0
 s_mi0:    db "PLAY THE CAMPAIGN",0
 s_mi1:    db "CREATE LEVELS",0
