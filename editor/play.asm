@@ -127,6 +127,13 @@ pi_up:  push hl
         dec a
         ld (p_cnt),a
         jr nz,pi_up
+        ld hl,CRMB              ; blocchi friabili e chiavi azzerati
+        ld de,CRMB+1
+        ld bc,11
+        ld (hl),0
+        ldir
+        xor a
+        ld (p_keys),a
         call map_save           ; la mappa originale resta in VRAM: la prova la modifica (monete, nemici)
         call ent_spawn
         call ent_vram
@@ -234,6 +241,11 @@ play_status:
         call print_str
         ld a,(p_coins)
         call print_num3
+        ld hl,s_keys
+        call print_str
+        ld a,(p_keys)
+        add a,'0'
+        call print_char
         ld hl,s_kills
         call print_str
         ld a,(p_kills)
@@ -523,6 +535,8 @@ pp_gdone:
         ld b,12                 ; verso destra: bordo x+12
         call col_x
         jr nc,pp_xdone
+        call try_door           ; con una chiave il portone si apre
+        jr nc,pp_xdone
         ld hl,(p_x)
         ld de,12
         add hl,de
@@ -540,6 +554,8 @@ pp_gdone:
 pp_left:
         ld b,3
         call col_x
+        jr nc,pp_xdone
+        call try_door           ; con una chiave il portone si apre
         jr nc,pp_xdone
         ld hl,(p_x)
         ld de,3
@@ -602,6 +618,7 @@ pp_up:  ld b,3                  ; in salita: bordo superiore y
         call blocks
         jr nc,pp_ysol
 pp_bump:
+        call head_hit           ; blocchi colpiti da sotto
         ld hl,(p_y)
         ld a,l
         and 0xF0
@@ -630,7 +647,8 @@ pp_gset:
         ld (p_ground),a
 pp_ydone:
         call touch_all
-        ret
+        call crumble_check
+        jp crumble_update
 
 neg_hl: ld a,l
         cpl
@@ -812,9 +830,23 @@ t_spring:
 t_die:  ld a,40
         ld (p_dead),a
         ret
-t_pick: ld a,(p_coins)
+t_pick: ld a,e
+        cp T_KEY
+        jr nz,tpk_c
+        ld a,(p_keys)           ; la chiave non e' una moneta
         inc a
-        ld (p_coins),a
+        ld (p_keys),a
+        jr tpk_d
+tpk_c:  cp T_GEM
+        ld b,1
+        jr nz,tpk_a
+        ld b,5                  ; la gemma vale 5
+tpk_a:  ld a,(p_coins)
+        add a,b
+        jr nc,tpk_s
+        ld a,255
+tpk_s:  ld (p_coins),a
+tpk_d:
         ld a,(p_trow)           ; il tile sparisce dalla mappa
         ld h,a
         ld l,0
@@ -939,4 +971,5 @@ m_won:    db "  Superato! Validato",0
 m_quit:   db "  Prova interrotta",0
 s_coins:  db "MONETE ",0
 s_kills:  db "  NEMICI ",0
+s_keys:   db "  CHIAVI ",0
 s_playhelp: db "FRECCE SPAZIO=salta ESC=esci",0

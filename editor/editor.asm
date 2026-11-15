@@ -896,6 +896,7 @@ utn:    pop bc
         include "publish.asm"
         include "scroll.asm"
         include "enemy.asm"
+        include "blocks.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"
