@@ -153,6 +153,9 @@ start:  di
         ld (v_bcol),a
         ld a,10
         ld (v_cury),a
+        xor a
+        ld (cp_done),a          ; campagna: nessun livello ancora superato
+        ld (cp_done+1),a
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
         IFNDEF TESTBUILD
         call do_menu
@@ -929,6 +932,7 @@ utn:    pop bc
         include "netui.asm"
         include "netset.asm"
         include "menu.asm"
+        include "campaign.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"
@@ -939,7 +943,7 @@ p_stat:  db 0,0,0,0, 0,0,192,0, 0,1, 20,0, 0x11,0,0xC0
 p_pick:  db 0,0,0,0, 0,0,0,0, 0,1, 64,0, 0x11,0,0xC0
 s_x:     db "X:",0
 s_y:     db " Y:",0
-s_help:  db "  ,.=tile TAB=elenco",0
+s_help:  db "  ,.=tile TAB=list",0
 s_val:   db " [OK]",0
 ; cursore 16x16: cornice spessa 2 pixel (UL, LL, UR, LR)
 spat:    db 0xFF,0xFF,0xC0,0xC0,0xC0,0xC0,0xC0,0xC0
@@ -954,6 +958,7 @@ palette: incbin "../assets/palette.bin"
         ds 0x4000,0xFF                          ; segmenti 2 e 3
         incbin "../assets/sprites.bin"          ; segmento 4: sprite eroe + nemici (finestra A000)
         incbin "../assets/tiles_seg.bin"        ; segmento 5: tileset (finestra A000)
-        ds 0x20000-0xC000,0xFF
+        incbin "../assets/campaign.bin"         ; segmento 6: i 10 livelli fissi della campagna
+        ds 0x20000-0xE000,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF

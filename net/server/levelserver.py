@@ -192,9 +192,14 @@ def seed(store):
         store.users = {"testuser": "TESTKEY-0123456"}
         json.dump(store.users, open(store.users_path, "w"), indent=1)
     if not store.index:
-        store.add("Prato di partenza", "server", make_blob(bytes(range(256)) * 2))
-        store.add("Grotta lunga", "server", make_blob(bytes((i * 7) & 255 for i in range(900))))
-        store.add("Castello", "server", make_blob(bytes((i * 13 + 5) & 255 for i in range(1500))))
+        seed_dir = os.path.join(HERE, "..", "..", "assets", "levels")
+        names = ["Starter Meadow", "Crystal Cave", "Castle Gate"]
+        for fname, title in zip(("01.lvl", "04.lvl", "07.lvl"), names):
+            path = os.path.join(seed_dir, fname)
+            if os.path.exists(path):
+                store.add(title, "server", open(path, "rb").read())
+            else:                                  # senza i file di gioco: livelli segnaposto non giocabili
+                store.add(title, "server", make_blob(bytes(range(256)) * 2))
 
 
 def main():

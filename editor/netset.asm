@@ -820,20 +820,20 @@ fld_tab:                        ; tipo, max, buffer, etichetta, y, -
         dw f_ip+48,l_dns
         db 152,0
 l_srv:  db "Server",0
-l_port: db "Porta",0
-l_user: db "Utente",0
-l_key:  db "Chiave",0
-l_net:  db "Rete",0
+l_port: db "Port",0
+l_user: db "User",0
+l_key:  db "Key",0
+l_net:  db "Network",0
 l_ip:   db "IP",0
-l_mask: db "Maschera",0
+l_mask: db "Netmask",0
 l_gw:   db "Gateway",0
 l_dns:  db "DNS",0
 s_dhcp: db "DHCP",0,0,0,0
-s_static: db "STATICO",0
-s_nstitle: db "IMPOSTAZIONI DI RETE",0
-s_nsh1: db "SU/GIU campo  SPAZIO DHCP/IP",0
-s_nsh2: db "INVIO salva  ESC annulla",0
-m_nsok: db "  Impostazioni salvate",0
+s_static: db "STATIC",0
+s_nstitle: db "NETWORK SETTINGS",0
+s_nsh1: db "UP/DOWN field  SPACE DHCP/IP",0
+s_nsh2: db "ENTER save  ESC cancel",0
+m_nsok: db "  Settings saved",0
 ; matrice -> ASCII, righe 0..5 (8 colonne ciascuna); 0 = nessun carattere
 key_un: db "01234567"
         db "89-=",0x5C,"[];"

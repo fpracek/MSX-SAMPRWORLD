@@ -2,408 +2,408 @@
  {
   "id": 0,
   "key": "EMPTY",
-  "nome": "Vuoto",
-  "categoria": "base",
+  "nome": "Empty",
+  "categoria": "basic",
   "classe": "vuoto",
-  "descrizione": "Cielo / nessun blocco"
+  "descrizione": "Sky / no block"
  },
  {
   "id": 1,
   "key": "GRASS",
-  "nome": "Terra erbosa",
-  "categoria": "terreno",
+  "nome": "Grass ground",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Terreno con erba in cima"
+  "descrizione": "Ground with grass on top"
  },
  {
   "id": 2,
   "key": "DIRT",
-  "nome": "Terra",
-  "categoria": "terreno",
+  "nome": "Dirt",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Riempimento sotto l'erba"
+  "descrizione": "Fill below the grass"
  },
  {
   "id": 3,
   "key": "STONE",
-  "nome": "Pietra",
-  "categoria": "terreno",
+  "nome": "Stone",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Blocco di roccia grezza"
+  "descrizione": "Rough rock block"
  },
  {
   "id": 4,
   "key": "BRICK",
-  "nome": "Mattone del castello",
-  "categoria": "terreno",
+  "nome": "Castle brick",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Muri e torri"
+  "descrizione": "Walls and towers"
  },
  {
   "id": 5,
   "key": "MOSSY",
-  "nome": "Pietra muschiosa",
-  "categoria": "terreno",
+  "nome": "Mossy stone",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Rovine antiche"
+  "descrizione": "Ancient ruins"
  },
  {
   "id": 6,
   "key": "CRATE",
-  "nome": "Cassa di legno",
-  "categoria": "terreno",
+  "nome": "Wooden crate",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Solida, decorativa"
+  "descrizione": "Solid, decorative"
  },
  {
   "id": 7,
   "key": "CRYST",
-  "nome": "Blocco di cristallo",
-  "categoria": "terreno",
+  "nome": "Crystal block",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Caverne magiche"
+  "descrizione": "Magic caves"
  },
  {
   "id": 8,
   "key": "GOLDB",
-  "nome": "Blocco d'oro",
-  "categoria": "terreno",
+  "nome": "Gold block",
+  "categoria": "terrain",
   "classe": "solido",
-  "descrizione": "Solido e lucente"
+  "descrizione": "Solid and shiny"
  },
  {
   "id": 9,
   "key": "CWALL",
-  "nome": "Parete del castello",
-  "categoria": "sfondo",
+  "nome": "Castle wall",
+  "categoria": "background",
   "classe": "decorazione",
-  "descrizione": "Sfondo non solido"
+  "descrizione": "Non-solid backdrop"
  },
  {
   "id": 10,
   "key": "WOODP",
-  "nome": "Piattaforma di legno",
-  "categoria": "piattaforme",
+  "nome": "Wooden platform",
+  "categoria": "platforms",
   "classe": "piattaforma",
-  "descrizione": "Si salta da sotto"
+  "descrizione": "Jump up through it from below"
  },
  {
   "id": 11,
   "key": "BRIDGE",
-  "nome": "Ponte di corda",
-  "categoria": "piattaforme",
+  "nome": "Rope bridge",
+  "categoria": "platforms",
   "classe": "piattaforma",
-  "descrizione": "Si salta da sotto"
+  "descrizione": "Jump up through it from below"
  },
  {
   "id": 12,
   "key": "LEDGE",
-  "nome": "Cornice di pietra",
-  "categoria": "piattaforme",
+  "nome": "Stone ledge",
+  "categoria": "platforms",
   "classe": "piattaforma",
-  "descrizione": "Si salta da sotto"
+  "descrizione": "Jump up through it from below"
  },
  {
   "id": 13,
   "key": "RUNE",
-  "nome": "Blocco runico",
-  "categoria": "speciali",
+  "nome": "Rune block",
+  "categoria": "special",
   "classe": "colpibile",
-  "descrizione": "Colpito da sotto rilascia un oggetto"
+  "descrizione": "Hit from below to release an item"
  },
  {
   "id": 14,
   "key": "RUNEU",
-  "nome": "Blocco runico usato",
-  "categoria": "speciali",
+  "nome": "Used rune block",
+  "categoria": "special",
   "classe": "solido",
-  "descrizione": "Dopo l'uso"
+  "descrizione": "After use"
  },
  {
   "id": 15,
   "key": "BREAK",
-  "nome": "Pietra fessurata",
-  "categoria": "speciali",
+  "nome": "Cracked stone",
+  "categoria": "special",
   "classe": "colpibile",
-  "descrizione": "Si rompe da sotto"
+  "descrizione": "Breaks when hit from below"
  },
  {
   "id": 16,
   "key": "CRUMB",
-  "nome": "Blocco friabile",
-  "categoria": "speciali",
+  "nome": "Crumbling block",
+  "categoria": "special",
   "classe": "colpibile",
-  "descrizione": "Crolla dopo il passaggio"
+  "descrizione": "Collapses after you stand on it"
  },
  {
   "id": 17,
   "key": "SPRING",
-  "nome": "Fungo molla viola",
-  "categoria": "speciali",
+  "nome": "Mushroom spring",
+  "categoria": "special",
   "classe": "marcatore",
-  "descrizione": "Rimbalzo alto"
+  "descrizione": "High bounce"
  },
  {
   "id": 18,
   "key": "SPIKES",
-  "nome": "Spuntoni",
-  "categoria": "pericoli",
+  "nome": "Spikes",
+  "categoria": "hazards",
   "classe": "pericolo",
-  "descrizione": "Uccidono al contatto"
+  "descrizione": "Deadly on contact"
  },
  {
   "id": 19,
   "key": "LAVAT",
-  "nome": "Lava (superficie)",
-  "categoria": "pericoli",
+  "nome": "Lava (top)",
+  "categoria": "hazards",
   "classe": "pericolo",
-  "descrizione": "Uccide al contatto"
+  "descrizione": "Deadly on contact"
  },
  {
   "id": 20,
   "key": "LAVA",
   "nome": "Lava",
-  "categoria": "pericoli",
+  "categoria": "hazards",
   "classe": "pericolo",
-  "descrizione": "Riempimento"
+  "descrizione": "Fill"
  },
  {
   "id": 21,
   "key": "WATERT",
-  "nome": "Acqua (superficie)",
-  "categoria": "liquidi",
+  "nome": "Water (top)",
+  "categoria": "liquids",
   "classe": "liquido",
-  "descrizione": "Nuoto, movimento lento"
+  "descrizione": "Swim, slow movement"
  },
  {
   "id": 22,
   "key": "WATER",
-  "nome": "Acqua",
-  "categoria": "liquidi",
+  "nome": "Water",
+  "categoria": "liquids",
   "classe": "liquido",
-  "descrizione": "Riempimento"
+  "descrizione": "Fill"
  },
  {
   "id": 23,
   "key": "LADDER",
-  "nome": "Scala di legno",
-  "categoria": "scalabili",
+  "nome": "Wooden ladder",
+  "categoria": "climbables",
   "classe": "scalabile",
-  "descrizione": "Su e giu'"
+  "descrizione": "Up and down"
  },
  {
   "id": 24,
   "key": "VINE",
-  "nome": "Rampicante",
-  "categoria": "scalabili",
+  "nome": "Vine",
+  "categoria": "climbables",
   "classe": "scalabile",
-  "descrizione": "Su e giu'"
+  "descrizione": "Up and down"
  },
  {
   "id": 25,
   "key": "DOORT",
-  "nome": "Portone (alto)",
-  "categoria": "speciali",
+  "nome": "Gate (top)",
+  "categoria": "special",
   "classe": "marcatore",
-  "descrizione": "Si apre con la chiave"
+  "descrizione": "Opens with a key"
  },
  {
   "id": 26,
   "key": "DOORB",
-  "nome": "Portone (basso)",
-  "categoria": "speciali",
+  "nome": "Gate (bottom)",
+  "categoria": "special",
   "classe": "marcatore",
-  "descrizione": "Si apre con la chiave"
+  "descrizione": "Opens with a key"
  },
  {
   "id": 27,
   "key": "COIN",
-  "nome": "Moneta d'oro",
-  "categoria": "oggetti",
+  "nome": "Gold coin",
+  "categoria": "items",
   "classe": "oggetto",
-  "descrizione": "Punti"
+  "descrizione": "Points"
  },
  {
   "id": 28,
   "key": "GEM",
-  "nome": "Gemma",
-  "categoria": "oggetti",
+  "nome": "Gem",
+  "categoria": "items",
   "classe": "oggetto",
-  "descrizione": "Molti punti"
+  "descrizione": "Worth 5 coins"
  },
  {
   "id": 29,
   "key": "KEY",
-  "nome": "Chiave",
-  "categoria": "oggetti",
+  "nome": "Key",
+  "categoria": "items",
   "classe": "oggetto",
-  "descrizione": "Apre i portoni"
+  "descrizione": "Opens gates"
  },
  {
   "id": 30,
   "key": "POTION",
-  "nome": "Pozione",
-  "categoria": "oggetti",
+  "nome": "Potion",
+  "categoria": "items",
   "classe": "oggetto",
-  "descrizione": "Ricarica un cuore"
+  "descrizione": "Restores a heart"
  },
  {
   "id": 31,
   "key": "CHEST",
-  "nome": "Forziere",
-  "categoria": "oggetti",
+  "nome": "Chest",
+  "categoria": "items",
   "classe": "colpibile",
-  "descrizione": "Contiene un tesoro"
+  "descrizione": "Hit from below for a gem"
  },
  {
   "id": 32,
   "key": "CHKPT",
-  "nome": "Stendardo checkpoint",
-  "categoria": "marcatori",
+  "nome": "Checkpoint banner",
+  "categoria": "markers",
   "classe": "marcatore",
-  "descrizione": "Punto di ripresa"
+  "descrizione": "Respawn point"
  },
  {
   "id": 33,
   "key": "PORTT",
-  "nome": "Portale (alto)",
-  "categoria": "marcatori",
+  "nome": "Portal (top)",
+  "categoria": "markers",
   "classe": "marcatore",
-  "descrizione": "Fine del livello"
+  "descrizione": "End of the level"
  },
  {
   "id": 34,
   "key": "PORTB",
-  "nome": "Portale (basso)",
-  "categoria": "marcatori",
+  "nome": "Portal (bottom)",
+  "categoria": "markers",
   "classe": "marcatore",
-  "descrizione": "Fine del livello"
+  "descrizione": "End of the level"
  },
  {
   "id": 35,
   "key": "START",
-  "nome": "Partenza",
-  "categoria": "marcatori",
+  "nome": "Start",
+  "categoria": "markers",
   "classe": "marcatore",
-  "descrizione": "Dove inizia l'eroe"
+  "descrizione": "Where the hero begins"
  },
  {
   "id": 36,
   "key": "TORCH",
-  "nome": "Torcia",
-  "categoria": "decorazioni",
+  "nome": "Torch",
+  "categoria": "decorations",
   "classe": "decorazione",
-  "descrizione": "Animata in gioco"
+  "descrizione": ""
  },
  {
   "id": 37,
   "key": "TRUNK",
-  "nome": "Tronco",
-  "categoria": "decorazioni",
+  "nome": "Tree trunk",
+  "categoria": "decorations",
   "classe": "decorazione",
-  "descrizione": "Albero"
+  "descrizione": ""
  },
  {
   "id": 38,
   "key": "LEAVES",
-  "nome": "Chioma",
-  "categoria": "decorazioni",
+  "nome": "Tree crown",
+  "categoria": "decorations",
   "classe": "decorazione",
-  "descrizione": "Albero"
+  "descrizione": ""
  },
  {
   "id": 39,
   "key": "BUSH",
-  "nome": "Cespuglio",
-  "categoria": "decorazioni",
+  "nome": "Bush",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 40,
   "key": "FENCE",
-  "nome": "Staccionata",
-  "categoria": "decorazioni",
+  "nome": "Fence",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 41,
   "key": "FLOWER",
-  "nome": "Fiori",
-  "categoria": "decorazioni",
+  "nome": "Flowers",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 42,
   "key": "BONES",
-  "nome": "Teschio e ossa",
-  "categoria": "decorazioni",
+  "nome": "Skull and bones",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 43,
   "key": "BANNER",
-  "nome": "Arazzo",
-  "categoria": "decorazioni",
+  "nome": "Tapestry",
+  "categoria": "decorations",
   "classe": "decorazione",
-  "descrizione": "Su parete del castello"
+  "descrizione": "On a castle wall"
  },
  {
   "id": 44,
   "key": "WINDOW",
-  "nome": "Finestra ad arco",
-  "categoria": "decorazioni",
+  "nome": "Arched window",
+  "categoria": "decorations",
   "classe": "decorazione",
-  "descrizione": "Su parete del castello"
+  "descrizione": "On a castle wall"
  },
  {
   "id": 45,
   "key": "CRYDEC",
-  "nome": "Cristalli",
-  "categoria": "decorazioni",
+  "nome": "Crystals",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 46,
   "key": "SHROOM",
-  "nome": "Fungo",
-  "categoria": "decorazioni",
+  "nome": "Mushroom",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 47,
   "key": "SIGN",
-  "nome": "Cartello",
-  "categoria": "decorazioni",
+  "nome": "Sign",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 48,
   "key": "CLOUD",
-  "nome": "Nuvola",
-  "categoria": "decorazioni",
+  "nome": "Cloud",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 49,
   "key": "PILLAR",
-  "nome": "Colonna",
-  "categoria": "decorazioni",
+  "nome": "Column",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
  {
   "id": 50,
   "key": "DRAGON",
-  "nome": "Statua del drago",
-  "categoria": "decorazioni",
+  "nome": "Dragon statue",
+  "categoria": "decorations",
   "classe": "decorazione",
   "descrizione": ""
  },
@@ -411,16 +411,16 @@
   "id": 51,
   "key": "GOBLIN",
   "nome": "Goblin",
-  "categoria": "nemici",
+  "categoria": "enemies",
   "classe": "marcatore",
-  "descrizione": "Cammina e gira ai bordi; si schiaccia saltandoci sopra"
+  "descrizione": "Walks, turns at edges; stomp it from above"
  },
  {
   "id": 52,
   "key": "BAT",
-  "nome": "Pipistrello",
-  "categoria": "nemici",
+  "nome": "Bat",
+  "categoria": "enemies",
   "classe": "marcatore",
-  "descrizione": "Vola in orizzontale ondeggiando"
+  "descrizione": "Flies sideways, bobbing"
  }
 ]

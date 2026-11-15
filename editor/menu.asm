@@ -1,6 +1,6 @@
 ; menu.asm - schermata iniziale (all'avvio e con F1): creare/continuare la bozza, livelli del server, impostazioni di rete.
 mn_sel  equ FBUF+0xB0
-mn_n    equ 3
+mn_n    equ 4
 
 do_menu:
         call hide_cursor
@@ -51,8 +51,12 @@ mn_dn:  ld a,(mn_sel)
         jr mn_loop
 mn_go:  ld a,(mn_sel)
         or a
-        jr z,mn_exit
-        cp 1
+        jr nz,mg_1
+        call do_campaign
+        jr mn_back
+mg_1:   cp 1
+        jr z,mn_exit            ; CREATE LEVELS: si entra nell'editor
+        cp 2
         jr nz,mn_set
         call do_browse
         jr mn_back
@@ -60,7 +64,7 @@ mn_set: call do_netset
 mn_back:
         call hide_cursor
         call mn_draw
-        jr mn_loop
+        jp mn_loop
 mn_exit:
         ld a,1
         ld (v_redr),a
@@ -70,12 +74,12 @@ mn_exit:
 ; carattere C a sinistra della voce A
 mn_mark:
         ld b,a
-        ld a,150
+        ld a,142
         ld d,b
         inc d
 mm_y:   dec d
         jr z,mm_d
-        add a,14
+        add a,12
         jr mm_y
 mm_d:   ld l,a
         ld h,0
@@ -113,13 +117,13 @@ mn_t:   ld a,15
         ld (BAKCLR),a
         ld hl,84
         ld (GRPACX),hl
-        ld hl,122
+        ld hl,116
         ld (GRPACY),hl
         ld hl,s_mtitle
         call print_str
-        ld hl,48
+        ld hl,20
         ld (GRPACX),hl
-        ld hl,136
+        ld hl,127
         ld (GRPACY),hl
         ld hl,s_msub
         call print_str
@@ -127,12 +131,12 @@ mn_t:   ld a,15
         ld b,0
 mn_i:   push bc
         push hl
-        ld a,150
+        ld a,142
         ld d,b
         inc d
 mi_y:   dec d
         jr z,mi_d
-        add a,14
+        add a,12
         jr mi_y
 mi_d:   ld l,a
         ld h,0
@@ -181,8 +185,9 @@ mn_scene:
         db 0xFF
 
 s_mtitle: db "SAMPR WORLD",0
-s_msub:   db "Platform fantasy per MSX2",0
-s_mi0:    db "CREA / CONTINUA LA BOZZA",0
-s_mi1:    db "LIVELLI DEL SERVER",0
-s_mi2:    db "IMPOSTAZIONI DI RETE",0
-s_mfoot:  db "SU/GIU scegli   INVIO conferma",0
+s_msub:   db "Fantasy platformer for MSX2",0
+s_mi0:    db "PLAY THE CAMPAIGN",0
+s_mi1:    db "CREATE LEVELS",0
+s_mi2:    db "SERVER LEVELS",0
+s_mi3:    db "NETWORK SETTINGS",0
+s_mfoot:  db "UP/DOWN select  ENTER confirm",0

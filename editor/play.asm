@@ -992,9 +992,9 @@ ps_pl:  ld a,e
         jr nz,ps_pl
         jp ent_sprites          ; poi i nemici e il terminatore
 
-m_won:    db "  Superato! Validato",0
-m_quit:   db "  Prova interrotta",0
-s_coins:  db "MONETE ",0
-s_kills:  db "  NEMICI ",0
-s_keys:   db "  CHIAVI ",0
-s_playhelp: db "FRECCE SPAZIO=salta ESC=esci",0
+m_won:    db "  Cleared! Validated",0
+m_quit:   db "  Test stopped",0
+s_coins:  db "COINS ",0
+s_kills:  db "  ENEMIES ",0
+s_keys:   db "  KEYS ",0
+s_playhelp: db "ARROWS SPACE=jump ESC=exit",0

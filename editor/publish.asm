@@ -141,13 +141,13 @@ pd16s:  inc c
 pd16p:  ld b,1
         jp print_char
 
-m_nosett: db "  Nessuna impostaz.",0
-m_notval: db "  Superalo prima",0
-m_pubing: db "  Pubblico...",0
-m_nounapi: db "  Scheda UNAPI assente",0
-m_dns:    db "  DNS fallito",0
-m_noopen: db "  UDP non si apre",0
-m_notmo:  db "  Server non risponde",0
-m_auth:   db "  Credenziali errate",0
-m_refused: db "  Rifiutato, stato ",0
-m_pubok:  db "  Pubblicato id ",0
+m_nosett: db "  No settings",0
+m_notval: db "  Clear it first",0
+m_pubing: db "  Publishing...",0
+m_nounapi: db "  No UNAPI card",0
+m_dns:    db "  DNS failed",0
+m_noopen: db "  UDP open failed",0
+m_notmo:  db "  Server not answering",0
+m_auth:   db "  Wrong credentials",0
+m_refused: db "  Refused, status ",0
+m_pubok:  db "  Published id ",0

@@ -507,18 +507,18 @@ ld_inc: ld hl,m_incomp
         ld (v_msg),hl
         ret
 
-m_saved:  db "  Bozza salvata",0
-m_confirm: db "  SELECT = conferma",0
-m_devval: db "  Validato (DEV)",0
-m_loaded: db "  Bozza caricata",0
-m_none:   db "  Nessuna bozza",0
-m_erased: db "  Bozza cancellata",0
-m_err:    db "  ERRORE FLASH",0
-m_bad:    db "  Bozza corrotta",0
-m_incomp: db "  Bozza incompatibile",0
+m_saved:  db "  Draft saved",0
+m_confirm: db "  SELECT = confirm",0
+m_devval: db "  Validated (DEV)",0
+m_loaded: db "  Draft loaded",0
+m_none:   db "  No draft",0
+m_erased: db "  Draft erased",0
+m_err:    db "  FLASH ERROR",0
+m_bad:    db "  Draft corrupt",0
+m_incomp: db "  Draft incompatible",0
 ; intestazione livello v1 (25 byte): LV, ver, w, h, start x/y, tema, titolo[16], n_ent
 lvhdr:  db "LV",1,MAPW,MAPH,1,10,0
-        db "Bozza",0,0,0,0,0,0,0,0,0,0,0
+        db "Draft",0,0,0,0,0,0,0,0,0,0,0
         db 0
 
 ; routine che toccano la flash: eseguite in RAM (la flash in programmazione non e' leggibile)

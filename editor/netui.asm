@@ -484,13 +484,13 @@ hide_cursor:
         out (0x98),a
         ret
 
-s_brtitle: db "LIVELLI SUL SERVER  pag ",0
-s_brh1:    db "SU/GIU scegli  SX/DX pagina",0
-s_brh2:    db "INVIO scarica e gioca  ESC esci",0
-m_brload:  db "Carico l'elenco...",0
-m_brget:   db "Scarico il livello...",0
-m_nolev:   db "Nessun livello",0
-m_toobig:  db "Livello troppo grande",0
-m_badfmt:  db "Formato non supportato",0
-m_srverr:  db "Errore del server",0
-m_fwon:    db "  Livello superato!",0
+s_brtitle: db "SERVER LEVELS  page ",0
+s_brh1:    db "UP/DOWN select  LEFT/RIGHT page",0
+s_brh2:    db "ENTER download+play  ESC back",0
+m_brload:  db "Loading list...",0
+m_brget:   db "Downloading level...",0
+m_nolev:   db "No levels",0
+m_toobig:  db "Level too big",0
+m_badfmt:  db "Unsupported format",0
+m_srverr:  db "Server error",0
+m_fwon:    db "  Level cleared!",0

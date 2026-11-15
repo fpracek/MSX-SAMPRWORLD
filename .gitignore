@@ -5,3 +5,5 @@ __pycache__/
 store/
 server.log
 *.log
+editor/tests/maps/
+editor/editor_bot.rom

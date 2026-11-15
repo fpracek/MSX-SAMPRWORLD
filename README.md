@@ -1,34 +1,39 @@
 # SamPr World
 
-Platform game per **MSX2** (SCREEN 5) ispirato a Mario Maker: ambientazione fantasy, editor di livelli
-integrato, livelli scaricabili/caricabili da un server via **UNAPI** (UDP). Cartuccia **Yamanooto**
-(Konami5/SCC, salvataggio impostazioni in flash).
+A fantasy platformer for **MSX2** (SCREEN 5, pure V9938) with a built-in level editor, ten fixed campaign levels, and
+level sharing over the network: levels made by other players are downloaded from a server through **UNAPI** (UDP).
+Runs from a **Yamanooto** cartridge (Konami5/SCC mapper, flash for saving a draft and the network settings).
 
-## Struttura
-- `tools/gen_tiles.py` - genera il tileset fantasy (51 blocchi/oggetti 16x16) in `assets/`
-- `assets/` - `tiles.png`, `tiles.bin` (SCREEN 5), `palette.bin`, `tileset.inc` (costanti asm + classi di collisione), `catalog.json`, anteprime
-- `tools/gen_sprites.py` - sprite dell'eroe (4 frame x 2 direzioni, 4 sprite sovrapposti per frame) -> `assets/hero.bin`
-- `net/` - spike di rete verificati su openMSX 22: driver UnapiNet, client UNAPI, server livelli UDP, test Yamanooto/flash
+All on-screen text is in English.
 
-## Stato
-Fase 0 (rete/banking/flash) verificata in emulazione. Ora: blocchi e oggetti per i livelli.
-Ancora da fare: formato livello, motore (da soccerlg), editor, SCC, prove su hardware reale.
+## Build and run
+`editor/build.sh` (needs [sjasmplus](https://github.com/z00m128/sjasmplus)) produces
+- `editor/editor.rom` - the game (title menu on start-up),
+- `editor/editor_test.rom` - the same without the menu, used by the automated tests in `editor/tests` (openMSX Tcl scripts).
 
-## Avvio
-`editor/build.sh` produce `editor.rom` (gioco, con menu iniziale: crea/continua bozza, livelli del server, impostazioni; F1 riapre il menu) e `editor_test.rom` (senza menu, usata dai test in `editor/tests`).
+Run in openMSX with the Yamanooto mapper: `openmsx -machine <MSX2 machine> -ext unapinet -carta net/unapi/unapinet.rom`
+and load `editor.rom` in slot B as `-romtype Yamanooto` (the UNAPI bridge driver is only needed for the network features).
 
-## Editor (v0) - `editor/editor.asm`
-Assemblare con sjasmplus, provare con `openmsx -machine Panasonic_FS-A1ST -cart editor/editor.rom`.
-Frecce = muovi, SPAZIO = piazza (tenuto premuto = pittura), X/DEL = cancella, `,` `.` = tile precedente/successivo,
-P = prendi il tile sotto il cursore, TAB = elenco blocchi (INVIO/SPAZIO sceglie, ESC chiude).
-Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/FLASH.md):
-S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
-U = pubblica sul server (UNAPI/UDP; richiede il livello superato, vedi docs/VALIDATION.md; V = valida, solo build DEV).
-T = prova il livello (modalita' gioco: frecce + SPAZIO salta, ESC esce). Arrivare al portale valida il livello e salva la bozza.
-Nemici: tile "Goblin" (cammina, si gira ai bordi) e "Pipistrello" (vola ondeggiando) dalla lista blocchi; in prova si schiacciano dall'alto, altrimenti uccidono. Alla fine della prova la mappa viene ripristinata.
-Blocchi interattivi (in prova): pietra fessurata si rompe da sotto; blocco runico/forziere colpiti da sotto fanno apparire moneta/gemma; blocco friabile crolla dopo ~0,5 s; chiave + portone (la chiave si consuma).
-Audio SCC: musica in prova (re minore) ed effetti (salto, moneta, schiacciato, blocco, morte, vittoria); vedi docs/AUDIO.md.
-D = livelli sul server (UNAPI/UDP): elenco a pagine, SU/GIU/SX/DX, INVIO scarica e gioca (il lavoro dell'editor e la sua validazione non cambiano), ESC esce. Solo livelli 128x12 con CRC valido.
-N = impostazioni di rete (server o IP, porta, utente, chiave, DHCP/IP statico) salvate in flash; SU/GIU campo, SPAZIO alterna DHCP/STATICO, INVIO salva. L'IP statico usa CONFIG_AUTOIP/CONFIG_IP dell'UNAPI TCP/IP (non provato su schede reali).
-Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
-cancellare `Documents/openMSX/persistent/roms/editor.rom`).
+## What is in the game
+- **Title menu**: Play the campaign - Create levels - Server levels - Network settings (F1 reopens it from the editor).
+- **Campaign**: 10 fixed levels (meadows, caves, castle) always available in the ROM (`tools/make_levels.py`).
+- **Editor** (arrows move, SPACE places, X/DEL erases, `,` `.` previous/next block, TAB block list, P pick, S save the
+  draft to flash, L reload it, SELECT new level, T test-play, U publish, D server levels, N network settings).
+- **Test-play**: physics, one-way platforms, ladders, water, springs, checkpoints, coins/gems/keys, crumbling blocks,
+  breakable stone, rune blocks, gates, goblins and bats. A level must be cleared by its creator before it can be published
+  (`docs/VALIDATION.md`).
+- **Network**: publish the draft, browse the server list, download and play other players' levels
+  (`net/server/levelserver.py` is a stdlib-only UDP server, `docs/` has the formats).
+- **Audio**: music and effects on the SCC (`docs/AUDIO.md`).
+
+## Repository layout
+- `editor/` - Z80 source (sjasmplus), `tests/` - automated openMSX tests
+- `tools/` - tile/sprite/music/level generators (Python + Pillow)
+- `assets/` - generated tileset, sprites, audio, campaign levels
+- `net/` - UNAPI bridge driver, test clients, level server, spikes
+- `docs/` - flash layout, level format, validation, scrolling and audio notes (Italian)
+
+## Status
+Everything is verified in openMSX (including a scripted bot that clears all 10 campaign levels), but not yet on real
+hardware: flash timing and 64 KB alignment on the Yamanooto, real UNAPI cards and the static-IP calls still need testing.
+Scrolling is page-based because the V9938 cannot scroll smoothly at 50/60 Hz (`docs/SCROLL.md`).
