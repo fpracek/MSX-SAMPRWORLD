@@ -210,6 +210,34 @@ n_resolve:
         ld a,(SETREC+0x1A)
         or a
         jr z,nr_ip
+        ld hl,SETREC+0x1A       ; "localhost" e indirizzi decimali "a.b.c.d" si risolvono qui, senza DNS
+        ld de,s_lhost
+        ld b,10
+nr_lh:  ld a,(de)
+        cp (hl)
+        jr nz,nr_nl
+        inc hl
+        inc de
+        djnz nr_lh
+        ld hl,s_lip
+        ld de,blk
+        ld bc,4
+        ldir
+        jr nr_port
+nr_nl:  ld a,(SETREC+0x1A)
+        cp '0'
+        jr c,nr_dns
+        cp '9'+1
+        jr nc,nr_dns
+        ld hl,SETREC+0x1A
+        ld de,blk
+        ld b,4
+nr_p:   call nr_num
+        ld (de),a
+        inc de
+        djnz nr_p
+        jr nr_port
+nr_dns: ld hl,SETREC+0x1A
         ld hl,SETREC+0x1A
         ld b,0
         ld a,6                  ; DNS_Q
@@ -232,6 +260,35 @@ nr_port:
         ld (blk+4),hl
         xor a
         ret
+
+; decimale -> A, HL oltre il punto
+nr_num: push de
+        ld e,0
+nn_l:   ld a,(hl)
+        sub '0'
+        jr c,nn_e
+        cp 10
+        jr nc,nn_e
+        inc hl
+        ld d,a
+        ld a,e
+        add a,a
+        ld c,a
+        add a,a
+        add a,a
+        add a,c
+        add a,d
+        ld e,a
+        jr nn_l
+nn_e:   ld a,(hl)
+        cp '.'
+        jr nz,nn_r
+        inc hl
+nn_r:   ld a,e
+        pop de
+        ret
+s_lhost: db "localhost",0
+s_lip:  db 127,0,0,1
 
 n_put:  ld hl,(REC+3)
         ld (n_size),hl
