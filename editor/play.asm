@@ -218,6 +218,10 @@ pe_nj:  call snd_off
         ld a,(p_win)
         or a
         jr z,pe_quit
+        ld a,(p_foreign)
+        or a
+        ld hl,m_fwon
+        jr nz,pe_msg            ; livello scaricato: nessuna validazione
         ld a,1
         ld (v_valid),a
         call do_save            ; la validazione si scrive nella bozza in flash

@@ -77,6 +77,8 @@ NETRT   equ 0xE400              ; modulo di rete copiato in RAM
 v_sfound equ V+0x92
 v_msgnum equ V+0x93             ; 2 byte: numero da accodare al messaggio
 v_msgnf equ V+0x95
+v_prev3 equ V+0x9E
+v_e3    equ V+0x9F
 v_valid equ V+0x96              ; 1 = il creatore ha superato questo livello (vale solo finche' non lo modifica)
 v_conf  equ V+0x97              ; conferma di SELECT: frame residui
 DEVBUILD equ 1                  ; 1 = tasto V valida senza giocare (SOLO SVILUPPO: finche' non c'e' la modalita' prova)
@@ -186,6 +188,10 @@ mcf:    ld hl,v_frame
         ld hl,v_prev5
         call edge
         ld (v_e5),a
+        ld a,3
+        ld hl,v_prev3
+        call edge
+        ld (v_e3),a
         ld a,8
         ld hl,v_prev8
         call edge
@@ -284,7 +290,10 @@ nnext:  ld a,(v_e4)
         ld (v_tile),a
         ld a,1
         ld (v_dirty),a
-nopick: ld a,(v_e5)
+nopick: ld a,(v_e3)
+        bit 1,a                 ; D = livelli sul server
+        call nz,do_browse
+        ld a,(v_e5)
         bit 0,a                 ; S = salva la bozza in flash
         call nz,do_save
         ld a,(v_e5)
@@ -898,6 +907,7 @@ utn:    pop bc
         include "enemy.asm"
         include "blocks.asm"
         include "audio.asm"
+        include "netui.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"

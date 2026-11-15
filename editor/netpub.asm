@@ -5,31 +5,147 @@
 ;         4 nessuna risposta, 5 credenziali rifiutate, 6 altro rifiuto (n_status).
 ; Protocollo: net/server/levelserver.py (PUTBEG/PUTCHK/PUTEND). Solo funzioni UNAPI standard.
         disp NETRT
+        jp net_publish          ; tabella di ingresso: NETRT+0 pubblica, +3 elenco, +6 scarica
+        jp net_list
+        jp net_get
+
 net_publish:
         ei
-        call n_discover
+        call n_open
         or a
         jr nz,np_ret
+        call n_put
+        push af
+        call n_close
+        pop af
+np_ret: di
+        ret
+
+; sessione: UNAPI + DNS + UDP aperto (A = 0 ok, altrimenti codice d'errore)
+n_open: call n_discover
+        or a
+        ret nz
         call n_resolve
         or a
-        jr nz,np_ret
+        ret nz
         ld hl,0xFFFF            ; UDP_OPEN, porta casuale
         ld b,0
         ld a,8
         call ucall
         or a
         ld a,3
-        jr nz,np_ret
+        ret nz
         ld a,b
         ld (conn),a
-        call n_put
-        push af
+        xor a
+        ret
+
+n_close:
         ld a,(conn)
         ld b,a
         ld a,9                  ; UDP_CLOSE
-        call ucall
-        pop af
-np_ret: di
+        jp ucall
+
+; A = pagina -> RXBUF = risposta dell'elenco (6 livelli per pagina). Uscita: A = 0 ok
+net_list:
+        ld (nl_pg),a
+        ei
+        call n_open
+        or a
+        jr nz,nl_ret
+        ld a,1                  ; LIST
+        call hdr
+        ld a,(nl_pg)
+        ld (TXBUF+2),a
+        ld bc,3
+        call txn
+        or a
+        jr nz,nl_tmo
+        ld a,(RXBUF+2)
+        or a
+        jr nz,nl_st
+        call n_close
+        xor a
+        jr nl_ret
+nl_tmo: call n_close
+        ld a,4
+        jr nl_ret
+nl_st:  ld (n_status),a
+        call n_close
+        ld a,6
+nl_ret: di
+        ret
+
+; HL = id -> il livello va in REC (n_glen = lunghezza). Uscita: A = 0 ok, 7 = troppo grande
+net_get:
+        ld (gid),hl
+        ei
+        call n_open
+        or a
+        jp nz,ng_ret
+        ld hl,0
+        ld (goff),hl
+ng_l:   ld a,2                  ; GET
+        call hdr
+        ld hl,(gid)
+        ld (TXBUF+2),hl
+        ld hl,(goff)
+        ld (TXBUF+4),hl
+        ld a,128
+        ld (TXBUF+6),a
+        ld bc,7
+        call txn
+        or a
+        jp nz,ng_tmo
+        ld a,(RXBUF+2)
+        or a
+        jp nz,ng_st
+        ld hl,(RXBUF+7)         ; lunghezza totale
+        ld (n_glen),hl
+        ld de,4097
+        or a
+        sbc hl,de
+        jr nc,ng_big
+        ld a,(RXBUF+9)
+        or a
+        jr z,ng_zero
+        ld c,a
+        ld b,0
+        ld hl,(goff)
+        ld de,REC
+        add hl,de
+        ex de,hl
+        ld hl,RXBUF+10
+        ldir
+        ld a,(RXBUF+9)
+        ld c,a
+        ld b,0
+        ld hl,(goff)
+        add hl,bc
+        ld (goff),hl
+        ld de,(n_glen)
+        or a
+        sbc hl,de
+        jr c,ng_l
+        call n_close
+        xor a
+        jr ng_ret
+ng_zero:
+        ld a,6
+        ld (n_status),a
+        call n_close
+        ld a,6
+        jr ng_ret
+ng_big: call n_close
+        ld a,7
+        jr ng_ret
+ng_tmo: call n_close
+        ld a,4
+        jr ng_ret
+ng_st:  ld (n_status),a
+        call n_close
+        ld a,6
+ng_ret: di
         ret
 
 n_discover:
@@ -302,6 +418,10 @@ poff:   dw 0
 n_size: dw 0
 n_newid: dw 0
 n_status: db 0
+nl_pg:  db 0
+gid:    dw 0
+goff:   dw 0
+n_glen: dw 0
 blk:    db 0,0,0,0
         dw 0                    ; porta
 blk_len: dw 0
