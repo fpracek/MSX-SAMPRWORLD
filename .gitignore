@@ -7,3 +7,5 @@ server.log
 *.log
 editor/tests/maps/
 editor/editor_bot.rom
+editor/tests/*.txt
+editor/tests/*.png
