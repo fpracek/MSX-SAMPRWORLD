@@ -327,40 +327,45 @@ sf_w:   call wrreg              ; R#2: pagina visibile
         ld (p_job),a
         jp play_sprite          ; l'eroe cambia posizione sullo schermo nello stesso vblank
 
-; ---- scorrimento a pagine di 8 colonne (128 px) ----
-; La copia a schermo intero costa 80-115 ms su V9938 (misurato: spikes/hmmm), quindi lo scorrimento fluido a pixel
-; e' possibile solo su V9958 (R#26/R#27). Qui la nuova vista si disegna nella pagina nascosta una colonna per frame
-; mentre il gioco continua, poi si scambia la pagina: nessun blocco.
+; ---- scorrimento a passi di 16 px (1 tile) ----
+; Ogni passo: HMMM asincrona dell'area di gioco dalla pagina visibile a quella nascosta spostata di 16 px, poi si
+; disegna la colonna di tile scoperta e al vblank si scambia la pagina. La copia costa ~100 ms sul V9938 (docs/SCROLL.md):
+; lo sfondo avanza a 6-8 passi/s mentre eroe, nemici e fisica restano a 60 Hz. Passi piccoli e frequenti disorientano
+; molto meno dei salti di mezzo schermo.
+SCRSTEP equ 16
 scroll_update:
         ld a,(p_job)
         or a
         jr z,su_idle
         cp 1
         ret nz                  ; 2 = pronta, attende il vblank per lo scambio
-        ld a,(p_d)              ; colonna da disegnare in questo frame (0..15)
-        ld hl,(p_camh)
-        push af
-        call div16
-        ld c,a
-        pop af
-        add a,c
-        ld (bs_c),a
-        ld (bs_c1),a
-        ld hl,(p_camh)
-        ld (bs_cam),hl
-        ld a,(p_page)
+        call vdp_busy
+        ret nz                  ; copia ancora in corso
+        ld a,(p_page)           ; colonna scoperta, sulla pagina nascosta
         xor 1
         ld (bc_pg),a
-        ld hl,16
+        ld hl,(p_camh)
+        ld (bs_cam),hl
+        ld hl,(p_d)
+        bit 7,h
+        jr nz,ss_l
+        ld hl,256               ; passo a destra: ultima colonna (schermo x 240..255), finestra con bias +16
         ld (bc_w0),hl
         ld hl,272
         ld (bc_w1),hl
+        ld hl,(bs_cam)
+        call div16
+        add a,15
+        jr ss_go
+ss_l:   ld hl,16                ; passo a sinistra: prima colonna (schermo x 0..15)
+        ld (bc_w0),hl
+        ld hl,32
+        ld (bc_w1),hl
+        ld hl,(bs_cam)
+        call div16
+ss_go:  ld (bs_c),a
+        ld (bs_c1),a
         call blit_cols
-        ld a,(p_d)
-        inc a
-        ld (p_d),a
-        cp 16
-        ret c
         call apply_dirty
         ld a,2
         ld (p_job),a
@@ -369,39 +374,74 @@ su_idle:
         ld hl,(p_x)
         ld de,(p_cam)
         or a
-        sbc hl,de               ; x sullo schermo
+        sbc hl,de               ; x dell'eroe sullo schermo
         bit 7,h
         jr nz,su_left
         ld a,h
         or a
         jr nz,su_right
         ld a,l
-        cp 176
+        cp 144
         jr nc,su_right
-        cp 48
+        cp 96
         ret nc
 su_left:
         ld hl,(p_cam)
         ld a,h
         or l
         ret z
-        ld de,-128
-        add hl,de
+        ld hl,-SCRSTEP
         jr su_go
 su_right:
         ld hl,(p_cam)
         ld de,MAPW*16-256
         or a
         sbc hl,de
-        ret nc                  ; gia' all'ultima pagina
+        ret nc                  ; gia' in fondo al livello
+        ld hl,SCRSTEP
+su_go:  ld (p_d),hl
+        ld de,(p_cam)
         add hl,de
-        ld de,128
-        add hl,de
-su_go:  ld (p_camh),hl
+        ld (p_camh),hl
+        ld hl,(p_d)             ; parametri della copia: sorgente x = d (o 0), destinazione x = 0 (o |d|), larghezza 256-|d|
+        ld a,l
+        bit 7,h
+        jr z,su_pos
+        neg
+        ld c,a
         xor a
-        ld (p_d),a
-        ld (p_nd),a
-        inc a
+        ld (P+0),a
+        ld a,c
+        ld (P+4),a
+        jr su_nx
+su_pos: ld c,a
+        ld (P+0),a
+        xor a
+        ld (P+4),a
+su_nx:  xor a
+        ld (P+1),a
+        ld (P+2),a
+        ld (P+5),a
+        ld (P+6),a
+        ld (P+9),a
+        ld a,c
+        neg
+        ld (P+8),a
+        ld a,(p_page)
+        ld (P+3),a
+        xor 1
+        ld (P+7),a
+        ld a,192
+        ld (P+10),a
+        xor a
+        ld (P+11),a
+        ld (P+12),a
+        ld (P+13),a
+        ld a,0xD0
+        ld (P+14),a
+        ld hl,P
+        call vdp_cmd            ; parte in background
+        ld a,1
         ld (p_job),a
         ret
 

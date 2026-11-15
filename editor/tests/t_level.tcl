@@ -14,17 +14,18 @@ set ground {1 2 3 4 5 6 7 8 10 11 12 13 14 15 16 31}
 set f [open "$R/maps/$lv.txt" r]; set tiles [split [string trim [read $f]] " "]; close $f
 set log [open "$R/level_$lv.txt" w]
 proc L {s} { global log; puts $log $s; flush $log }
-set wasair 0; set n 0; set deaths 0; set wasdead 0; set jump 0; set hold 0; set t0 0; set res TIMEOUT
+set sxmin 999; set sxmax -999; set wasair 0; set n 0; set deaths 0; set wasdead 0; set jump 0; set hold 0; set t0 0; set res TIMEOUT
 proc tick {} {
-    global n solid ground deaths wasdead jump hold res log lv wasair
+    global n solid ground deaths wasdead jump hold res log lv wasair sxmin sxmax
     incr n
     set x [rd16 0xC8A0]; set y [rd16 0xC8A5]; set gr [rd 0xC8AC]; set dead [rd 0xC8B1]
     if {$x > 32768 || $y > 32768} { after time 0.04 tick; return }
     if {$dead > 0 && !$wasdead} { incr deaths; L "morte a x=$x y=$y" }
     set wasdead [expr {$dead > 0}]
-    if {[rd 0xC8B6] == 1 && [rd 0xC8BE] == 1} { set res VINTO; L "$res nel tick $n  morti=$deaths  x=$x"; close $log; exit }
+    if {[rd 0xC8B6] == 1 && [rd 0xC8BE] == 1} { set res VINTO; L "$res nel tick $n  morti=$deaths  x=$x  sx(min,max)=$sxmin,$sxmax"; close $log; exit }
     if {$n > 3200} { L "$res (x=$x) morti=$deaths"; close $log; exit }
     if {!$gr} { set wasair 1 } elseif {$wasair} { set hold 0; set wasair 0 }
+    set sx [expr {$x - [rd16 0xC8C0]}]; if {$dead == 0 && $n > 20} { if {$sx < $sxmin} { set sxmin $sx }; if {$sx > $sxmax} { set sxmax $sx } }
     set row [expr {$y / 16}]
     set fx [expr {$x + 13}]
     set want 0; set why ""
