@@ -17,4 +17,7 @@ Ancora da fare: formato livello, motore (da soccerlg), editor, SCC, prove su har
 Assemblare con sjasmplus, provare con `openmsx -machine Panasonic_FS-A1ST -cart editor/editor.rom`.
 Frecce = muovi, SPAZIO = piazza (tenuto premuto = pittura), X/DEL = cancella, `,` `.` = tile precedente/successivo,
 P = prendi il tile sotto il cursore, TAB = elenco blocchi (INVIO/SPAZIO sceglie, ESC chiude).
-Mappa 128x12 in RAM; per ora non si salva. `editor/run2.tcl` e' il test automatico con tastiera vera.
+Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/FLASH.md):
+S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
+Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
+cancellare `Documents\openMSX\persistentoms\editor.rom`).

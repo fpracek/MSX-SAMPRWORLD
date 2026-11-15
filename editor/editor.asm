@@ -10,6 +10,9 @@
 
 CHGMOD  equ 0x005F
 GRPPRT  equ 0x008D
+ENASLT  equ 0x0024
+EXPTBL  equ 0xFCC1
+SLTTBL  equ 0xFCC5
 FORCLR  equ 0xF3E9
 GRPACX  equ 0xFCB7
 GRPACY  equ 0xFCB9
@@ -44,6 +47,27 @@ v_bcol  equ V+19
 v_redr  equ V+20
 v_dirty equ V+21
 v_nosp  equ V+22
+v_prev5 equ V+23
+v_e5    equ V+24
+v_msg   equ V+25                ; puntatore al messaggio da mostrare (2 byte)
+v_lvalid equ V+0x80
+v_lseg  equ V+0x81
+v_lpos  equ V+0x82              ; 2 byte
+v_fseg  equ V+0x84
+v_fpos  equ V+0x85              ; 2 byte
+v_rlen  equ V+0x87              ; 2 byte
+v_seq   equ V+0x89
+v_perr  equ V+0x8A
+v_rt    equ V+0x8B
+v_rn    equ V+0x8C
+v_tmp   equ V+0x8D              ; 2 byte
+v_segi  equ V+0x8F
+REC     equ 0xD000              ; record bozza: 'D','R',seq,len2,blob,somma
+FLRT    equ 0xC900              ; routine flash copiate in RAM
+DRAFTSEG equ 24                 ; primo segmento (8K) del settore bozza = 64K allineati
+SETSEG  equ 16                  ; settore impostazioni di rete (riservato)
+BANKW   equ 0x9000              ; registro banco Konami5 della finestra 8000-9FFF
+ENAR    equ 0x7FFF
 
         org 0x4000
         db "AB"
@@ -51,6 +75,13 @@ v_nosp  equ V+22
 
 start:  di
         ld sp,0xF380
+        call getslot
+        ld h,0x80
+        call ENASLT             ; pagina 2 = cartuccia (finestre banco 8000-BFFF)
+        ld hl,flashrt_rom
+        ld de,FLRT
+        ld bc,flashrt_end-flashrt_rom
+        ldir
         ld a,5
         call CHGMOD
         di
@@ -85,22 +116,11 @@ start:  di
         call vdp_cmd
         call upload_tiles
         call init_sprite
-        ; mappa: vuota con una riga di terra erbosa in fondo
-        ld hl,MAP
-        ld de,MAP+1
-        ld bc,MAPW*MAPH-1
-        ld (hl),0
-        ldir
-        ld hl,MAP+(MAPH-1)*MAPW
-        ld b,MAPW
-        ld a,T_GRASS
-mapfl:  ld (hl),a
-        inc hl
-        djnz mapfl
+        call init_map
         ; variabili
         ld hl,V
         ld de,V+1
-        ld bc,31
+        ld bc,0x5F
         ld (hl),0
         ldir
         ld a,T_GRASS
@@ -109,6 +129,7 @@ mapfl:  ld (hl),a
         ld (v_bcol),a
         ld a,10
         ld (v_cury),a
+        call load_draft         ; se c'e' una bozza in flash, si riparte da li'
         call redraw_map
         call sprite_update
         call draw_status
@@ -140,6 +161,10 @@ main:   call vwait
         ld hl,v_prev7
         call edge
         ld (v_e7),a
+        ld a,5
+        ld hl,v_prev5
+        call edge
+        ld (v_e5),a
         ld a,8
         ld hl,v_prev8
         call edge
@@ -238,7 +263,16 @@ nnext:  ld a,(v_e4)
         ld (v_tile),a
         ld a,1
         ld (v_dirty),a
-nopick: ld a,(v_redr)
+nopick: ld a,(v_e5)
+        bit 0,a                 ; S = salva la bozza in flash
+        call nz,do_save
+        ld a,(v_e4)
+        bit 1,a                 ; L = ricarica la bozza
+        call nz,do_load
+        ld a,(v_e7)
+        bit 6,a                 ; SELECT = nuovo livello (cancella anche la bozza)
+        call nz,do_new
+        ld a,(v_redr)
         or a
         jr z,nor
         xor a
@@ -638,8 +672,15 @@ dst1:   ld e,a
         call print_str
         ld a,(v_cury)
         call print_num2
+        ld hl,(v_msg)
+        ld a,h
+        or l
+        jr nz,dsm
         ld hl,s_help
-        jp print_str
+dsm:    call print_str
+        ld hl,0
+        ld (v_msg),hl
+        ret
 
 print_char:
         push bc
@@ -787,6 +828,8 @@ utn:    pop bc
         jr nz,utt
         ret
 
+        include "draft.asm"
+
 ; ------------------------------------------------------------------------- dati
 p_clear: db 0,0,0,0, 0,0,0,0, 0,1, 212,0, 0x11,0,0xC0
 p_stat:  db 0,0,0,0, 0,0,192,0, 0,1, 20,0, 0x11,0,0xC0
@@ -803,4 +846,6 @@ palette: incbin "../assets/palette.bin"
 tiles:   incbin "../assets/tiles.bin"
         include "../assets/tileset.inc"
         include "../assets/tilenames.inc"
-        ds 0xC000-$,0xFF
+        ds 0x8000-$,0xFF
+; segmenti 2..31 vuoti (FF). 16..23 = settore impostazioni, 24..31 = settore bozza (64K allineati)
+        ds 0x40000-0x4000,0xFF
