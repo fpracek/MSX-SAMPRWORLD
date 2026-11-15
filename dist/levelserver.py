@@ -191,12 +191,22 @@ def seed(store):
     if not store.users:
         store.users = {"testuser": "TESTKEY-0123456"}
         json.dump(store.users, open(store.users_path, "w"), indent=1)
-    if not store.index:
+    try:
+        from seedlevels import SEED
+    except ImportError:                    # senza il file dei livelli: segnaposto non giocabili
+        SEED = [(t, make_blob(bytes(range(256)) * 2)) for t in ("Starter Meadow", "Crystal Cave", "Castle Gate")]
+    # i livelli "server" di vecchie versioni (formato non piu' valido) vengono sostituiti da quelli attuali
+    titles = {t for t, _ in SEED}
+    for k in [k for k, e in store.index.items() if e["author"] == "server" and e["title"] not in titles]:
         try:
-            from seedlevels import SEED
-        except ImportError:                    # senza il file dei livelli: segnaposto non giocabili
-            SEED = [(t, make_blob(bytes(range(256)) * 2)) for t in ("Starter Meadow", "Crystal Cave", "Castle Gate")]
-        for title, blob in SEED:
+            os.remove(store.blob_path(int(k)))
+        except OSError:
+            pass
+        del store.index[k]
+    store.save_index()
+    have = {e["title"] for e in store.index.values()}
+    for title, blob in SEED:
+        if title not in have:
             store.add(title, "server", blob)
 
 
