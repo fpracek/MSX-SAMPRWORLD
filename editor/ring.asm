@@ -476,6 +476,9 @@ hp_glyph:
 ; attributi dei 6 sprite HUD (piani 10-15) e terminatore
 hud_attr:
         ld hl,hud_tab
+        ld a,(sw_on)
+        or a
+        jr nz,ha_1              ; sprite software: l'HUD e' completo anche con due giocatori
         ld a,(p_two)
         or a
         jr z,ha_1

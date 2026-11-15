@@ -79,15 +79,11 @@ pl_cam:
         jp play_end
 
 play_init:
-        ld a,(p_two)            ; sprite software: solo V9958 e un giocatore, se abilitati
-        or a
-        ld a,0
-        jr nz,pi_sw
-        ld a,(p_ring)
+        ld a,(p_ring)           ; sprite software: solo V9958, se abilitati
         ld b,a
         ld a,(p_sw)
         and b
-pi_sw:  ld (sw_on),a
+        ld (sw_on),a
         ld hl,MAP               ; cerca il tile di partenza
         ld bc,MAPW*MAPH
         ld a,T_START

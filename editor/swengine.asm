@@ -94,10 +94,12 @@ sf_cp:  ld hl,P                 ; HMMM master (0,768) -> pagina sx_pg, 256x192
         ld (sw_cam),hl
         ld (sw_cam+2),hl
         ld (sw_cam+4),hl
+        ld hl,SWOK
+        ld de,SWOK+1
+        ld bc,SWN*3-1
+        ld (hl),0
+        ldir
         xor a
-        ld (sw_ok),a
-        ld (sw_ok+1),a
-        ld (sw_ok+2),a
         ld (sw_S),a
         call vdp_wait
         jp sw_show_i
@@ -125,7 +127,16 @@ su2:    ld (sw_E),a
         ld (sw_lo+6),hl
         call sw_view_strip      ; vista D: le stesse colonne, copiate dal master
         call vdp_wait           ; (le strisce di D devono essere finite prima di disegnarci)
-        call sw_erase           ; vista E: via lo sprite vecchio (il VDP lavora mentre la CPU disegna in D)
+        call sw_objs            ; lista degli oggetti: nemici, eroe
+        xor a
+        ld (sw_j),a
+suo_l:  call sw_erase           ; vista E: via lo sprite vecchio (il VDP lavora mentre la CPU disegna in D)
+        call sw_draw
+        ld a,(sw_j)
+        inc a
+        ld (sw_j),a
+        cp SWN
+        jr nz,suo_l
         ld a,(sw_D)
         add a,a
         ld e,a
@@ -136,7 +147,110 @@ su2:    ld (sw_E),a
         ld (hl),e
         inc hl
         ld (hl),d
-        jp sw_drawhero
+        ret
+
+; lista oggetti SWO (SWN x 4 byte: frame, x (2), y; frame 0xFF = assente): 0-7 nemici, 8 giocatore 2, 9 giocatore 1.
+; Si disegnano nell'ordine: gli ultimi stanno sopra.
+sw_objs:
+        ld ix,ENT
+        ld hl,SWO
+        ld b,E_MAX
+so_e:   ld a,(ix+0)
+        or a
+        jr z,so_off
+        ld c,SWF_GOB
+        ld d,3                  ; goblin: un frame di animazione ogni 8 fotogrammi
+        cp 1
+        jr z,so_t
+        ld c,SWF_BAT
+        ld d,2                  ; pipistrello: ogni 4
+so_t:   ld a,(p_tick)
+so_sh:  srl a
+        dec d
+        jr nz,so_sh
+        and 7
+        cp 6
+        jr c,so_a
+        sub 6
+so_a:   add a,c
+        bit 0,(ix+4)
+        jr z,so_r
+        add a,6                 ; verso sinistra
+so_r:   ld (hl),a
+        inc hl
+        ld a,(ix+1)
+        ld (hl),a
+        inc hl
+        ld a,(ix+2)
+        ld (hl),a
+        inc hl
+        ld a,(ix+3)
+        ld (hl),a
+        inc hl
+        jr so_n
+so_off: ld (hl),0xFF
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+so_n:   ld de,8
+        add ix,de
+        djnz so_e
+        ld a,(p_two)
+        or a
+        jr nz,so_2p
+        ld (hl),0xFF            ; 8: giocatore 2 assente
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+        ld a,(p_dead)           ; 9: giocatore 1 (blocco attivo)
+        or a
+        jr nz,so_h1
+        ld a,(p_frame)
+        add a,SWF_HERO1
+        ld (hl),a
+        inc hl
+        ld a,(p_x)
+        ld (hl),a
+        inc hl
+        ld a,(p_x+1)
+        ld (hl),a
+        inc hl
+        ld a,(p_y)
+        ld (hl),a
+        ret
+so_h1:  ld (hl),0xFF
+        ret
+so_2p:  ld iy,HS1               ; 8: giocatore 2
+        ld c,SWF_HERO2
+        call so_hero
+        ld iy,HS0               ; 9: giocatore 1
+        ld c,SWF_HERO1
+so_hero:
+        ld a,(iy+HO_DEAD)
+        or a
+        jr nz,so_hx
+        ld a,(iy+15)            ; p_frame salvato
+        add a,c
+        ld (hl),a
+        inc hl
+        ld a,(iy+HO_X)
+        ld (hl),a
+        inc hl
+        ld a,(iy+HO_X+1)
+        ld (hl),a
+        inc hl
+        ld a,(iy+HO_Y)
+        ld (hl),a
+        inc hl
+        ret
+so_hx:  ld (hl),0xFF
+        inc hl
+        inc hl
+        inc hl
+        inc hl
+        ret
 
 ; vista D: copia la striscia [lo_D, nuovo lo) dal master
 sw_view_strip:
@@ -251,59 +365,91 @@ sx_do:  ld (sx_t),a
         ld hl,P
         jp vdp_cmd
 
-; cancella lo sprite della vista E (se c'e')
-sw_erase:
-        ld a,(sw_E)
+; DE = pagina*SWN + oggetto corrente (A = pagina)
+sw_idx: ld c,a
+        add a,a
+        add a,a
+        add a,a
+        add a,c
+        add a,c
+        ld c,a
+        ld a,(sw_j)
+        add a,c
         ld e,a
         ld d,0
-        ld hl,sw_ok
+        ret
+
+; cancella lo sprite dell'oggetto sw_j nella vista E (se c'e')
+sw_erase:
+        ld a,(sw_E)
+        call sw_idx
+        ld hl,SWOK
         add hl,de
         ld a,(hl)
         or a
         ret z
         ld (hl),0
-        ld hl,sw_x
+        ld hl,SWX
         add hl,de
         ld a,(hl)
         ld (sx_x),a
-        ld hl,sw_y
+        ld hl,SWY
         add hl,de
         ld a,(hl)
         ld (sx_y),a
         ld a,16
         ld (sx_n),a
         ld (sx_h),a
-        ld a,e
+        ld a,(sw_E)
         ld (sx_pg),a
         jp sw_cp
 
-; ------------------------------------------------------------------------- disegno dell'eroe nella vista D
-sw_drawhero:
-        ld a,(p_dead)
+; ------------------------------------------------------------------------- disegno dell'oggetto sw_j nella vista D
+sw_draw:
+        ld a,(sw_j)
+        add a,a
+        add a,a
+        ld e,a
+        ld d,0
+        ld hl,SWO
+        add hl,de
+        ld a,(hl)
+        cp 0xFF
+        ret z
+        ld (sw_fr),a
+        inc hl
+        ld c,(hl)
+        inc hl
+        ld b,(hl)               ; BC = x del mondo
+        inc hl
+        ld a,(hl)               ; y
+        cp 177
+        ret nc                  ; fuori schermo (sopra/sotto)
+        ld (sw_ry),a
+        ld h,b
+        ld l,c
+        ld de,(p_cam)
         or a
-        ret nz
-        ld hl,(p_y)
+        sbc hl,de               ; x sullo schermo: solo se interamente dentro [0, 240]
         ld a,h
         or a
-        ret nz                  ; fuori schermo (sopra): non si disegna
+        ret nz
         ld a,l
-        cp 177
+        cp 241
         ret nc
-        ld (sw_ry),a
-        ld a,(p_x)
+        ld a,c
         and 0xFE
         ld (sw_rx),a
         ld a,(sw_D)             ; memorizza posizione e validita' per la cancellazione
-        ld e,a
-        ld d,0
-        ld hl,sw_ok
+        call sw_idx
+        ld hl,SWOK
         add hl,de
         ld (hl),1
-        ld hl,sw_x
+        ld hl,SWX
         add hl,de
         ld a,(sw_rx)
         ld (hl),a
-        ld hl,sw_y
+        ld hl,SWY
         add hl,de
         ld a,(sw_ry)
         ld (hl),a
@@ -462,19 +608,28 @@ sds_n:  ld c,a
         ld hl,P
         jp vdp_cmd
 
-; DE = indirizzo VRAM (14 bit | 0x4000), R#14 gia' impostato: esegue il frame compilato p_frame
+; DE = indirizzo VRAM (14 bit | 0x4000), R#14 gia' impostato: esegue il frame compilato sw_fr (segmento nella finestra 8000)
 sw_callframe:
-        ld a,(p_frame)
-        add a,a
+        ld a,(sw_fr)
         ld c,a
         ld b,0
-        ld hl,swh_tab
+        ld hl,swf_seg
+        add hl,bc
+        ld a,(hl)
+        ld (BANKW),a
+        ld hl,swf_adr
+        add hl,bc
         add hl,bc
         ld a,(hl)
         inc hl
         ld h,(hl)
         ld l,a
         ld c,0x98
+        call sw_jphl
+        ld a,SCCMAP             ; la finestra 8000 serve all'SCC (audio ed effetti)
+        ld (BANKW),a
+        ret
+sw_jphl:
         jp (hl)
 
 ; una cella della mappa e' cambiata: master e le tre viste

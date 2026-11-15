@@ -30,8 +30,11 @@ sopravvivono a una nuova esecuzione. `preview.png` confronta originale e convert
 - Il motore regge fino a 144 tile (`trow_tab` in `editor.asm`, dati in 3 segmenti ROM).
 - Livelli: gli id dei tile arrivano a 127 (RLE a 7 bit, `docs/LEVEL.md`); le proprieta' dei nemici viaggiano nel blob.
 
+## Sprite
+Eroe, giocatore 2 (abiti rossi), goblin (soldato) e pipistrello (medico) usano i frame del Maniero come sprite software su V9958 (`docs/SWSPRITES.md`).
+
 ## Cosa manca
-1. Eroe e nemici del Maniero come sprite software (`tools/gen_swsprites.py` accetta oggi solo i frame di `gen_sprites.py`).
+1. Altri nemici (poliziotto, operaio, soldato con spada...) e un campo "sprite" nelle proprieta' per sceglierli; animazioni di colpo/morte.
 2. Ridisegnare con la nuova palette i tile funzionali che l'arte non ha (molla, spuntoni, acqua, lava, checkpoint, blocchi).
 3. Ricostruire i 10 livelli della campagna con i nuovi blocchi (`tools/make_levels.py` usa ancora i tile legacy).
 4. Le 8 IA complete: oggi pattuglia, dormiglione, inseguitore e pauroso (goblin); il pipistrello usa raggio e vita.

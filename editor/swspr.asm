@@ -11,9 +11,11 @@
 p_sw    equ PXV+6               ; 1 = abilita gli sprite software (V9958, un giocatore)
 sw_on   equ PXV+0x10            ; attivo nella prova corrente
 sw_S    equ PXV+0x11            ; pagina mostrata (0..2)
-sw_ok   equ PXV+0x12            ; 3 byte: la pagina contiene lo sprite
-sw_x    equ PXV+0x15            ; 3 byte: x nell'anello (pari)
-sw_y    equ PXV+0x18            ; 3 byte: y
+SWN     equ 10                  ; oggetti: 0-7 nemici, 8 giocatore 2, 9 giocatore 1
+SWO     equ 0xCD00              ; SWN x 4 byte: frame (0xFF = assente), x del mondo (2), y  (RAM di reach.asm: libera in gioco)
+SWOK    equ 0xCD40              ; 3 pagine x SWN: l'oggetto e' stato disegnato in quella vista
+SWX     equ 0xCD60              ; 3 x SWN: x nell'anello (pari)
+SWY     equ 0xCD80              ; 3 x SWN: y
 sw_cam  equ PXV+0x1C            ; 3 x 2 byte: camera di ogni pagina
 sw_lo   equ PXV+0x22            ; 4 x 2 byte: lo (primo px valido dell'anello) per le pagine 0..2 e il master (3)
 sw_idle equ PXV+0x2A            ; 2 byte: giri di attesa del vblank nell'ultimo fotogramma (misura del carico)
@@ -31,6 +33,8 @@ sw_ry   equ PXV+0x38
 sx_t    equ PXV+0x39
 sx_n2   equ PXV+0x3A
 sw_t    equ PXV+0x3B            ; 2 byte
+sw_j    equ PXV+0x3E            ; oggetto corrente
+sw_fr   equ PXV+0x3F            ; frame dell'oggetto corrente
 sw_dbg  equ PXV+0x3D            ; solo misure: bit0 = salta sw_update, bit1 = salta fisica/nemici
 SWSCR_Y equ 736                 ; area di lavoro: pagina 2, riga 224 (0x17000)
 
@@ -48,11 +52,16 @@ pl_sw:  call sw_vwait
 pls_ne: ld a,(sw_dbg)
         bit 1,a
         jr nz,pls_nl
+        ld a,(p_two)
+        or a
+        jr nz,pls_2
         call play_physics
         call ent_update
         call ent_hit
 pls_nl: call hero_calcframe
-        call ring_frame         ; politica di camera (in sw_on aggiorna solo p_cam)
+        jr pls_cm
+pls_2:  call play_2p_sw         ; due giocatori: fisica e frame di entrambi, camera sul leader
+pls_cm: call ring_frame         ; politica di camera (in sw_on aggiorna solo p_cam)
         ld a,(sw_dbg)
         bit 0,a
         call z,sw_update
@@ -106,15 +115,16 @@ sw_tr:     ld a,3
 sw_jbc:    push bc
            ret
 
-; sprite hardware: eroe nascosto, poi nemici e HUD
+; sprite hardware: solo l'HUD (piani 10-15); eroe e nemici (piani 0-9) sono software
 sw_sat:
         ld hl,0x7600
         call vram_w
+        ld b,5
+ssb_l:  push bc
         ld hl,hide_attr
         ld bc,0x0898
         otir
-        ld hl,hide_attr
-        ld bc,0x0898
-        otir
-        jp ent_sprites
+        pop bc
+        djnz ssb_l
+        jp hud_attr
 

@@ -167,13 +167,15 @@ st_nf:  ld (v_flash),a
         ld (p_two),a            ; un giocatore (il menu lo cambia)
         ld (p_tin1),a           ; (solo TESTBUILD: tasti forzati da Tcl) la RAM all'accensione non e' azzerata
         ld (p_tin2),a
-        ld (p_sw),a             ; sprite software disabilitati (per ora: si abilita da test)
+        ld (p_sw),a
         ld (sw_on),a
         ld (sw_dbg),a
         ld (sw_ovr),a
         ld (sw_ovr+1),a
         ld (sw_fn),a
         ld (sw_fn+1),a
+        inc a
+        ld (p_sw),a             ; sprite software attivi di default (solo V9958: play_init li abilita se p_ring)
         call cp_load            ; progressi della campagna dalla flash
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
         ld a,(v_flash)
@@ -1087,7 +1089,7 @@ tile_names_end:
         include "swengine.asm"
         include "swreach.asm"
         include "swprops.asm"
-        include "swhero.inc"
+        include "swtab.inc"
 swh_end:
         ent
         ds 0x2000-(swh_end-0xA000),0xFF
@@ -1096,6 +1098,13 @@ swh_end:
         incbin "../assets/campaign.bin"         ; segmento 6: i 10 livelli fissi della campagna
         incbin "../assets/tiles_seg2.bin"       ; segmento 7: tile 64..127
         incbin "../assets/tiles_seg3.bin"       ; segmento 8: tile 128..191
-        ds 0x20000-0x12000,0xFF
+        ds 0x2000,0xFF                          ; segmento 9 (riservato ai tile 192..)
+        include "swfr10.inc"                    ; segmento 10: frame compilati degli sprite software (finestra 8000)
+        ds 0x2000-(swfr10_end-0x8000),0xFF
+        include "swfr11.inc"                    ; segmento 11
+        ds 0x2000-(swfr11_end-0x8000),0xFF
+        include "swfr12.inc"                    ; segmento 12
+        ds 0x2000-(swfr12_end-0x8000),0xFF
+        ds 0x20000-0x1A000,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF

@@ -406,3 +406,28 @@ p2_attrs:
         ld bc,0x0898
         otir
         ret
+
+; due giocatori con sprite software: come play_2p ma senza sprite hardware; lascia il leader nel blocco attivo
+play_2p_sw:
+        xor a
+        call p2_phys
+        ld a,1
+        call p2_phys
+        call ent_update
+        xor a
+        call p2_hit
+        ld a,1
+        call p2_hit
+        call p2_follow
+        ld a,1
+        call hero_load
+        call hero_calcframe
+        ld a,1
+        call hero_save
+        xor a
+        call hero_load
+        call hero_calcframe
+        xor a
+        call hero_save
+        call p2_leader
+        jp hero_load
