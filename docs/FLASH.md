@@ -45,3 +45,9 @@ si cancella il settore DRAFT.
 - Credenziali in chiaro nella flash (la cartuccia e' dell'utente; da valutare un offuscamento).
 - Se manca la corrente durante l'erase+riscrittura (settore pieno) la bozza puo' andare persa.
 - Tempi reali di erase e allineamento a 64 KB nel menu Yamanooto: da verificare sul ferro.
+
+## Impostazioni di rete (stato)
+La schermata N (editor/netset.asm) scrive un nuovo record da 128 byte in coda al settore SET (il record di sviluppo
+della ROM, `assets/settings_dev.bin`, e' solo il punto di partenza). Con IP statico (bit0 di flags) il modulo di rete chiama
+TCPIP_CONFIG_AUTOIP (25, B=1 C=0) e TCPIP_CONFIG_IP (26) per IP locale, maschera, gateway e DNS primario; gli errori
+(ERR_NOT_IMP) si ignorano. Il campo Server accetta un nome DNS o un IP in forma decimale.

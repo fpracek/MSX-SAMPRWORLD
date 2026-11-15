@@ -290,7 +290,10 @@ nnext:  ld a,(v_e4)
         ld (v_tile),a
         ld a,1
         ld (v_dirty),a
-nopick: ld a,(v_e3)
+nopick: ld a,(v_e4)
+        bit 3,a                 ; N = impostazioni di rete
+        call nz,do_netset
+        ld a,(v_e3)
         bit 1,a                 ; D = livelli sul server
         call nz,do_browse
         ld a,(v_e5)
@@ -908,6 +911,7 @@ utn:    pop bc
         include "blocks.asm"
         include "audio.asm"
         include "netui.asm"
+        include "netset.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"

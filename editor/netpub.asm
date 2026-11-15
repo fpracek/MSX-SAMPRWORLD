@@ -25,6 +25,7 @@ np_ret: di
 n_open: call n_discover
         or a
         ret nz
+        call n_static
         call n_resolve
         or a
         ret nz
@@ -147,6 +148,41 @@ ng_st:  ld (n_status),a
         ld a,6
 ng_ret: di
         ret
+
+; IP statico (impostazioni: bit0 di SETREC+3): CONFIG_AUTOIP (25) -> manuale, poi CONFIG_IP (26) per
+; IP locale, maschera, gateway e DNS primario. Se la scheda non lo supporta gli errori si ignorano
+; (resta la sua configurazione). Funzioni dalla specifica TCP/IP UNAPI 1.1; NON provate su schede reali.
+n_static:
+        ld a,(SETREC+3)
+        and 1
+        ret z
+        ld a,25
+        ld b,1
+        ld c,0
+        call ucall
+        ld b,1
+        ld hl,SETREC+4
+        call n_setip
+        ld b,3
+        ld hl,SETREC+8
+        call n_setip
+        ld b,4
+        ld hl,SETREC+0x0C
+        call n_setip
+        ld b,5
+        ld hl,SETREC+0x10
+n_setip:
+        ld c,(hl)
+        inc hl
+        ld a,(hl)
+        inc hl
+        ld e,(hl)
+        inc hl
+        ld d,(hl)
+        ld h,a
+        ld l,c
+        ld a,26
+        jp ucall
 
 n_discover:
         call setarg
