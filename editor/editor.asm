@@ -290,6 +290,9 @@ nopick: ld a,(v_e5)
         ld a,(v_e5)
         bit 2,a                 ; U = pubblica sul server
         call nz,do_publish
+        ld a,(v_e5)
+        bit 1,a                 ; T = prova il livello
+        call nz,do_play
         IF DEVBUILD
         ld a,(v_e5)
         bit 3,a                 ; V = valida (DEV)
@@ -872,6 +875,7 @@ utn:    pop bc
 
         include "draft.asm"
         include "publish.asm"
+        include "play.asm"
 netrt_rom:
         include "netpub.asm"
 
@@ -894,6 +898,8 @@ tiles:   incbin "../assets/tiles.bin"
         include "../assets/tilenames.inc"
         ds 0x8000-$,0xFF
 ; segmenti 2..31 vuoti (FF). 16..23 = settore impostazioni, 24..31 = settore bozza (64K allineati)
-        ds 0x20000-0x4000,0xFF
+        ds 0x4000,0xFF                          ; segmenti 2 e 3
+        incbin "../assets/hero.bin"             ; segmento 4: sprite dell'eroe (finestra A000)
+        ds 0x20000-0x8000-1536,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF

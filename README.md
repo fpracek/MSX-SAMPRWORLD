@@ -7,6 +7,7 @@ integrato, livelli scaricabili/caricabili da un server via **UNAPI** (UDP). Cart
 ## Struttura
 - `tools/gen_tiles.py` - genera il tileset fantasy (51 blocchi/oggetti 16x16) in `assets/`
 - `assets/` - `tiles.png`, `tiles.bin` (SCREEN 5), `palette.bin`, `tileset.inc` (costanti asm + classi di collisione), `catalog.json`, anteprime
+- `tools/gen_sprites.py` - sprite dell'eroe (4 frame x 2 direzioni, 4 sprite sovrapposti per frame) -> `assets/hero.bin`
 - `net/` - spike di rete verificati su openMSX 22: driver UnapiNet, client UNAPI, server livelli UDP, test Yamanooto/flash
 
 ## Stato
@@ -20,5 +21,6 @@ P = prendi il tile sotto il cursore, TAB = elenco blocchi (INVIO/SPAZIO sceglie,
 Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/FLASH.md):
 S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
 U = pubblica sul server (UNAPI/UDP; richiede il livello superato, vedi docs/VALIDATION.md; V = valida, solo build DEV).
+T = prova il livello (modalita' gioco: frecce + SPAZIO salta, ESC esce). Arrivare al portale valida il livello e salva la bozza.
 Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
 cancellare `Documents/openMSX/persistent/roms/editor.rom`).
