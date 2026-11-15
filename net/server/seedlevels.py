@@ -1,0 +1,8 @@
+"""Livelli di esempio con cui parte il server (generato da dist/make: copia di assets/levels/01,04,07.lvl)."""
+import base64
+
+SEED = [
+    ('Starter Meadow', base64.b64decode('TFYBgAwBCQBTdGFydGVyIE1lYWRvdwAAAICDMIApMIApMIBHMIApMIApMIAdMIApMIApMICgmwSANTSARooEgAsPDQ+AdxsbgCObA4BxAwOATyGAByMAACmAFSmABTOABoMEgAUggBUzgAcDgBYugAMpgAUogAckACIAJIAEgQ8AAIEjgAOBSYIPAACCI4ADgkkHRA==')),
+    ('Crystal Cave', base64.b64decode('TFYBgAwBCQFDcnlzdGFsIENhdmUAAAAAAIf/B4D/gLg0gHAPDQ+Ad5sDgJoDA4A4IYAHI4AEEhKAEjOADCSAByAqgA2DBAAALYAEEhKABySAByoAACSABy6AAyoAACSABSqABCQAIgAkgASDDIsIgw6AA4NnlgiDDoADg1vfOw==')),
+    ('Castle Gate', base64.b64decode('TFYBgAwBCQJDYXN0bGUgR2F0ZQAAAAAAAIT/BIn/iQsriQgriQgriQgriQgriQgriQgriQgriQgriQgriQgriQgriQgriQ8siQgsiQgsiQgsiQgsiQY0CSyJCCyJCCyJCCyJCCyJCCyJCCyJCCyJrZsDiSobG4lCBIknBASJPiGJByOJBzOJBwSJBzOJDBISiQMgiQYkiQWEBIkEM4kHBIkMM4kHJIkDMYkDKokFMYkHJIkDJAkiCSSJBIQggAOEKgAAhFGAA4QqAACEMX50')),
+]
