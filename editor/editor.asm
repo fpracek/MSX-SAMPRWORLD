@@ -490,7 +490,7 @@ draw_tile:
         add a,a
         add a,a
         ld (P+2),a              ; SY (pagina 1: +256)
-        ld a,1
+        ld a,2
         ld (P+3),a
         ld a,b
         add a,a
@@ -826,7 +826,25 @@ vram_w: ld a,h
         out (0x99),a
         ret
 
-; copia il tileset in pagina 1 di VRAM: tile t in (t%16*16, 256+t/16*16)
+; imposta l'indirizzo VRAM di scrittura 0x10000+HL (pagina 2)
+vram_w_hi:
+        ld a,h
+        rlca
+        rlca
+        and 3
+        or 4
+        out (0x99),a
+        ld a,0x8E
+        out (0x99),a
+        ld a,l
+        out (0x99),a
+        ld a,h
+        and 0x3F
+        or 0x40
+        out (0x99),a
+        ret
+
+; copia il tileset in pagina 2 di VRAM: tile t in (t%16*16, 512+t/16*16)
 upload_tiles:
         ld hl,tiles
         xor a
@@ -847,14 +865,13 @@ utt:    ld a,(V+0x30)
         add a,a
         add a,a
         add a,a
-        add a,0x80
         ld d,a
         ld b,16
 utr:    push bc
         push de
         push hl
         ex de,hl
-        call vram_w
+        call vram_w_hi
         pop hl
         ld bc,0x0898
         otir
@@ -875,6 +892,7 @@ utn:    pop bc
 
         include "draft.asm"
         include "publish.asm"
+        include "scroll.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"

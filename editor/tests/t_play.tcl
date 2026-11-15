@@ -14,7 +14,7 @@ proc tick {} {
     set x [rd16 0xC8A0]; set y [rd16 0xC8A5]
     if {$y > 32768} { set y [expr {$y-65536}] }
     set gr [rd 0xC8AC]; set ex [rd 0xC8BE]; set dead [rd 0xC8B1]
-    puts $log "$n x=$x y=$y gr=$gr dead=$dead coins=[rd 0xC8B8] win=[rd 0xC8B6] scrx=[rd 0xC802]"
+    puts $log "$n x=$x y=$y gr=$gr dead=$dead coins=[rd 0xC8B8] win=[rd 0xC8B6] cam=[rd16 0xC8C0] page=[rd 0xC8C4] job=[rd 0xC8C5]"
     if {$n == 60} { screenshot "$R/play_mid.png" }
     if {($ex && $ex != 255) || $n > 900} {
         puts $log "FINE exit=$ex win=[rd 0xC8B6] valid=[rd 0xC896] coins=[rd 0xC8B8]"

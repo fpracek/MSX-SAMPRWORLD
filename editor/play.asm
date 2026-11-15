@@ -41,6 +41,7 @@ do_play:
         call play_init
 pl_loop:
         call vwait
+        call scroll_flip
         ld a,8
         call readrow
         cpl
@@ -54,6 +55,7 @@ pl_loop:
 pl_noesc:
         call play_physics
         call play_sprite
+        call scroll_update
         ld a,(p_exit)
         or a
         jr z,pl_loop
@@ -151,28 +153,43 @@ respawn:
         ld (p_climb),a
         ld (p_face),a
         ld (p_dead),a
-        ; camera: multipla di 8 colonne che contiene il punto di partenza
+        ; camera sul punto di ripartenza (pari, entro la mappa), ridisegno completo sulla pagina 0
+        call vdp_wait
         ld hl,(p_x)
-        srl h
-        rr l
-        srl h
-        rr l
-        srl h
-        rr l
-        srl h
-        rr l                    ; colonna
-        ld a,l
-        and 0xF8
-        cp 113
-        jr c,rs_cam
-        ld a,112
-rs_cam: ld hl,v_scrx
-        cp (hl)
-        ld (hl),a
-        jp nz,redraw_map
-        ret
+        ld de,48
+        or a
+        sbc hl,de
+        bit 7,h
+        jr z,rs_p
+        ld hl,0
+rs_p:   ld a,l
+        and 0x80
+        ld l,a                  ; multiplo di 128
+        push hl
+        ld de,MAPW*16-256
+        or a
+        sbc hl,de
+        pop hl
+        jr c,rs_c
+        ld hl,MAPW*16-256
+rs_c:
+        ld (p_cam),hl
+        xor a
+        ld (p_page),a
+        ld (p_job),a
+        ld (p_nd),a
+        ld e,2
+        ld a,0x1F
+        call wrreg              ; R#2: pagina 0 visibile
+        ld hl,(p_cam)
+        xor a
+        jp redraw_view
 
 play_end:
+        call vdp_wait
+        ld e,2
+        ld a,0x1F
+        call wrreg
         ld a,(p_win)
         or a
         jr z,pe_quit
@@ -216,7 +233,8 @@ play_status:
         ld hl,203
         ld (GRPACY),hl
         ld hl,s_playhelp
-        jp print_str
+        call print_str
+        jp status_copy
 
 ; ------------------------------------------------------------------------- lettura tile
 ; HL = x (px), DE = y (px, con segno) -> A = classe (0xFF = sotto la mappa), E = id tile
@@ -602,42 +620,7 @@ pp_gset:
         ld (p_ground),a
 pp_ydone:
         call touch_all
-        ; --- camera ---
-        ld hl,(p_x)
-        ld a,(v_scrx)
-        ld e,a
-        ld d,0
-        ex de,hl
-        add hl,hl
-        add hl,hl
-        add hl,hl
-        add hl,hl
-        ex de,hl
-        or a
-        sbc hl,de               ; x sullo schermo
-        bit 7,h
-        jr nz,cam_l
-        ld a,h
-        or a
-        jr nz,cam_r
-        ld a,l
-        cp 12*16
-        jr nc,cam_r
-        cp 3*16
-        jr nc,cam_ok
-cam_l:  ld a,(v_scrx)
-        or a
-        jr z,cam_ok
-        sub 8
-        ld (v_scrx),a
-        jp redraw_map
-cam_r:  ld a,(v_scrx)
-        cp 112
-        jr nc,cam_ok
-        add a,8
-        ld (v_scrx),a
-        jp redraw_map
-cam_ok: ret
+        ret
 
 neg_hl: ld a,l
         cpl
@@ -835,17 +818,11 @@ t_pick: ld a,(p_coins)
         add hl,de
         ld (hl),0
         ld a,(p_tcol)
-        ld hl,v_scrx
-        sub (hl)
-        jr c,tp_nv
-        cp 16
-        jr nc,tp_nv
-        ld b,a
+        ld (bo_col),a
         ld a,(p_trow)
-        ld c,a
-        xor a
-        call draw_tile
-tp_nv:  jp play_status
+        ld (bo_row),a
+        call cell_changed
+        jp play_status
 
 ; ------------------------------------------------------------------------- sprite
 play_sprite:
@@ -913,15 +890,8 @@ ps_attr:
         ld a,216                ; morto: lo sprite sparisce
         out (0x98),a
         ret
-ps_vis: ld a,(v_scrx)
-        ld l,a
-        ld h,0
-        add hl,hl
-        add hl,hl
-        add hl,hl
-        add hl,hl
-        ex de,hl
-        ld hl,(p_x)
+ps_vis: ld hl,(p_x)
+        ld de,(p_cam)
         or a
         sbc hl,de
         ld d,l                  ; D = X sullo schermo

@@ -1,0 +1,1 @@
+polls inizio=1 fine=1641 durata_s=8.2 per_copia_ms=82.0
