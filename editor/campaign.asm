@@ -96,6 +96,7 @@ cpd_s:  ld a,(cp_done)
         ld a,(cp_done+1)
         or h
         ld (cp_done+1),a
+        call cp_save            ; i progressi restano nella flash (record impostazioni)
 cp_again:
         call hide_cursor
         call cp_draw
@@ -222,3 +223,26 @@ s_cptitle: db "CAMPAIGN - 10 LEVELS",0
 s_cpdone:  db "[X]",0
 s_cph1:    db "UP/DOWN select  ENTER play",0
 s_cph2:    db "ESC back  [X] = cleared",0
+
+; il record impostazioni piu' recente + i progressi (SETREC+0x52/53) come nuovo record
+cp_save:
+        call load_settings
+        ret c                   ; nessun record impostazioni: niente da aggiornare
+        ld a,(cp_done)
+        ld (SETREC+0x52),a
+        ld a,(cp_done+1)
+        ld (SETREC+0x53),a
+        jp ns_append
+
+; all'avvio: legge i progressi dal record impostazioni
+cp_load:
+        xor a
+        ld (cp_done),a
+        ld (cp_done+1),a
+        call load_settings
+        ret c
+        ld a,(SETREC+0x52)
+        ld (cp_done),a
+        ld a,(SETREC+0x53)
+        ld (cp_done+1),a
+        ret

@@ -583,6 +583,10 @@ ns_save:
         ld bc,127
         ld (hl),0
         ldir
+        ld a,(cp_done)          ; il salvataggio delle impostazioni conserva i progressi
+        ld (SETREC+0x52),a
+        ld a,(cp_done+1)
+        ld (SETREC+0x53),a
         ld a,'N'
         ld (SETREC),a
         ld a,'S'

@@ -25,7 +25,8 @@ indipendentemente (l'erase e' per settore):
 1A server_host[28] nome DNS, zero-terminato (vuoto = usa server_ip)
 36 user[12]
 42 key[16]
-52 (riservato)
+52 progressi campagna[2] (maschera di bit dei livelli superati; ogni vittoria aggiunge un record)
+54 (riservato)
 7F checksum       somma di tutti i 128 byte = 0
 ```
 ## Record bozza

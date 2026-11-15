@@ -153,9 +153,7 @@ start:  di
         ld (v_bcol),a
         ld a,10
         ld (v_cury),a
-        xor a
-        ld (cp_done),a          ; campagna: nessun livello ancora superato
-        ld (cp_done+1),a
+        call cp_load            ; progressi della campagna dalla flash
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
         IFNDEF TESTBUILD
         call do_menu
