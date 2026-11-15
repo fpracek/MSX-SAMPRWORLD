@@ -254,6 +254,9 @@ blit_one:
 
 ; una cella e' cambiata (raccolta): aggiorna la pagina visibile e, se serve, quella nascosta
 cell_changed:
+        ld a,(p_ring)
+        or a
+        jp nz,ring_cell
         ld hl,(p_cam)
         ld a,(p_page)
         call blit_one

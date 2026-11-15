@@ -1,6 +1,6 @@
 # SamPr World
 
-A fantasy platformer for **MSX2** (SCREEN 5, pure V9938) with a built-in level editor, ten fixed campaign levels, and
+A fantasy platformer for **MSX2+** (SCREEN 5, V9958 hardware scrolling; a plain MSX2/V9938 still works with a slower step-scroll fallback) with a built-in level editor, ten fixed campaign levels, and
 level sharing over the network: levels made by other players are downloaded from a server through **UNAPI** (UDP).
 Runs from a **Yamanooto** cartridge (Konami5/SCC mapper, flash for saving a draft and the network settings).
 
@@ -36,4 +36,4 @@ and load `editor.rom` in slot B as `-romtype Yamanooto` (the UNAPI bridge driver
 ## Status
 Everything is verified in openMSX (including a scripted bot that clears all 10 campaign levels), but not yet on real
 hardware: flash timing and 64 KB alignment on the Yamanooto, real UNAPI cards and the static-IP calls still need testing.
-Scrolling is page-based because the V9938 cannot scroll smoothly at 50/60 Hz (`docs/SCROLL.md`).
+Scrolling: on MSX2+ (V9958, detected at start-up) the map scrolls smoothly at 60 Hz with the hardware registers R#26/R#27 and a 256-px ring buffer; the score is drawn with sprites. On a plain MSX2 (V9938) a step-scroll with page copies is used instead (`docs/SCROLL.md`).

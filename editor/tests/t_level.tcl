@@ -3,7 +3,7 @@
 set lv $::env(LEVEL)
 cartb E:/TEMP/Claude/SAMPRWORLD/repo/editor/editor_bot.rom -romtype Yamanooto
 reset
-set throttle off
+
 set R E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests
 proc rd {a} { return [debug read memory [expr {$a}]] }
 proc wr {a v} { debug write memory [expr {$a}] $v }
@@ -16,7 +16,7 @@ set log [open "$R/level_$lv.txt" w]
 proc L {s} { global log; puts $log $s; flush $log }
 set sxmin 999; set sxmax -999; set wasair 0; set n 0; set deaths 0; set wasdead 0; set jump 0; set hold 0; set t0 0; set res TIMEOUT
 proc tick {} {
-    global n solid ground deaths wasdead jump hold res log lv wasair sxmin sxmax
+    global n solid ground deaths wasdead jump hold res log lv wasair sxmin sxmax R
     incr n
     set x [rd16 0xC8A0]; set y [rd16 0xC8A5]; set gr [rd 0xC8AC]; set dead [rd 0xC8B1]
     if {$x > 32768 || $y > 32768} { after time 0.04 tick; return }
@@ -26,6 +26,7 @@ proc tick {} {
     if {$n > 3200} { L "$res (x=$x) morti=$deaths"; close $log; exit }
     if {!$gr} { set wasair 1 } elseif {$wasair} { set hold 0; set wasair 0 }
     set sx [expr {$x - [rd16 0xC8C0]}]; if {$dead == 0 && $n > 20} { if {$sx < $sxmin} { set sxmin $sx }; if {$sx > $sxmax} { set sxmax $sx } }
+    if {$n % 60 == 0 && $n < 700} { screenshot "$R/lv_[format %03d $n].png" }
     set row [expr {$y / 16}]
     set fx [expr {$x + 13}]
     set want 0; set why ""
@@ -57,7 +58,7 @@ proc tick {} {
     if {$hold > 0} { keymatrixdown 8 0x01; incr hold -1 } else { keymatrixup 8 0x01 }
     after time 0.04 tick
 }
-after time 18 {
+after time 26 {
     set i 0
     foreach t $tiles { wr [expr {0xC000 + $i}] $t; incr i }
     keymatrixdown 5 0x02

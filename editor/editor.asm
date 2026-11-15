@@ -109,6 +109,7 @@ start:  di
         ld a,5
         call CHGMOD
         di
+        call detect_vdp         ; V9958 (MSX2+) = scroll hardware, V9938 = scroll a passi
         ld a,0x80               ; 212 righe
         ld e,9
         call wrreg
@@ -119,7 +120,7 @@ start:  di
         or 2                    ; sprite 16x16
         ld e,1
         call wrreg
-        ld a,0xEC               ; tabella attributi sprite = 0x7600
+        ld a,0xEF               ; attributi sprite 0x7600 (i bit 1-0 di R#5 devono valere 1: azzerati, i piani 8-31 usano le tabelle colore dei piani 0-7)
         ld e,5
         call wrreg
         ld a,0x0F               ; generatore sprite = 0x7800
@@ -924,6 +925,7 @@ utn:    pop bc
         include "draft.asm"
         include "publish.asm"
         include "scroll.asm"
+        include "ring.asm"
         include "enemy.asm"
         include "blocks.asm"
         include "audio.asm"

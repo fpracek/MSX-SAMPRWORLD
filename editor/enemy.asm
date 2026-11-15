@@ -129,26 +129,23 @@ ent_vram:
         otir
         ld bc,0x8098
         otir
-        ld hl,0x7440            ; colori: piano 4 = 1 (contorno), piano 5 = riempimento
+        ld hl,0x7440            ; colori dei 3 slot: piano pari = contorno (1), dispari = riempimento (3 = goblin)
         call vram_w
-        ld ix,ENT
-        ld c,E_MAX
+        ld c,3
 ev_l:   ld b,16
         ld a,1
 ev_1:   out (0x98),a
         djnz ev_1
-        ld a,(ix+0)
-        cp 2
+        ld b,16
         ld a,3
-        jr nz,ev_f
-        ld a,13
-ev_f:   ld b,16
 ev_2:   out (0x98),a
         djnz ev_2
-        ld de,8
-        add ix,de
         dec c
         jr nz,ev_l
+        ld a,1
+        ld (e_st),a
+        ld (e_st+1),a
+        ld (e_st+2),a
         ret
 
 ent_update:
@@ -359,30 +356,79 @@ eh_n:   pop bc
         jp nz,eh_l
         ret
 
-; attributi degli sprite nemici (VRAM gia' posizionata dopo i 4 piani dell'eroe); chiude con il terminatore
+; attributi degli sprite nemici. Solo 16 piani hanno una tabella colore propria (i piani 16-31 ne condividono una con i piani
+; 0-15, verificato in openMSX): eroe = piani 0-3, nemici = 3 slot dinamici (piani 4-9: contorno + riempimento) assegnati ai
+; primi 3 nemici visibili, HUD = piani 10-15 (modalita' V9958), terminatore subito dopo.
+; La VRAM e' gia' posizionata dopo i 4 piani dell'eroe.
+e_sl    equ 0xCA80              ; 3 byte: indice dell'entita' in ogni slot (0xFF = vuoto)
+e_st    equ 0xCA83              ; 3 byte: tipo di cui e' caricata la tabella colore del riempimento
+
 ent_sprites:
+        ld a,0xFF
+        ld (e_sl),a
+        ld (e_sl+1),a
+        ld (e_sl+2),a
         ld ix,ENT
-        ld c,E_MAX
-en_l:   ld a,(ix+0)
+        ld b,0                  ; indice entita'
+        ld c,0                  ; slot assegnati
+es_scan:
+        ld a,(ix+0)
         or a
-        jr z,en_hide
+        jr z,es_nx
         ld l,(ix+1)
         ld h,(ix+2)
         ld de,(p_cam)
         or a
         sbc hl,de
         bit 7,h
-        jr nz,en_hide
+        jr nz,es_nx
         ld a,h
         or a
-        jr nz,en_hide
+        jr nz,es_nx
+        push bc
+        ld e,c
+        ld d,0
+        ld hl,e_sl
+        add hl,de
+        ld (hl),b
+        pop bc
+        inc c
+        ld a,c
+        cp 3
+        jr z,es_go
+es_nx:  ld de,8
+        add ix,de
+        inc b
+        ld a,b
+        cp E_MAX
+        jr nz,es_scan
+es_go:  ld c,0                  ; scrittura dei 3 slot
+es_w:   ld e,c
+        ld d,0
+        ld hl,e_sl
+        add hl,de
+        ld a,(hl)
+        cp 0xFF
+        jr z,es_hide
+        add a,a
+        add a,a
+        add a,a
+        ld e,a
+        ld d,0
+        ld ix,ENT
+        add ix,de
+        ld l,(ix+1)
+        ld h,(ix+2)
+        ld de,(p_cam)
+        or a
+        sbc hl,de
         ld d,l                  ; X
         ld a,(ix+3)
         dec a
         ld e,a                  ; Y
         ld a,(ix+0)
         cp 1
-        jr nz,en_bat
+        jr nz,es_bat
         ld a,(ix+4)             ; goblin: frame = direzione*2 + passo
         add a,a
         ld b,a
@@ -392,14 +438,14 @@ en_l:   ld a,(ix+0)
         rrca
         and 1
         add a,b
-        jr en_pat
-en_bat: ld a,(p_tick)
+        jr es_pat
+es_bat: ld a,(p_tick)
         rrca
         rrca
         rrca
         and 1
         add a,4
-en_pat: add a,a
+es_pat: add a,a
         add a,a
         add a,a                 ; frame*8
         add a,ENPAT
@@ -423,20 +469,76 @@ en_pat: add a,a
         inc hl
         ld (hl),0
         ld hl,e_buf
-        jr en_out
-en_hide:
+        jr es_out
+es_hide:
         ld hl,hide_attr
-en_out: push bc                 ; C = contatore degli slot
+es_out: push bc
         ld bc,0x0898
         otir
         pop bc
-en_next:
-        ld de,8
-        add ix,de
-        dec c
-        jp nz,en_l
+        inc c
+        ld a,c
+        cp 3
+        jr nz,es_w
+        ld a,(p_ring)
+        or a
+        jr z,es_term
+        call hud_attr           ; V9958: sei sprite HUD (piani 10-15) e terminatore
+        jr es_col
+es_term:
         ld a,216                ; fine della lista sprite
         out (0x98),a
+es_col: ld c,0                  ; tabelle colore dei riempimenti, solo se il tipo dello slot e' cambiato
+ec_l:   ld e,c
+        ld d,0
+        ld hl,e_sl
+        add hl,de
+        ld a,(hl)
+        cp 0xFF
+        jr z,ec_n
+        add a,a
+        add a,a
+        add a,a
+        ld e,a
+        ld d,0
+        ld ix,ENT
+        add ix,de
+        ld a,(ix+0)             ; tipo
+        ld hl,e_st
+        ld e,c
+        ld d,0
+        add hl,de
+        cp (hl)
+        jr z,ec_n
+        ld (hl),a
+        ld b,a                  ; colore: goblin 3, pipistrello 13
+        ld a,3
+        dec b
+        jr z,ec_c
+        ld a,13
+ec_c:   ld b,a
+        ld a,c                  ; piano riempimento = 5 + 2*slot -> VRAM 0x7400 + piano*16
+        add a,a
+        add a,5
+        ld l,a
+        ld h,0
+        add hl,hl
+        add hl,hl
+        add hl,hl
+        add hl,hl
+        ld de,0x7400
+        add hl,de
+        push bc
+        call vram_w
+        pop bc
+        ld a,b
+        ld b,16
+ec_w:   out (0x98),a
+        djnz ec_w
+ec_n:   inc c
+        ld a,c
+        cp 3
+        jr nz,ec_l
         ret
 
 hide_attr: db 0xE0,0,0,0,0xE0,0,0,0

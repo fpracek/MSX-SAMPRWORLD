@@ -41,7 +41,13 @@ do_play:
         call play_init
 pl_loop:
         call vwait
-        call scroll_flip
+        ld a,(p_ring)
+        or a
+        jr z,pl_v38
+        call ring_frame         ; V9958: camera, registri di scroll e colonne entranti nel vblank
+        jr pl_vc
+pl_v38: call scroll_flip
+pl_vc:
         call snd_tick
         ld a,8
         call readrow
@@ -58,7 +64,9 @@ pl_noesc:
         call ent_update
         call ent_hit
         call play_sprite
-        call scroll_update
+        ld a,(p_ring)
+        or a
+        call z,scroll_update
         ld a,(p_exit)
         or a
         jr z,pl_loop
@@ -139,6 +147,9 @@ pi_up:  push hl
         call map_save           ; la mappa originale resta in VRAM: la prova la modifica (monete, nemici)
         call ent_spawn
         call ent_vram
+        ld a,(p_ring)
+        or a
+        call nz,ring_start
         xor a
         ld (p_win),a
         ld (p_exit),a
@@ -169,6 +180,9 @@ respawn:
         ld (p_dead),a
         ; camera sul punto di ripartenza (pari, entro la mappa), ridisegno completo sulla pagina 0
         call vdp_wait
+        ld a,(p_ring)
+        or a
+        jp nz,ring_respawn_cam  ; V9958: anello hardware
         ld hl,(p_x)
         ld de,48
         or a
@@ -200,6 +214,9 @@ rs_c:
         jp redraw_view
 
 play_end:
+        ld a,(p_ring)
+        or a
+        call nz,ring_off
         ld a,(p_win)            ; vittoria: si lascia suonare il jingle
         or a
         jr z,pe_nj
@@ -243,6 +260,9 @@ pe_c:   ld (v_scrx),a
         ret
 
 play_status:
+        ld a,(p_ring)
+        or a
+        jp nz,hud_update        ; V9958: punteggio con gli sprite
         ld hl,p_stat
         call vdp_cmd
         ld a,15
