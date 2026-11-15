@@ -82,6 +82,7 @@ v_sfound equ V+0x92
 v_msgnum equ V+0x93             ; 2 byte: numero da accodare al messaggio
 v_msgnf equ V+0x95
 v_prev3 equ V+0x9E
+v_unsaved equ FBUF+0xB6          ; 1 = il disegno ha modifiche non ancora salvate in flash
 v_prev6 equ V+0x9C
 v_e6    equ V+0x9D
 v_e3    equ V+0x9F
@@ -306,8 +307,11 @@ nnext:  ld a,(v_e4)
         ld a,1
         ld (v_dirty),a
 nopick: ld a,(v_e6)
-        bit 5,a                 ; F1 = menu
-        call nz,do_menu
+        bit 5,a                 ; F1 = menu (salva prima la bozza se serve)
+        jr z,nomenu
+        call autosave
+        call do_menu
+nomenu:
         ld a,(v_e4)
         bit 3,a                 ; N = impostazioni di rete
         call nz,do_netset
@@ -321,8 +325,11 @@ nopick: ld a,(v_e6)
         bit 2,a                 ; U = pubblica sul server
         call nz,do_publish
         ld a,(v_e5)
-        bit 1,a                 ; T = prova il livello
-        call nz,do_play
+        bit 1,a                 ; T = prova il livello (salva prima la bozza se serve)
+        jr z,noplay
+        call autosave
+        call do_play
+noplay:
         IF DEVBUILD
         ld a,(v_e5)
         bit 3,a                 ; V = valida (DEV)
@@ -455,6 +462,8 @@ place:  ld c,a
         ld (hl),c
         xor a
         ld (v_valid),a          ; modificato: va rigiocato
+        inc a
+        ld (v_unsaved),a
         ld a,(v_curx)
         ld hl,v_scrx
         sub (hl)
@@ -943,7 +952,7 @@ p_stat:  db 0,0,0,0, 0,0,192,0, 0,1, 20,0, 0x11,0,0xC0
 p_pick:  db 0,0,0,0, 0,0,0,0, 0,1, 64,0, 0x11,0,0xC0
 s_x:     db "X:",0
 s_y:     db " Y:",0
-s_help:  db "  ,.=tile TAB=list",0
+s_help:  db "  S=save TAB=list",0
 s_val:   db " [OK]",0
 ; cursore 16x16: cornice spessa 2 pixel (UL, LL, UR, LR)
 spat:    db 0xFF,0xFF,0xC0,0xC0,0xC0,0xC0,0xC0,0xC0

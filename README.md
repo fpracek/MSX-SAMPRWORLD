@@ -18,7 +18,7 @@ and load `editor.rom` in slot B as `-romtype Yamanooto` (the UNAPI bridge driver
 - **Title menu**: Play the campaign - Create levels - Server levels - Network settings (F1 reopens it from the editor).
 - **Campaign**: 10 fixed levels (meadows, caves, castle) always available in the ROM (`tools/make_levels.py`).
 - **Editor** (arrows move, SPACE places, X/DEL erases, `,` `.` previous/next block, TAB block list, P pick, S save the
-  draft to flash, L reload it, SELECT new level, T test-play, U publish, D server levels, N network settings).
+  draft to flash (it is also saved automatically before F1 menu and T test-play), L reload it, SELECT new level, T test-play, U publish, D server levels, N network settings).
 - **Test-play**: physics, one-way platforms, ladders, water, springs, checkpoints, coins/gems/keys, crumbling blocks,
   breakable stone, rune blocks, gates, goblins and bats. A level must be cleared by its creator before it can be published
   (`docs/VALIDATION.md`).

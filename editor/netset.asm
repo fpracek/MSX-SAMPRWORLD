@@ -712,6 +712,33 @@ nap_s:  add a,(hl)
 nap_w:  ld a,(v_fs)
         add a,SETSEG
         ld (BANKW),a
+        ld a,(v_fr)             ; lo slot deve essere vuoto (FF), altrimenti si cancella il settore
+        ld h,a
+        ld l,0
+        srl h
+        rr l
+        ld a,h
+        or 0x80
+        ld h,a
+        ld b,128
+nap_c:  ld a,(hl)
+        inc a
+        jr nz,nap_d
+        inc hl
+        djnz nap_c
+        jr nap_e
+nap_d:  ld a,SETSEG
+        ld (BANKW),a
+        call ram_erase
+        ret c
+        xor a
+        ld (v_fs),a
+        ld (v_fr),a
+        ld a,SETSEG
+        ld (BANKW),a
+nap_e:  ld a,(v_fs)
+        add a,SETSEG
+        ld (BANKW),a
         ld a,(v_fr)
         ld h,a
         ld l,0

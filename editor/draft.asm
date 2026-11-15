@@ -312,6 +312,25 @@ write_record:
 wr_fits:
         ld a,(v_fseg)
         call set_dseg
+        ld hl,(v_fpos)          ; la zona di destinazione deve essere vuota (FF): altrimenti la flash non puo' programmarla
+        ld bc,(v_rlen)
+wr_bl:  ld a,(hl)
+        inc a
+        jr nz,wr_dirty
+        inc hl
+        dec bc
+        ld a,b
+        or c
+        jr nz,wr_bl
+        jr wr_go
+wr_dirty:
+        call erase_draft        ; residui nel settore: si cancella e si riparte da capo
+        jr c,wr_err
+        xor a
+        ld (v_fseg),a
+        ld hl,0x8000
+        ld (v_fpos),hl
+wr_go:
         ld hl,(v_fpos)
         ld de,REC
         ld iy,(v_rlen)
@@ -320,9 +339,7 @@ wr_lp:  ld a,(de)
         jr z,wr_sk
         ld c,a
         call FLRT               ; ram_prog: HL = destinazione, C = dato
-        jr nc,wr_sk
-        ld a,1
-        ld (v_perr),a
+        jr c,wr_err             ; nessuna risposta dalla flash: ci si ferma subito
 wr_sk:  inc hl
         inc de
         dec iy
@@ -359,9 +376,12 @@ do_save:
         call scan_draft
         call build_record
         call write_record
+        jr c,dsv_e
+        xor a
+        ld (v_unsaved),a        ; il disegno e' tutto in flash
         ld hl,m_saved
-        jr nc,dsv
-        ld hl,m_err
+        jr dsv
+dsv_e:  ld hl,m_err
 dsv:    ld (v_msg),hl
         ld a,1
         ld (v_dirty),a
@@ -379,6 +399,8 @@ do_devvalid:                    ; SOLO SVILUPPO: segna il livello come superato 
 
 do_load:
         call load_draft
+        xor a
+        ld (v_unsaved),a
         ld a,1
         ld (v_redr),a
         ld (v_dirty),a
@@ -397,6 +419,7 @@ do_new:
         ret
 dn_go:  xor a
         ld (v_conf),a
+        ld (v_unsaved),a
         ld (v_valid),a
         call init_map
         call erase_draft
@@ -513,7 +536,7 @@ m_devval: db "  Validated (DEV)",0
 m_loaded: db "  Draft loaded",0
 m_none:   db "  No draft",0
 m_erased: db "  Draft erased",0
-m_err:    db "  FLASH ERROR",0
+m_err:    db "  No flash found",0
 m_bad:    db "  Draft corrupt",0
 m_incomp: db "  Draft incompatible",0
 ; intestazione livello v1 (25 byte): LV, ver, w, h, start x/y, tema, titolo[16], n_ent
@@ -536,7 +559,7 @@ ram_prog:                       ; HL = destinazione (finestra 8000), C = dato ->
         ld a,0xA0
         ld (0x8AAA),a
         ld (hl),c
-        ld de,0
+        ld de,0x2000            ; timeout ~50 ms per byte: senza flash l'errore arriva subito
 rpw:    ld a,(hl)
         cp c
         jr z,rpok
@@ -588,3 +611,10 @@ redn:   xor a
         ret
         ent
 flashrt_end:
+
+; salva la bozza solo se ci sono modifiche non ancora salvate (prima del menu e della prova)
+autosave:
+        ld a,(v_unsaved)
+        or a
+        ret z
+        jp do_save
