@@ -327,21 +327,20 @@ sf_w:   call wrreg              ; R#2: pagina visibile
         ld (p_job),a
         jp play_sprite          ; l'eroe cambia posizione sullo schermo nello stesso vblank
 
-; ---- scorrimento a passi di 16 px (1 tile) ----
-; Ogni passo: HMMM asincrona dell'area di gioco dalla pagina visibile a quella nascosta spostata di 16 px, poi si
-; disegna la colonna di tile scoperta e al vblank si scambia la pagina. La copia costa ~100 ms sul V9938 (docs/SCROLL.md):
-; lo sfondo avanza a 6-8 passi/s mentre eroe, nemici e fisica restano a 60 Hz. Passi piccoli e frequenti disorientano
-; molto meno dei salti di mezzo schermo.
-SCRSTEP equ 16
+; ---- scorrimento a passi da 8 px (16 px se l'eroe e' lontano dal centro) ----
+; Ogni passo: HMMM asincrona dell'area di gioco dalla pagina visibile a quella nascosta spostata di |d| px, poi si
+; disegnano le colonne di tile scoperte e al vblank si scambia la pagina. La copia costa ~100 ms sul V9938 (docs/SCROLL.md):
+; con passi da 8 px la camera arriva a ~0,75 px/frame, con passi da 16 px a ~1,45 px/frame (l'eroe corre a 1,5):
+; quando l'eroe e' molto avanti rispetto al centro si passa ai passi grandi per recuperare. Eroe, nemici e fisica a 60 Hz.
 scroll_update:
         ld a,(p_job)
         or a
-        jr z,su_idle
+        jp z,su_idle
         cp 1
         ret nz                  ; 2 = pronta, attende il vblank per lo scambio
         call vdp_busy
         ret nz                  ; copia ancora in corso
-        ld a,(p_page)           ; colonna scoperta, sulla pagina nascosta
+        ld a,(p_page)           ; colonne scoperte, sulla pagina nascosta
         xor 1
         ld (bc_pg),a
         ld hl,(p_camh)
@@ -349,23 +348,45 @@ scroll_update:
         ld hl,(p_d)
         bit 7,h
         jr nz,ss_l
-        ld hl,256               ; passo a destra: ultima colonna (schermo x 240..255), finestra con bias +16
+        ld hl,272               ; passo a destra: finestra [256-d, 256) (bias +16)
+        ld de,(p_d)
+        or a
+        sbc hl,de
         ld (bc_w0),hl
         ld hl,272
         ld (bc_w1),hl
         ld hl,(bs_cam)
+        ld de,256
+        add hl,de
+        ld de,(p_d)
+        or a
+        sbc hl,de
         call div16
-        add a,15
+        ld (bs_c),a
+        ld hl,(bs_cam)
+        ld de,255
+        add hl,de
+        call div16
+        ld (bs_c1),a
         jr ss_go
-ss_l:   ld hl,16                ; passo a sinistra: prima colonna (schermo x 0..15)
-        ld (bc_w0),hl
-        ld hl,32
+ss_l:   ld hl,(p_d)             ; passo a sinistra: finestra [0, |d|)
+        call neg_hl
+        push hl
+        ld de,16
+        add hl,de
         ld (bc_w1),hl
+        ld hl,16
+        ld (bc_w0),hl
         ld hl,(bs_cam)
         call div16
-ss_go:  ld (bs_c),a
+        ld (bs_c),a
+        pop hl
+        dec hl
+        ld de,(bs_cam)
+        add hl,de
+        call div16
         ld (bs_c1),a
-        call blit_cols
+ss_go:  call blit_cols
         call apply_dirty
         ld a,2
         ld (p_job),a
@@ -376,30 +397,53 @@ su_idle:
         or a
         sbc hl,de               ; x dell'eroe sullo schermo
         bit 7,h
-        jr nz,su_left
+        jr nz,su_fl
         ld a,h
         or a
-        jr nz,su_right
+        jr nz,su_fr
         ld a,l
-        cp 144
-        jr nc,su_right
-        cp 96
+        cp 176
+        jr nc,su_fr             ; molto avanti: passo grande
+        cp 128
+        jr nc,su_r8
+        cp 80
+        ret nc                  ; fascia centrale: la camera sta ferma
+        cp 48
+        jr c,su_fl
+        ld hl,-8
+        jr su_l
+su_fl:  ld hl,-16
+        jr su_l
+su_fr:  ld hl,16
+        jr su_r
+su_r8:  ld hl,8
+su_r:   ld (p_d),hl
+        ld hl,(p_cam)
+        ld de,MAPW*16-256
+        or a
+        sbc hl,de               ; camera - massimo (negativo se c'e' spazio)
         ret nc
-su_left:
+        call neg_hl
+        ex de,hl                ; DE = spazio rimasto
+        ld hl,(p_d)
+        or a
+        sbc hl,de
+        jr c,su_ok
+        ld (p_d),de             ; passo piu' grande dello spazio: si riduce
+        jr su_ok
+su_l:   ld (p_d),hl
         ld hl,(p_cam)
         ld a,h
         or l
         ret z
-        ld hl,-SCRSTEP
-        jr su_go
-su_right:
-        ld hl,(p_cam)
-        ld de,MAPW*16-256
-        or a
-        sbc hl,de
-        ret nc                  ; gia' in fondo al livello
-        ld hl,SCRSTEP
-su_go:  ld (p_d),hl
+        ld de,(p_d)
+        add hl,de
+        bit 7,h
+        jr z,su_ok
+        ld hl,(p_cam)           ; passo piu' grande dello spazio: si riduce
+        call neg_hl
+        ld (p_d),hl
+su_ok:  ld hl,(p_d)
         ld de,(p_cam)
         add hl,de
         ld (p_camh),hl

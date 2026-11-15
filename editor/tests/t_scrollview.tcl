@@ -13,7 +13,7 @@ after time 18 {
     after time 0.2 { keymatrixup 5 0x02; keymatrixdown 8 0x80 }
 }
 set k 0
-foreach tt {19.6 19.8 20.0 20.2 20.4 20.6 20.8 21.0} {
+foreach tt {19.6 19.75 19.9 20.05 20.2 20.35 20.5 20.65} {
     after time $tt [list apply {{k} { global R log; screenshot "$R/sv_$k.png"; puts $log "sv_$k: x=[rd16 0xC8A0] cam=[rd16 0xC8C0]"; flush $log }} $k]
     incr k
 }
