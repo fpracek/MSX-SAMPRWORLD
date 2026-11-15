@@ -19,5 +19,6 @@ Frecce = muovi, SPAZIO = piazza (tenuto premuto = pittura), X/DEL = cancella, `,
 P = prendi il tile sotto il cursore, TAB = elenco blocchi (INVIO/SPAZIO sceglie, ESC chiude).
 Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/FLASH.md):
 S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
+U = pubblica sul server (UNAPI/UDP; richiede il livello superato, vedi docs/VALIDATION.md; V = valida, solo build DEV).
 Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
 cancellare `Documents/openMSX/persistent/roms/editor.rom`).
