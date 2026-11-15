@@ -203,27 +203,37 @@ def seed(store):
 
 
 def main():
-    host = sys.argv[1] if len(sys.argv) > 1 else HOST
-    ttl = float(sys.argv[2]) if len(sys.argv) > 2 else 3600
+    import argparse
+    ap = argparse.ArgumentParser(description="Server UDP dei livelli di SamPr World")
+    ap.add_argument("host", nargs="?", default=HOST, help="indirizzo di ascolto (0.0.0.0 = tutte le interfacce)")
+    ap.add_argument("ttl", nargs="?", type=float, default=0, help="secondi di vita (0 = per sempre)")
+    ap.add_argument("--port", type=int, default=PORT)
+    args = ap.parse_args()
     store = Store(STORE)
     seed(store)
     srv = Server(store)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind((host, PORT))
+    sock.bind((args.host, args.port))
     sock.settimeout(1.0)
+    print("SamPr World level server in ascolto su %s:%d (%d livelli, %d utenti). Ctrl+C per fermare."
+          % (args.host, args.port, len(store.index), len(store.users)), flush=True)
     logf = open(os.path.join(HERE, "server.log"), "a")
     t0 = time.time()
-    while time.time() - t0 < ttl:
-        try:
-            data, addr = sock.recvfrom(1500)
-        except socket.timeout:
-            continue
-        resp = srv.handle(data, addr)
-        logf.write("%s %s op=%02X -> %s\n" % (time.strftime("%H:%M:%S"), addr, data[0] if data else 0,
-                                             resp[:3].hex() if resp else None))
-        logf.flush()
-        if resp:
-            sock.sendto(resp, addr)
+    try:
+        while args.ttl <= 0 or time.time() - t0 < args.ttl:
+            try:
+                data, addr = sock.recvfrom(1500)
+            except socket.timeout:
+                continue
+            resp = srv.handle(data, addr)
+            line = "%s %s op=%02X -> %s" % (time.strftime("%H:%M:%S"), addr, data[0] if data else 0,
+                                            resp[:3].hex() if resp else None)
+            logf.write(line + "\n")
+            logf.flush()
+            if resp:
+                sock.sendto(resp, addr)
+    except KeyboardInterrupt:
+        print("fermato")
 
 
 if __name__ == "__main__":
