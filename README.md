@@ -24,5 +24,6 @@ U = pubblica sul server (UNAPI/UDP; richiede il livello superato, vedi docs/VALI
 T = prova il livello (modalita' gioco: frecce + SPAZIO salta, ESC esce). Arrivare al portale valida il livello e salva la bozza.
 Nemici: tile "Goblin" (cammina, si gira ai bordi) e "Pipistrello" (vola ondeggiando) dalla lista blocchi; in prova si schiacciano dall'alto, altrimenti uccidono. Alla fine della prova la mappa viene ripristinata.
 Blocchi interattivi (in prova): pietra fessurata si rompe da sotto; blocco runico/forziere colpiti da sotto fanno apparire moneta/gemma; blocco friabile crolla dopo ~0,5 s; chiave + portone (la chiave si consuma).
+Audio SCC: musica in prova (re minore) ed effetti (salto, moneta, schiacciato, blocco, morte, vittoria); vedi docs/AUDIO.md.
 Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
 cancellare `Documents/openMSX/persistent/roms/editor.rom`).

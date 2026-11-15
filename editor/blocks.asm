@@ -41,6 +41,8 @@ head_hit:
         ld a,e
         cp T_BREAK
         jr nz,hh_1
+        ld a,SFX_HIT
+        call sfx_a
         xor a
         jp settile
 hh_1:   cp T_RUNE
@@ -50,6 +52,8 @@ hh_1:   cp T_RUNE
         ld c,T_GEM
         ret nz
 hh_it:  push bc
+        ld a,SFX_HIT
+        call sfx_a
         ld a,T_RUNEU
         call settile
         pop bc
@@ -82,6 +86,8 @@ td_d:   ld a,(p_keys)
         ret z
         dec a
         ld (p_keys),a
+        ld a,SFX_KEY
+        call sfx_a
         ld a,e
         ld (p_cnt),a
         ld a,(p_tcol)

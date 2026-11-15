@@ -335,6 +335,8 @@ eh_q:   ld a,h
         ld a,(p_kills)
         inc a
         ld (p_kills),a
+        ld a,SFX_STOMP
+        call sfx_a
         ld hl,0xFC80            ; rimbalzo
         ld (p_vy),hl
         xor a
@@ -346,12 +348,15 @@ eh_q:   ld a,h
 eh_hurt:
         ld a,40
         ld (p_dead),a
+        ld a,SFX_DIE
+        call sfx_a
         pop bc
         ret
 eh_n:   pop bc
         ld de,8
         add ix,de
-        djnz eh_l
+        dec b
+        jp nz,eh_l
         ret
 
 ; attributi degli sprite nemici (VRAM gia' posizionata dopo i 4 piani dell'eroe); chiude con il terminatore

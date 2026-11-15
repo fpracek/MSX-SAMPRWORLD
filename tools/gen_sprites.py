@@ -200,7 +200,9 @@ def main():
     frames, blob = build()
     open(os.path.join(OUT, "hero.bin"), "wb").write(blob)
     eb = enemy_bin()
-    seg = blob + eb
+    import gen_music
+    audio, _ = gen_music.build()
+    seg = (blob + eb).ljust(2048, bytes([255])) + audio       # audio a offset 2048
     assert len(seg) <= 8192
     open(os.path.join(OUT, "sprites.bin"), "wb").write(seg.ljust(8192, bytes([255])))   # segmento 4 della ROM
     sys_pal = [(2, 4, 7), (0, 0, 1), (0, 3, 1), (2, 5, 1), (4, 7, 2), (2, 1, 0), (4, 2, 1), (6, 4, 2), (2, 2, 3),

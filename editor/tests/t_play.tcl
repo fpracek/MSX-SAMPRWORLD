@@ -17,10 +17,12 @@ proc tick {} {
     puts $log "$n x=$x y=$y gr=$gr dead=$dead coins=[rd 0xC8B8] win=[rd 0xC8B6] cam=[rd16 0xC8C0] page=[rd 0xC8C4] job=[rd 0xC8C5]"
     if {$n == 60} { screenshot "$R/play_mid.png" }
     if {($ex && $ex != 255) || $n > 900} {
-        puts $log "FINE exit=$ex win=[rd 0xC8B6] valid=[rd 0xC896] coins=[rd 0xC8B8]"
-        close $log
-        after time 0.05 { screenshot "E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests/play_end0.png" }
-        after time 3 { screenshot "E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests/play_end.png"; exit }
+        after time 3 {
+            puts $log "FINE exit=[rd 0xC8BE] win=[rd 0xC8B6] valid=[rd 0xC896] coins=[rd 0xC8B8]"
+            close $log
+            screenshot "E:/TEMP/Claude/SAMPRWORLD/repo/editor/tests/play_end.png"
+            exit
+        }
         return
     }
     # il bot: sempre a destra; salta davanti alla buca (x 140-170) e al muro (x 196-215)

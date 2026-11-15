@@ -42,6 +42,7 @@ do_play:
 pl_loop:
         call vwait
         call scroll_flip
+        call snd_tick
         ld a,8
         call readrow
         cpl
@@ -134,6 +135,7 @@ pi_up:  push hl
         ldir
         xor a
         ld (p_keys),a
+        call snd_init           ; SCC: onde, musica
         call map_save           ; la mappa originale resta in VRAM: la prova la modifica (monete, nemici)
         call ent_spawn
         call ent_vram
@@ -198,6 +200,16 @@ rs_c:
         jp redraw_view
 
 play_end:
+        ld a,(p_win)            ; vittoria: si lascia suonare il jingle
+        or a
+        jr z,pe_nj
+        ld b,50
+pe_j:   push bc
+        call vwait
+        call snd_tick
+        pop bc
+        djnz pe_j
+pe_nj:  call snd_off
         call map_load
         call vdp_wait
         ld e,2
@@ -463,6 +475,8 @@ pp_dry: ld a,(p_ground)
         xor a
         ld (p_ground),a
         ld (p_climb),a
+        ld a,SFX_JUMP
+        call sfx_a
         jr pp_grav
 pp_clj: ld a,(p_climb)          ; salto dalla scala
         or a
@@ -817,7 +831,9 @@ touch:  cp 3
 t_win:  ld a,1
         ld (p_win),a
         ld (p_exit),a
-        ret
+        call snd_music_off
+        ld a,SFX_WIN
+        jp sfx_a
 t_spring:
         ld hl,(p_vy)
         bit 7,h
@@ -827,9 +843,13 @@ t_spring:
         xor a
         ld (p_ground),a
         ret
-t_die:  ld a,40
+t_die:  ld a,(p_dead)
+        or a
+        ret nz
+        ld a,40
         ld (p_dead),a
-        ret
+        ld a,SFX_DIE
+        jp sfx_a
 t_pick: ld a,e
         cp T_KEY
         jr nz,tpk_c
@@ -846,7 +866,8 @@ tpk_a:  ld a,(p_coins)
         jr nc,tpk_s
         ld a,255
 tpk_s:  ld (p_coins),a
-tpk_d:
+tpk_d:  ld a,SFX_COIN
+        call sfx_a
         ld a,(p_trow)           ; il tile sparisce dalla mappa
         ld h,a
         ld l,0
