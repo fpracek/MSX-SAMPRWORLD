@@ -20,4 +20,4 @@ P = prendi il tile sotto il cursore, TAB = elenco blocchi (INVIO/SPAZIO sceglie,
 Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/FLASH.md):
 S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
 Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
-cancellare `Documents\openMSX\persistentoms\editor.rom`).
+cancellare `Documents/openMSX/persistent/roms/editor.rom`).
