@@ -15,7 +15,7 @@ affianca la tastiera.
 ## Regole
 - Condivisi: monete, chiavi, nemici uccisi, checkpoint, portale (vale chi lo raggiunge), ESC.
 - Separati: posizione, velocita', salto, vita. Gli eroi non collidono tra loro (si attraversano).
-- Camera: segue l'eroe vivo piu' avanti. Chi resta fuori dallo schermo viene portato accanto a lui.
+- Camera di gruppo: nessuno dei due eroi puo' uscire dallo schermo (muri invisibili a `cam` e a `cam+240`, a destra e a sinistra). Chi e' davanti puo' avanzare fino al bordo opposto della finestra e li' si ferma; la camera non scorre finche' l'altro non gli si avvicina: scorre solo nel margine che resta, cioe' sta sempre tra `max(x)-240` e `min(x)` (ancora = punto medio, limitata). Se un eroe e' morto la camera segue l'altro. Codice in `swcam.asm`.
 - Morte: l'eroe rinasce dopo 40 fotogrammi accanto all'altro (se e' vivo); se sono morti entrambi, tutti e due ripartono
   dall'ultimo checkpoint (camera inclusa).
 

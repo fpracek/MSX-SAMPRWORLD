@@ -30,6 +30,6 @@ valori predefiniti. Nell'editor si modificano con INVIO sul nemico (`editor/prop
 | 4 | raggio di pattuglia in tile | 0 = illimitato; dopo il raggio dalla posizione di partenza torna indietro (pipistrelli: durata dell'andata) |
 | 5 | vita | 1-3 balzi sulla testa per ucciderlo |
 | 6 | rilevamento in tile | 1-15: distanza a cui l'eroe "sveglia"/attira/spaventa il nemico |
-| 7 | riservato | 0 |
+| 7 | sprite | 0 = quello del tipo (goblin = soldato, pipistrello = medico), 1 soldato, 2 medico, 3 poliziotto |
 
 Il formato e' retrocompatibile con i livelli esistenti (n_ent = 0). Tile id fino a 127 (RLE a 7 bit).

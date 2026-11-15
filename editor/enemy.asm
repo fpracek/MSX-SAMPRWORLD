@@ -337,6 +337,7 @@ ep_spawn:
         ld (iy+3),1             ; vita
         ld (iy+4),96            ; rilevamento 6 tile
         ld (iy+7),96            ; durata della pattuglia dei pipistrelli
+        ld (ix+5),0             ; sprite: quello del tipo
         ld a,(ix+1)
         ld (iy+5),a             ; posizione di partenza
         ld a,(ix+2)
@@ -371,6 +372,9 @@ eps_h:  inc hl
         add a,a
         add a,a
         ld (iy+4),a
+        inc hl
+        ld a,(hl)
+        ld (ix+5),a             ; sprite scelto (0 = quello del tipo, 1-3 = soldato, medico, poliziotto)
         ret
 
 gb_grav:

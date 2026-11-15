@@ -179,7 +179,7 @@ play_2p:
         call p2_hit
         ld a,1
         call p2_hit
-        call p2_follow
+        call p2_clamp
         ld a,1                  ; sprite dell'eroe 2 (attributi in buffer: li scrive ent_sprites)
         call hero_load
         call p2_sprite
@@ -190,8 +190,9 @@ play_2p:
         call play_sprite        ; sprite dell'eroe 1, poi nemici, HUD, eroe 2 e terminatore
         xor a
         call hero_save
-        call p2_leader          ; la camera segue l'eroe piu' avanti
-        jp hero_load
+        call p2_leader          ; la camera segue il gruppo (vedi p2_anchor)
+        call hero_load
+        jp p2_anchor
 
 p2_phys:
         ld (p_cur),a
@@ -235,50 +236,6 @@ pl_a0:  ld a,(HS1+HO_DEAD)
         ld a,1
         ret
 pl_0:   xor a
-        ret
-
-; chi e' fuori dallo schermo (o dietro la camera) viene riportato accanto al leader
-p2_follow:
-        ld a,(HS0+HO_DEAD)
-        ld hl,HS1+HO_DEAD
-        or (hl)
-        ret nz                  ; uno dei due e' morto: nessuno da riportare
-        call p2_leader
-        or a
-        ld ix,HS0               ; IX = leader, IY = gregario
-        ld iy,HS1
-        jr z,pf_s
-        ld ix,HS1
-        ld iy,HS0
-pf_s:   ld l,(iy+HO_X)
-        ld h,(iy+HO_X+1)
-        ld de,(p_cam)
-        or a
-        sbc hl,de
-        ld a,h
-        or a
-        jr nz,pf_tp             ; fuori (negativo o oltre 255)
-        ld a,l
-        cp 241
-        ret c
-pf_tp:  ld a,(ix+HO_X)
-        ld (iy+HO_X),a
-        ld a,(ix+HO_X+1)
-        ld (iy+HO_X+1),a
-        ld a,(ix+HO_Y)
-        ld (iy+HO_Y),a
-        ld (iy+HO_OY),a
-        ld a,(ix+HO_Y+1)
-        ld (iy+HO_Y+1),a
-        ld (iy+HO_OY+1),a
-        xor a
-        ld (iy+HO_VX),a
-        ld (iy+HO_VX+1),a
-        ld (iy+HO_VY),a
-        ld (iy+HO_VY+1),a
-        ld (iy+2),a             ; frazioni
-        ld (iy+7),a
-        ld (iy+12),a            ; a terra: ricade da solo
         ret
 
 ; eroe morto: rinasce accanto all'altro (se e' vivo), altrimenti al checkpoint (con la camera)
@@ -418,7 +375,7 @@ play_2p_sw:
         call p2_hit
         ld a,1
         call p2_hit
-        call p2_follow
+        call p2_clamp
         ld a,1
         call hero_load
         call hero_calcframe
@@ -430,4 +387,13 @@ play_2p_sw:
         xor a
         call hero_save
         call p2_leader
-        jp hero_load
+        call hero_load
+        jp p2_anchor
+
+; ------------------------------------------------------------------------- camera di gruppo (swcam.asm, segmento 3)
+p2_clamp:
+        ld bc,p2_clamp_i
+        jp sw_tr
+p2_anchor:
+        ld bc,p2_anchor_i
+        jp sw_tr

@@ -49,7 +49,13 @@ for i in range(6):
     FRAMES.append(("bat_r%d" % i, 64 + i, None))                                # id 28-33: pipistrello (medico) a destra
 for i in range(6):
     FRAMES.append(("bat_l%d" % i, 72 + i, None))                                # id 34-39: a sinistra
-FR_HERO1, FR_HERO2, FR_GOB, FR_BAT = 0, 8, 16, 28                               # primi id (usati da swspr/enemy)
+for i in range(6):
+    FRAMES.append(("pol_r%d" % i, 80 + i, None))                                # id 40-45: poliziotto a destra
+for i in range(6):
+    FRAMES.append(("pol_l%d" % i, 88 + i, None))                                # id 46-51: a sinistra
+for who, remap in (("h1", None), ("h2", P2_MAP)):                               # id 52-55: eroe che sale/scende le scale (di schiena)
+    for k, n in (("a", 128), ("b", 132)):
+        FRAMES.append(("%s_climb_%s" % (who, k), n, remap))
 
 
 def load_frames():
@@ -133,6 +139,9 @@ def main():
         segs[-1].append("\n".join(lines))
         used[-1] += size
         where.append(len(segs) - 1)
+    while len(segs) < 4:
+        segs.append([])
+        used.append(0)
     for k, body in enumerate(segs):
         path = os.path.join(OUTD, "swfr%d.inc" % (SEG_FIRST + k))
         text = "; generato da tools/gen_swsprites.py - NON modificare a mano (segmento ROM %d, finestra 8000)\n" % (SEG_FIRST + k)
@@ -140,8 +149,10 @@ def main():
         open(path, "w", encoding="utf-8").write(text)
     tab = ["; generato da tools/gen_swsprites.py - NON modificare a mano: id di frame -> segmento e indirizzo (finestra 8000)",
            "SWF_COUNT equ %d" % len(frames)]
-    for nm, v in (("SWF_HERO1", 0), ("SWF_HERO2", 8), ("SWF_GOB", 16), ("SWF_BAT", 28)):
+    for nm, v in (("SWF_HERO1", 0), ("SWF_HERO2", 8), ("SWF_GOB", 16), ("SWF_BAT", 28), ("SWF_POL", 40),
+                  ("SWF_CLIMB1", 52), ("SWF_CLIMB2", 54)):
         tab.append("%s equ %d" % (nm, v))
+    tab.append("swf_kb: db SWF_GOB,SWF_BAT,SWF_POL          ; primo frame di ogni sprite nemico (soldato, medico, poliziotto)")
     tab.append("swf_adr: dw " + ",".join(f[0] for f in frames))
     tab.append("swf_seg: db " + ",".join(str(SEG_FIRST + w) for w in where))
     open(os.path.join(OUTD, "swtab.inc"), "w", encoding="utf-8").write("\n".join(tab) + "\n")

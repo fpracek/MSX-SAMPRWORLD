@@ -226,6 +226,37 @@ rco_ok: scf
 rco_bad: or a
         ret
 
+; B = colonna: se l'eroe puo' stare su una scala (riga d'appoggio raggiungibile nella cella di una scala), puo' salire
+; fino in cima: la cima della scala diventa un appoggio raggiungibile (poi vale il solito salto verso le colonne vicine)
+rc_lad:
+        ld hl,RC_LOW
+        ld e,b
+        ld d,0
+        add hl,de
+        ld a,(hl)
+        cp 0xFF
+        ret z
+        ld c,a
+        call rc_tile
+        ld e,0x20               ; classe 5 (scalabile)
+        call rc_m
+        ret nc                  ; non si e' su una scala
+        ld a,c
+        ld (rc_T),a             ; riga di partenza
+rl_up:  ld a,c
+        or a
+        jr z,rl_t
+        dec c
+        call rc_tile
+        ld e,0x20
+        call rc_m
+        jr c,rl_up
+        inc c
+rl_t:   ld a,(rc_T)
+        cp c
+        ret z                   ; nessuna salita
+        jp rc_upd               ; appoggio in cima (B = colonna, C = riga)
+
 ; riempie rc_cnt e rc_exit
 rc_scan:
         ld hl,0
@@ -263,12 +294,14 @@ rcs_it: xor a
         ld (rc_chg),a
         ld b,0
 rcs_c:  call rc_col
+        call rc_lad
         inc b
         ld a,b
         cp MAPW
         jr c,rcs_c
         ld b,MAPW-1
 rcs_d:  call rc_col
+        call rc_lad
         ld a,b
         or a
         jr z,rcs_e

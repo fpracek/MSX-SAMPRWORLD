@@ -1089,6 +1089,7 @@ tile_names_end:
         include "swengine.asm"
         include "swreach.asm"
         include "swprops.asm"
+        include "swcam.asm"
         include "swtab.inc"
 swh_end:
         ent
@@ -1105,6 +1106,8 @@ swh_end:
         ds 0x2000-(swfr11_end-0x8000),0xFF
         include "swfr12.inc"                    ; segmento 12
         ds 0x2000-(swfr12_end-0x8000),0xFF
-        ds 0x20000-0x1A000,0xFF
+        include "swfr13.inc"                    ; segmento 13
+        ds 0x2000-(swfr13_end-0x8000),0xFF
+        ds 0x20000-0x1C000,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF

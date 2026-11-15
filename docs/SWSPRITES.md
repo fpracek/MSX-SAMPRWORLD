@@ -24,9 +24,9 @@ della VRAM (riga 128 di una pagina) si disegna nell'area di lavoro e si copia co
 interamente dentro lo schermo non si disegnano.
 
 ## Dati
-`tools/gen_swsprites.py` legge `assets/maniero/src/sprite.png` (palette `assets/maniero/palette.json`) e genera 40 frame
-(eroe a destra/sinistra x4 stati, giocatore 2 con abiti rossi, goblin = soldato, pipistrello = medico, 6+6 frame ciascuno) in
-`editor/swfr10..12.inc` (segmenti ROM 10-12, finestra 8000) e la tabella `editor/swtab.inc`. Il motore sta nel segmento 3
+`tools/gen_swsprites.py` legge `assets/maniero/src/sprite.png` (palette `assets/maniero/palette.json`) e genera 56 frame
+(eroe a destra/sinistra x4 stati e di schiena sulle scale, giocatore 2 con abiti rossi, soldato, medico e poliziotto con 6+6 frame ciascuno) in
+`editor/swfr10..13.inc` (segmenti ROM 10-13, finestra 8000) e la tabella `editor/swtab.inc`. Il motore sta nel segmento 3
 (finestra A000, con trampolini in `swspr.asm`); durante il disegno la finestra 8000 mappa il frame e poi torna all'SCC.
 
 ## Costi misurati (openMSX, V9958)

@@ -158,15 +158,29 @@ sw_objs:
 so_e:   ld a,(ix+0)
         or a
         jr z,so_off
-        ld c,SWF_GOB
-        ld d,3                  ; goblin: un frame di animazione ogni 8 fotogrammi
+        ld a,(ix+5)             ; sprite scelto nelle proprieta' (0 = quello del tipo)
+        or a
+        jr nz,so_k
+        ld a,(ix+0)
+so_k:   dec a                   ; 0 soldato, 1 medico, 2 poliziotto
+        ld e,a
+        ld d,3                  ; un frame di animazione ogni 8 fotogrammi (medico: ogni 4)
         cp 1
-        jr z,so_t
-        ld c,SWF_BAT
-        ld d,2                  ; pipistrello: ogni 4
-so_t:   ld a,(p_tick)
+        jr nz,so_s
+        ld d,2
+so_s:   ld a,d
+        ld (sw_t),a
+        ld d,0
+        push hl
+        ld hl,swf_kb
+        add hl,de
+        ld c,(hl)
+        pop hl
+        ld a,(sw_t)
+        ld e,a
+        ld a,(p_tick)
 so_sh:  srl a
-        dec d
+        dec e
         jr nz,so_sh
         and 7
         cp 6
@@ -207,9 +221,18 @@ so_n:   ld de,8
         ld a,(p_dead)           ; 9: giocatore 1 (blocco attivo)
         or a
         jr nz,so_h1
-        ld a,(p_frame)
+        ld a,(p_climb)
+        or a
+        jr z,so_n1
+        ld a,(p_y)              ; sulla scala: di schiena, il frame cambia ogni 4 px
+        rrca
+        rrca
+        and 1
+        add a,SWF_CLIMB1
+        jr so_f1
+so_n1:  ld a,(p_frame)
         add a,SWF_HERO1
-        ld (hl),a
+so_f1:  ld (hl),a
         inc hl
         ld a,(p_x)
         ld (hl),a
@@ -224,15 +247,25 @@ so_h1:  ld (hl),0xFF
         ret
 so_2p:  ld iy,HS1               ; 8: giocatore 2
         ld c,SWF_HERO2
+        ld b,SWF_CLIMB2
         call so_hero
         ld iy,HS0               ; 9: giocatore 1
         ld c,SWF_HERO1
+        ld b,SWF_CLIMB1
 so_hero:
         ld a,(iy+HO_DEAD)
         or a
         jr nz,so_hx
+        ld a,(iy+20)            ; p_climb salvato
+        or a
         ld a,(iy+15)            ; p_frame salvato
-        add a,c
+        jr z,so_nc
+        ld a,(iy+HO_Y)
+        rrca
+        rrca
+        and 1
+        ld c,b
+so_nc:  add a,c
         ld (hl),a
         inc hl
         ld a,(iy+HO_X)

@@ -41,7 +41,7 @@ ep_up:  ld a,(ep_sel)
         dec a
         jr ep_s
 ep_dn:  ld a,(ep_sel)
-        cp 4
+        cp 5
         jr nc,epl
         inc a
 ep_s:   ld c,a
@@ -111,7 +111,7 @@ ep_draw:
         call print_str
         ld hl,40
         ld (GRPACX),hl
-        ld hl,138
+        ld hl,146
         ld (GRPACY),hl
         ld hl,s_epfoot
         call print_str
@@ -120,7 +120,7 @@ epd_a:  ld (ep_i),a
         call ep_row
         ld a,(ep_i)
         inc a
-        cp 5
+        cp 6
         jr nz,epd_a
         ret
 
@@ -169,13 +169,16 @@ epd_m:  call print_char
         ld a,(hl)               ; valore del campo
         ld c,a
         ld a,(ep_i)
+        ld hl,ep_ai             ; riga 0: nome del comportamento
         or a
+        jr z,epd_t
+        cp 5
         jr nz,epd_n
-        ld a,c                  ; IA: nome
+        ld hl,ep_sp             ; riga 5: nome dello sprite
+epd_t:  ld a,c
         add a,a
         ld e,a
         ld d,0
-        ld hl,ep_ai
         add hl,de
         ld a,(hl)
         inc hl
@@ -185,10 +188,11 @@ epd_m:  call print_char
 epd_n:  ld a,c
         jp print_num2
 
-p_epbox: db 0,0,0,0, 24,0,50,0, 208,0,100,0, 0x11,0,0xC0
-ep_min:  db 0,1,0,1,1
-ep_max:  db 3,3,15,3,15
-ep_lab:  dw s_eplai,s_eplsp,s_eplrg,s_eplhp,s_epldt
+p_epbox: db 0,0,0,0, 24,0,50,0, 208,0,108,0, 0x11,0,0xC0
+ep_min:  db 0,1,0,1,1,0
+ep_max:  db 3,3,15,3,15,3
+ep_lab:  dw s_eplai,s_eplsp,s_eplrg,s_eplhp,s_epldt,s_eplsk
+ep_sp:   dw s_sp0,s_sp1,s_sp2,s_sp3
 ep_ai:   dw s_ai0,s_ai1,s_ai2,s_ai3
 s_ephead: db "ENEMY PROPERTIES",0
 s_eplai:  db "BEHAVIOR",0
@@ -196,6 +200,11 @@ s_eplsp:  db "SPEED",0
 s_eplrg:  db "RANGE",0
 s_eplhp:  db "HEALTH",0
 s_epldt:  db "DETECT",0
+s_eplsk:  db "SPRITE",0
+s_sp0:    db "DEFAULT",0
+s_sp1:    db "SOLDIER",0
+s_sp2:    db "DOCTOR ",0
+s_sp3:    db "POLICE ",0
 s_ai0:    db "PATROL ",0
 s_ai1:    db "SLEEPER",0
 s_ai2:    db "CHASER ",0
