@@ -241,17 +241,99 @@ def stone_ledge():
 
 
 def rune_block():
-    t = Tile(GLD)
-    t.frame(0, 0, 15, 15, DBR)
-    t.frame(1, 1, 14, 14, WHT)
-    t.rect(2, 2, 13, 13, GLD)
-    t.line(2, 13, 13, 13, BRN)
-    t.line(13, 2, 13, 13, BRN)
-    for (x, y) in ((6, 4), (7, 4), (8, 4), (9, 5), (9, 6), (8, 7), (7, 8), (7, 9), (7, 11)):
-        t.px(x, y, PUR)
-        t.px(x + 1, y + 1, BRN)
-    t.px(7, 11, PUR)
-    t.px(7, 12, PUR)
+    t = Tile(DST)
+    t.frame(0, 0, 15, 15, BLK)
+    t.frame(1, 1, 14, 14, LST)
+    t.rect(2, 2, 13, 13, DST)
+    t.line(2, 13, 13, 13, BLK)
+    t.line(13, 2, 13, 13, BLK)
+    t.rect(2, 2, 2, 12, STN)
+    # runa luminosa (stile "fehu"): asta + due rami
+    t.rect(7, 3, 8, 12, CYN)
+    t.line(8, 4, 12, 2, CYN)
+    t.line(8, 7, 12, 5, CYN)
+    t.px(7, 3, WHT)
+    t.px(7, 6, WHT)
+    t.px(4, 4, PUR)
+    t.px(11, 11, PUR)
+    t.px(4, 11, PUR)
+    return t
+
+
+def breakable():
+    t = Tile(STN)
+    t.frame(0, 0, 15, 15, BLK)
+    t.rect(1, 1, 14, 14, STN)
+    t.rect(1, 1, 14, 1, LST)
+    t.rect(1, 1, 1, 14, LST)
+    t.rect(1, 14, 14, 14, DST)
+    t.rect(14, 1, 14, 14, DST)
+    for (x, y) in ((8, 1), (7, 2), (8, 3), (6, 4), (7, 5), (5, 6), (6, 7), (4, 8), (5, 9), (3, 10),
+                   (4, 11), (3, 12), (2, 13)):
+        t.px(x, y, BLK)
+    for (x, y) in ((8, 6), (9, 6), (10, 7), (11, 8), (10, 9), (11, 10), (12, 11)):
+        t.px(x, y, BLK)
+    t.px(12, 4, DST)
+    t.px(3, 3, DST)
+    return t
+
+
+def spring():
+    t = Tile(SKY)
+    t.rect(6, 9, 9, 15, SND)
+    t.rect(6, 9, 6, 15, WHT)
+    t.rect(9, 9, 9, 15, BRN)
+    t.rect(4, 14, 11, 15, DKG)
+    t.rect(3, 5, 12, 8, PUR)
+    t.rect(5, 3, 10, 4, PUR)
+    t.rect(7, 2, 8, 2, PUR)
+    t.rect(2, 7, 13, 8, PUR)
+    t.rect(2, 8, 13, 8, BLK)
+    t.rect(5, 4, 6, 5, GLD)
+    t.rect(9, 6, 10, 7, GLD)
+    t.px(4, 7, GLD)
+    t.px(12, 7, CYN)
+    t.px(8, 3, CYN)
+    return t
+
+
+def checkpoint():
+    t = Tile(SKY)
+    t.rect(1, 0, 14, 1, BRN)
+    t.rect(1, 0, 14, 0, SND)
+    t.disc(1, 1, 1, GLD)
+    t.disc(14, 1, 1, GLD)
+    t.rect(3, 2, 12, 10, PUR)
+    t.line(3, 11, 7, 14, PUR)
+    t.line(12, 11, 8, 14, PUR)
+    t.rect(4, 11, 11, 11, PUR)
+    t.rect(5, 12, 10, 12, PUR)
+    t.rect(6, 13, 9, 13, PUR)
+    t.rect(7, 14, 8, 14, PUR)
+    t.rect(3, 2, 3, 10, DST)
+    t.rect(12, 2, 12, 10, DST)
+    t.disc(7.5, 6, 2, GLD)
+    t.px(7, 6, PUR)
+    t.px(8, 6, PUR)
+    t.rect(7, 3, 8, 3, GLD)
+    return t
+
+
+def mushroom_deco():
+    t = Tile(SKY)
+    t.rect(7, 8, 8, 14, SND)
+    t.rect(7, 8, 7, 14, WHT)
+    t.rect(4, 4, 11, 7, CYN)
+    t.rect(5, 3, 10, 3, CYN)
+    t.rect(6, 2, 9, 2, CYN)
+    t.rect(3, 6, 12, 7, CYN)
+    t.rect(3, 7, 12, 7, DST)
+    t.rect(5, 4, 6, 5, WHT)
+    t.px(9, 5, WHT)
+    t.px(11, 6, WHT)
+    t.rect(4, 15, 11, 15, DKG)
+    t.px(2, 14, GLD)
+    t.px(13, 13, GLD)
     return t
 
 
@@ -261,13 +343,6 @@ def rune_used():
     t.frame(1, 1, 14, 14, DST)
     t.rect(2, 2, 13, 13, DST)
     t.speckle(31, [STN, BLK], 10, (2, 2, 13, 13))
-    return t
-
-
-def breakable():
-    t = bricks(RED, SND, DBR, DBR, 41)
-    t.rect(0, 0, 15, 0, SND)
-    t.frame(0, 0, 15, 15, DBR)
     return t
 
 
@@ -282,21 +357,6 @@ def crumble():
     t.line(9, 5, 12, 9, DBR)
     t.line(12, 9, 11, 14, DBR)
     t.speckle(5, [BRN], 8)
-    return t
-
-
-def spring():
-    t = Tile(SKY)
-    t.rect(6, 9, 9, 15, SND)
-    t.rect(5, 12, 10, 15, WHT)
-    t.rect(4, 3, 11, 8, RED)
-    t.rect(2, 5, 13, 8, RED)
-    t.rect(5, 2, 10, 2, RED)
-    t.rect(6, 3, 8, 5, WHT)
-    t.px(3, 6, WHT)
-    t.px(12, 6, WHT)
-    t.rect(2, 9, 13, 9, DBR)
-    t.rect(1, 8, 1, 8, SKY)
     return t
 
 
@@ -488,23 +548,6 @@ def chest():
     return t
 
 
-def checkpoint():
-    t = Tile(SKY)
-    t.rect(2, 0, 3, 15, SND)
-    t.rect(2, 0, 2, 15, WHT)
-    t.rect(3, 0, 3, 15, BRN)
-    t.rect(4, 1, 13, 7, GRN)
-    t.rect(4, 1, 13, 1, LGR)
-    t.rect(4, 7, 13, 7, DKG)
-    t.px(14, 4, GRN)
-    t.px(13, 5, GRN)
-    t.px(14, 3, SKY)
-    t.rect(7, 3, 10, 5, WHT)
-    t.px(8, 4, GLD)
-    t.disc(2.5, 0.5, 1, GLD)
-    return t
-
-
 def portal(top):
     t = Tile(SKY)
     if top:
@@ -678,23 +721,6 @@ def crystal_deco():
     return t
 
 
-def mushroom_deco():
-    t = Tile(SKY)
-    t.rect(6, 9, 9, 14, SND)
-    t.rect(6, 9, 6, 14, WHT)
-    t.rect(9, 9, 9, 14, BRN)
-    t.rect(3, 5, 12, 8, RED)
-    t.rect(4, 3, 11, 4, RED)
-    t.rect(5, 2, 10, 2, RED)
-    t.px(3, 8, BRN)
-    t.px(12, 8, BRN)
-    t.rect(5, 4, 6, 5, WHT)
-    t.rect(9, 6, 10, 7, WHT)
-    t.rect(7, 3, 7, 3, WHT)
-    t.rect(4, 15, 11, 15, DKG)
-    return t
-
-
 def sign():
     t = Tile(SKY)
     t.rect(7, 9, 8, 15, BRN)
@@ -764,9 +790,9 @@ CATALOG = [
     ("LEDGE", "Cornice di pietra", "piattaforme", ONEWAY, stone_ledge, "Si salta da sotto"),
     ("RUNE", "Blocco runico", "speciali", HIT, rune_block, "Colpito da sotto rilascia un oggetto"),
     ("RUNEU", "Blocco runico usato", "speciali", SOLID, rune_used, "Dopo l'uso"),
-    ("BREAK", "Mattone rosso", "speciali", HIT, breakable, "Si rompe da sotto"),
+    ("BREAK", "Pietra fessurata", "speciali", HIT, breakable, "Si rompe da sotto"),
     ("CRUMB", "Blocco friabile", "speciali", HIT, crumble, "Crolla dopo il passaggio"),
-    ("SPRING", "Fungo molla", "speciali", TRIGGER, spring, "Rimbalzo alto"),
+    ("SPRING", "Fungo molla viola", "speciali", TRIGGER, spring, "Rimbalzo alto"),
     ("SPIKES", "Spuntoni", "pericoli", HAZARD, spikes, "Uccidono al contatto"),
     ("LAVAT", "Lava (superficie)", "pericoli", HAZARD, lava_top, "Uccide al contatto"),
     ("LAVA", "Lava", "pericoli", HAZARD, lava, "Riempimento"),
@@ -845,6 +871,14 @@ def main():
         f.write("\n; classe di collisione di ogni tile (1 byte per tile)\ntile_class:\n")
         for i in range(0, n, 16):
             f.write("        db " + ",".join(str(c[3]) for c in CATALOG[i:i + 16]) + "\n")
+
+    # --- nomi per l'editor (stride 24 byte, ASCII, zero-terminati) ---
+    with open(os.path.join(OUT, "tilenames.inc"), "w") as f:
+        f.write("; generato da tools/gen_tiles.py - nomi dei tile, 24 byte ciascuno\ntile_names:\n")
+        for c in CATALOG:
+            nm = c[1].encode("ascii")
+            assert len(nm) < 24
+            f.write('        db "%s"%s\n' % (c[1], ",0" * (24 - len(nm))))
 
     # --- catalogo ---
     cat = [{"id": i, "key": c[0], "nome": c[1], "categoria": c[2], "classe": CLASS_NAMES[c[3]],

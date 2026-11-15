@@ -122,7 +122,7 @@
  {
   "id": 15,
   "key": "BREAK",
-  "nome": "Mattone rosso",
+  "nome": "Pietra fessurata",
   "categoria": "speciali",
   "classe": "colpibile",
   "descrizione": "Si rompe da sotto"
@@ -138,7 +138,7 @@
  {
   "id": 17,
   "key": "SPRING",
-  "nome": "Fungo molla",
+  "nome": "Fungo molla viola",
   "categoria": "speciali",
   "classe": "marcatore",
   "descrizione": "Rimbalzo alto"
