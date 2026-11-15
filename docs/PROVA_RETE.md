@@ -14,8 +14,10 @@ Alla prima partenza crea la cartella `store/` con 3 livelli di esempio e l'utent
 
 ## 2. Configurare openMSX
 - **Extensions**: aggiungere *openMSXnet UnapiNet* (il ponte di rete).
-- **Cartridge Slot A**: `editor.rom` con mapper-type **Yamanooto**.
-- **Cartridge Slot B**: `unapinet.rom` (il driver UNAPI per il ponte; mapper "auto detect").
+- **Cartridge Slot A**: `unapinet.rom` (il driver UNAPI per il ponte; mapper "auto detect"). **Deve stare nello slot A**:
+  il BIOS inizializza le cartucce in ordine e il gioco, una volta partito, non restituisce il controllo, quindi il driver
+  deve essere inizializzato prima (altrimenti il gioco dice "No UNAPI card").
+- **Cartridge Slot B**: `editor.rom` con mapper-type **Yamanooto**.
 - Reset della macchina.
 
 ## 3. Impostazioni di rete nel gioco
