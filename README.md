@@ -12,7 +12,7 @@ All on-screen text is in English.
 - `editor/editor_test.rom` - the same without the menu, used by the automated tests in `editor/tests` (openMSX Tcl scripts).
 
 Tested machines in openMSX: `Panasonic_FS-A1ST` (MSX turbo R, V9958 = smooth hardware scroll), `C-BIOS_MSX2+` (V9958) and `Philips_NMS_8250` (plain MSX2, V9938 = step-scroll fallback). Run in openMSX with the Yamanooto mapper: `openmsx -machine <MSX2 machine> -ext unapinet -carta net/unapi/unapinet.rom`
-and load `editor.rom` in slot B as `-romtype Yamanooto` (the UNAPI bridge driver is only needed for the network features).
+and load `editor.rom` in slot B as `-romtype Yamanooto` (in the openMSX GUI: Cartridge Slot -> mapper-type -> **Yamanooto**; "auto detect" picks *Konami with SCC*, which has no flash, so saving does not work and the menu shows "NO FLASH") (the UNAPI bridge driver is only needed for the network features).
 
 ## What is in the game
 - **Title menu**: Play the campaign - Create levels - Server levels - Network settings (F1 reopens it from the editor).
