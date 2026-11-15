@@ -145,7 +145,7 @@ start:  di
         ; variabili
         ld hl,V
         ld de,V+1
-        ld bc,0x9F
+        ld bc,0xFF
         ld (hl),0
         ldir
         ld a,T_GRASS

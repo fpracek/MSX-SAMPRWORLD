@@ -11,7 +11,7 @@ All on-screen text is in English.
 - `editor/editor.rom` - the game (title menu on start-up),
 - `editor/editor_test.rom` - the same without the menu, used by the automated tests in `editor/tests` (openMSX Tcl scripts).
 
-Run in openMSX with the Yamanooto mapper: `openmsx -machine <MSX2 machine> -ext unapinet -carta net/unapi/unapinet.rom`
+Tested machines in openMSX: `Panasonic_FS-A1ST` (MSX turbo R, V9958 = smooth hardware scroll), `C-BIOS_MSX2+` (V9958) and `Philips_NMS_8250` (plain MSX2, V9938 = step-scroll fallback). Run in openMSX with the Yamanooto mapper: `openmsx -machine <MSX2 machine> -ext unapinet -carta net/unapi/unapinet.rom`
 and load `editor.rom` in slot B as `-romtype Yamanooto` (the UNAPI bridge driver is only needed for the network features).
 
 ## What is in the game
