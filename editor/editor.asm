@@ -82,6 +82,7 @@ v_sfound equ V+0x92
 v_msgnum equ V+0x93             ; 2 byte: numero da accodare al messaggio
 v_msgnf equ V+0x95
 v_prev3 equ V+0x9E
+v_flash equ FBUF+0xB7             ; 1 = flash Yamanooto rilevata
 v_unsaved equ FBUF+0xB6          ; 1 = il disegno ha modifiche non ancora salvate in flash
 v_prev6 equ V+0x9C
 v_e6    equ V+0x9D
@@ -107,6 +108,13 @@ start:  di
         ld de,NETRT
         ld bc,netrt_end-netrt_rom
         ldir
+        ld a,DRAFTSEG           ; rileva la flash (e se manca non si tenta di salvare)
+        ld (BANKW),a
+        call ram_probe
+        ld a,0
+        jr c,st_nf
+        inc a
+st_nf:  ld (v_flash),a
         ld a,5
         call CHGMOD
         di
@@ -157,6 +165,12 @@ start:  di
         ld (v_cury),a
         call cp_load            ; progressi della campagna dalla flash
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
+        ld a,(v_flash)
+        or a
+        jr nz,st_fl
+        ld hl,m_nofl2           ; senza flash il salvataggio non funziona: lo si dice subito
+        ld (v_msg),hl
+st_fl:
         IFNDEF TESTBUILD
         call do_menu
         ENDIF

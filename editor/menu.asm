@@ -163,8 +163,12 @@ mi_m:   call print_char
         ld (GRPACX),hl
         ld hl,200
         ld (GRPACY),hl
+        ld a,(v_flash)
+        or a
         ld hl,s_mfoot
-        jp print_str
+        jr nz,mf_p
+        ld hl,s_mnoflash
+mf_p:   jp print_str
 
 p_sky:  db 0,0,0,0, 0,0,0,0, 0,1, 112,0, 0x00,0,0xC0      ; HMMV colore 0 sulle prime 112 righe
 
@@ -191,3 +195,4 @@ s_mi1:    db "CREATE LEVELS",0
 s_mi2:    db "SERVER LEVELS",0
 s_mi3:    db "NETWORK SETTINGS",0
 s_mfoot:  db "UP/DOWN select  ENTER confirm",0
+s_mnoflash: db "NO FLASH - use Yamanooto ROM",0

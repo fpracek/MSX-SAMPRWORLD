@@ -226,6 +226,9 @@ s_cph2:    db "ESC back  [X] = cleared",0
 
 ; il record impostazioni piu' recente + i progressi (SETREC+0x52/53) come nuovo record
 cp_save:
+        ld a,(v_flash)
+        or a
+        ret z
         call load_settings
         ret c                   ; nessun record impostazioni: niente da aggiornare
         ld a,(cp_done)

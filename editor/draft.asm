@@ -373,6 +373,9 @@ erase_draft:                    ; CF=1 se timeout
 
 ; ---- azioni dei tasti ----
 do_save:
+        ld a,(v_flash)
+        or a
+        jr z,dsv_e              ; senza flash non si tenta nemmeno la scrittura
         call scan_draft
         call build_record
         call write_record
@@ -537,6 +540,7 @@ m_loaded: db "  Draft loaded",0
 m_none:   db "  No draft",0
 m_erased: db "  Draft erased",0
 m_err:    db "  No flash found",0
+m_nofl2:  db "  NO FLASH: not saved",0
 m_bad:    db "  Draft corrupt",0
 m_incomp: db "  Draft incompatible",0
 ; intestazione livello v1 (25 byte): LV, ver, w, h, start x/y, tema, titolo[16], n_ent
@@ -575,6 +579,34 @@ rpw:    ld a,(hl)
 rpok:   xor a
         ld (ENAR),a
         pop de
+        ret
+; rileva la flash AMD/Spansion (comando autoselect, codice produttore 01h). Gira in RAM e, se il mapper non e'
+; quello della Yamanooto, rimette i banchi 1 (Konami5: 7000h, Konami4: 6000h) per non perdere il codice in ROM.
+; Uscita: CF=0 flash presente, CF=1 assente
+ram_probe:
+        di
+        ld a,0x10
+        ld (ENAR),a
+        ld a,0xAA
+        ld (0x8AAA),a
+        ld a,0x55
+        ld (0x8555),a
+        ld a,0x90
+        ld (0x8AAA),a
+        ld a,(0x8000)
+        ld b,a
+        ld a,0xF0
+        ld (0x8000),a           ; torna in lettura
+        xor a
+        ld (ENAR),a
+        ld a,1
+        ld (0x7000),a           ; ripristino dei banchi di codice (innocuo sulla Yamanooto)
+        ld (0x6000),a
+        ld a,b
+        cp 0x01
+        scf
+        ret nz
+        ccf
         ret
 ram_erase:                      ; erase del settore mappato in finestra 8000 -> CF=1 se timeout
         di

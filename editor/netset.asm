@@ -687,7 +687,12 @@ sp_e:   ld a,(hl)
 
 ; aggiunge SETREC come nuovo record (seq+1, somma di controllo) nel settore SET. CF=1 se errore
 ns_append:
-        call set_scan           ; v_fs/v_fr = prossimo slot, v_sseq = ultimo numero
+        ld a,(v_flash)
+        or a
+        jr nz,nap_ok
+        scf
+        ret
+nap_ok: call set_scan           ; v_fs/v_fr = prossimo slot, v_sseq = ultimo numero
         ld a,(v_sseq)
         inc a
         ld (SETREC+2),a
