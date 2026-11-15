@@ -68,6 +68,18 @@ DRAFTSEG equ 24                 ; primo segmento (8K) del settore bozza = 64K al
 SETSEG  equ 16                  ; settore impostazioni di rete (riservato)
 BANKW   equ 0x9000              ; registro banco Konami5 della finestra 8000-9FFF
 ENAR    equ 0x7FFF
+EXTBIO  equ 0xFFCA
+ARG     equ 0xF847
+TXBUF   equ 0xE000
+RXBUF   equ 0xE100
+SETREC  equ 0xE200              ; copia in RAM del record impostazioni (128 B)
+NETRT   equ 0xE400              ; modulo di rete copiato in RAM
+v_sfound equ V+0x92
+v_msgnum equ V+0x93             ; 2 byte: numero da accodare al messaggio
+v_msgnf equ V+0x95
+v_valid equ V+0x96              ; 1 = il creatore ha superato questo livello (vale solo finche' non lo modifica)
+v_conf  equ V+0x97              ; conferma di SELECT: frame residui
+DEVBUILD equ 1                  ; 1 = tasto V valida senza giocare (SOLO SVILUPPO: finche' non c'e' la modalita' prova)
 
         org 0x4000
         db "AB"
@@ -81,6 +93,10 @@ start:  di
         ld hl,flashrt_rom
         ld de,FLRT
         ld bc,flashrt_end-flashrt_rom
+        ldir
+        ld hl,netrt_rom
+        ld de,NETRT
+        ld bc,netrt_end-netrt_rom
         ldir
         ld a,5
         call CHGMOD
@@ -120,7 +136,7 @@ start:  di
         ; variabili
         ld hl,V
         ld de,V+1
-        ld bc,0x5F
+        ld bc,0x9F
         ld (hl),0
         ldir
         ld a,T_GRASS
@@ -136,7 +152,12 @@ start:  di
 
 ; ------------------------------------------------------------------------- ciclo principale
 main:   call vwait
-        ld hl,v_frame
+        ld a,(v_conf)
+        or a
+        jr z,mcf
+        dec a
+        ld (v_conf),a
+mcf:    ld hl,v_frame
         inc (hl)
         ld a,(hl)
         and 0x0F
@@ -266,6 +287,14 @@ nnext:  ld a,(v_e4)
 nopick: ld a,(v_e5)
         bit 0,a                 ; S = salva la bozza in flash
         call nz,do_save
+        ld a,(v_e5)
+        bit 2,a                 ; U = pubblica sul server
+        call nz,do_publish
+        IF DEVBUILD
+        ld a,(v_e5)
+        bit 3,a                 ; V = valida (DEV)
+        call nz,do_devvalid
+        ENDIF
         ld a,(v_e4)
         bit 1,a                 ; L = ricarica la bozza
         call nz,do_load
@@ -391,6 +420,8 @@ place:  ld c,a
         cp c
         ret z
         ld (hl),c
+        xor a
+        ld (v_valid),a          ; modificato: va rigiocato
         ld a,(v_curx)
         ld hl,v_scrx
         sub (hl)
@@ -660,6 +691,10 @@ dst1:   ld e,a
         ld de,tile_names
         add hl,de
         call print_str
+        ld a,(v_valid)
+        or a
+        ld hl,s_val
+        call nz,print_str
         ld hl,2
         ld (GRPACX),hl
         ld hl,203
@@ -678,7 +713,14 @@ dst1:   ld e,a
         jr nz,dsm
         ld hl,s_help
 dsm:    call print_str
-        ld hl,0
+        ld a,(v_msgnf)
+        or a
+        jr z,dsn
+        xor a
+        ld (v_msgnf),a
+        ld hl,(v_msgnum)
+        call printdec16
+dsn:    ld hl,0
         ld (v_msg),hl
         ret
 
@@ -829,6 +871,9 @@ utn:    pop bc
         ret
 
         include "draft.asm"
+        include "publish.asm"
+netrt_rom:
+        include "netpub.asm"
 
 ; ------------------------------------------------------------------------- dati
 p_clear: db 0,0,0,0, 0,0,0,0, 0,1, 212,0, 0x11,0,0xC0
@@ -837,6 +882,7 @@ p_pick:  db 0,0,0,0, 0,0,0,0, 0,1, 64,0, 0x11,0,0xC0
 s_x:     db "X:",0
 s_y:     db " Y:",0
 s_help:  db "  ,.=tile TAB=elenco",0
+s_val:   db " [OK]",0
 ; cursore 16x16: cornice spessa 2 pixel (UL, LL, UR, LR)
 spat:    db 0xFF,0xFF,0xC0,0xC0,0xC0,0xC0,0xC0,0xC0
          db 0xC0,0xC0,0xC0,0xC0,0xC0,0xC0,0xFF,0xFF
@@ -848,4 +894,6 @@ tiles:   incbin "../assets/tiles.bin"
         include "../assets/tilenames.inc"
         ds 0x8000-$,0xFF
 ; segmenti 2..31 vuoti (FF). 16..23 = settore impostazioni, 24..31 = settore bozza (64K allineati)
-        ds 0x40000-0x4000,0xFF
+        ds 0x20000-0x4000,0xFF
+        incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
+        ds 0x40000-0x20000-128,0xFF

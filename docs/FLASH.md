@@ -9,7 +9,7 @@ indipendentemente (l'erase e' per settore):
 | Settore | Contenuto | Scrittura | Cancellazione |
 |---|---|---|---|
 | SET (64K) | impostazioni di rete e credenziali | append di record da 128 B | solo quando e' pieno (512 versioni) |
-| DRAFT (64K) | bozza del livello in creazione | append di record (blob RLE) | **dopo la pubblicazione** o quando e' pieno |
+| DRAFT (64K) | bozza del livello in creazione, **anche per giorni**, finche' non e' superata e pubblicata | append di record (blob RLE) | **dopo la pubblicazione**, con SELECT confermato, o quando e' pieno |
 
 ## Record impostazioni (128 byte, l'ultimo valido vince)
 ```
@@ -34,6 +34,7 @@ indipendentemente (l'erase e' per settore):
 02 seq
 03 len[2]         lunghezza del blob livello (LE)
 05 blob[len]      livello formato v1 (vedi docs/LEVEL.md), con il suo CRC16
+.. val[1]         1 = il creatore ha superato il livello (docs/VALIDATION.md); non viene inviato al server
 .. checksum[1]    somma dei byte del record = 0
 ```
 Il record successivo parte all'indirizzo allineato a 16 byte. Si legge l'ultimo valido; dopo la pubblicazione

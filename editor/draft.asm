@@ -101,7 +101,7 @@ sd_rec: push ix
         push ix
         pop hl
         add hl,de
-        ld de,6
+        ld de,7
         add hl,de               ; HL = fine del record
         push hl
         ld de,0xA001
@@ -257,6 +257,9 @@ rl_done:
         ld a,h
         ld (REC+4),a
         pop hl
+        ld a,(v_valid)
+        ld (hl),a               ; byte 'superato' dopo il blob
+        inc hl
         push hl
         ld de,REC
         or a
@@ -364,6 +367,16 @@ dsv:    ld (v_msg),hl
         ld (v_dirty),a
         ret
 
+        IF DEVBUILD
+do_devvalid:                    ; SOLO SVILUPPO: segna il livello come superato e lo salva
+        ld a,1
+        ld (v_valid),a
+        call do_save
+        ld hl,m_devval
+        ld (v_msg),hl
+        ret
+        ENDIF
+
 do_load:
         call load_draft
         ld a,1
@@ -372,6 +385,19 @@ do_load:
         ret
 
 do_new:
+        ld a,(v_conf)
+        or a
+        jr nz,dn_go
+        ld a,180                ; ~3 s per confermare: la bozza puo' valere giorni di lavoro
+        ld (v_conf),a
+        ld hl,m_confirm
+        ld (v_msg),hl
+        ld a,1
+        ld (v_dirty),a
+        ret
+dn_go:  xor a
+        ld (v_conf),a
+        ld (v_valid),a
         call init_map
         call erase_draft
         ld hl,m_erased
@@ -385,6 +411,8 @@ dnw:    ld (v_msg),hl
 
 ; carica l'ultima bozza valida nella mappa; imposta v_msg
 load_draft:
+        xor a
+        ld (v_valid),a
         call scan_draft
         ld hl,m_none
         ld (v_msg),hl
@@ -396,7 +424,7 @@ load_draft:
         ld ix,(v_lpos)
         ld a,(ix+5)
         cp 'L'
-        jr nz,ld_bad
+        jp nz,ld_bad
         ld a,(ix+6)
         cp 'V'
         jr nz,ld_bad
@@ -431,6 +459,10 @@ load_draft:
         ld a,(hl)
         cp d
         jr nz,ld_bad
+        inc hl
+        ld a,(hl)               ; byte 'superato'
+        and 1
+        ld (v_valid),a
         push ix                 ; decodifica RLE
         pop hl
         ld bc,5+25
@@ -476,6 +508,8 @@ ld_inc: ld hl,m_incomp
         ret
 
 m_saved:  db "  Bozza salvata",0
+m_confirm: db "  SELECT = conferma",0
+m_devval: db "  Validato (DEV)",0
 m_loaded: db "  Bozza caricata",0
 m_none:   db "  Nessuna bozza",0
 m_erased: db "  Bozza cancellata",0
