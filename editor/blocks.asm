@@ -1,7 +1,7 @@
 ; blocks.asm - blocchi interattivi della modalita' prova
 ;   Pietra fessurata (BREAK): si rompe colpendola da sotto.
 ;   Blocco runico (RUNE) e forziere (CHEST): colpiti da sotto diventano "usati" e fanno apparire una moneta / una gemma
-;   sopra di loro (se la cella e' libera).
+;   sopra di loro (ora: il premio viene accreditato subito).
 ;   Blocco friabile (CRUMB): ~0,5 s dopo che l'eroe ci sta sopra sparisce.
 ;   Portone (DOORT+DOORB): si apre toccandolo con una chiave; la chiave si consuma.
 ;   Chiave: si raccoglie come le monete; gemma = 5 monete.
@@ -56,20 +56,20 @@ hh_it:  push bc
         call sfx_a
         ld a,T_RUNEU
         call settile
-        pop bc
-        ld a,(bo_row)
-        or a
-        ret z
-        dec a
-        ld (bo_row),a
-        push bc
-        call tile_ptr
-        ld a,(hl)
-        pop bc
-        or a
-        ret nz                  ; sopra c'e' gia' qualcosa
+        pop bc                  ; C = T_COIN / T_GEM: il premio va subito nel conteggio (non resta sul blocco,
+        ld b,1                  ; dove spesso non si potrebbe raggiungere)
         ld a,c
-        jp settile
+        cp T_GEM
+        jr nz,hh_a
+        ld b,5
+hh_a:   ld a,(p_coins)
+        add a,b
+        jr nc,hh_s
+        ld a,255
+hh_s:   ld (p_coins),a
+        ld a,SFX_COIN
+        call sfx_a
+        jp play_status
 
 ; E = tile che blocca di lato. CF=1 se resta bloccato; con una chiave il portone si apre (CF=0)
 try_door:

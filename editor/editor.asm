@@ -332,6 +332,9 @@ nomenu:
         ld a,(v_e3)
         bit 1,a                 ; D = livelli sul server
         call nz,do_browse
+        ld a,(v_e3)
+        bit 0,a                 ; C = controlla le monete raggiungibili
+        call nz,do_check
         ld a,(v_e5)
         bit 0,a                 ; S = salva la bozza in flash
         call nz,do_save
@@ -343,6 +346,8 @@ nomenu:
         jr z,noplay
         call autosave
         call do_play
+        xor a
+        call rc_run             ; dopo la prova: avviso se ci sono monete/uscita irraggiungibili
 noplay:
         IF DEVBUILD
         ld a,(v_e5)
@@ -951,6 +956,7 @@ utn:    pop bc
         include "ring.asm"
         include "enemy.asm"
         include "blocks.asm"
+        include "reach.asm"
         include "audio.asm"
         include "netui.asm"
         include "netset.asm"
