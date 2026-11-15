@@ -50,7 +50,9 @@ T_SIGN    equ 47
 T_CLOUD   equ 48
 T_PILLAR  equ 49
 T_DRAGON  equ 50
-T_COUNT   equ 51
+T_GOBLIN  equ 51
+T_BAT     equ 52
+T_COUNT   equ 53
 
 C_VUOTO    equ 0
 C_SOLIDO   equ 1
@@ -68,4 +70,4 @@ tile_class:
         db 0,1,1,1,1,1,1,1,1,9,2,2,2,6,1,6
         db 6,8,3,3,3,4,4,5,5,8,8,7,7,7,7,6
         db 8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9
-        db 9,9,9
+        db 9,9,9,8,8

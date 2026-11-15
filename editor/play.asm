@@ -54,6 +54,8 @@ pl_loop:
         ld (p_exit),a
 pl_noesc:
         call play_physics
+        call ent_update
+        call ent_hit
         call play_sprite
         call scroll_update
         ld a,(p_exit)
@@ -125,6 +127,9 @@ pi_up:  push hl
         dec a
         ld (p_cnt),a
         jr nz,pi_up
+        call map_save           ; la mappa originale resta in VRAM: la prova la modifica (monete, nemici)
+        call ent_spawn
+        call ent_vram
         xor a
         ld (p_win),a
         ld (p_exit),a
@@ -186,6 +191,7 @@ rs_c:
         jp redraw_view
 
 play_end:
+        call map_load
         call vdp_wait
         ld e,2
         ld a,0x1F
@@ -227,6 +233,10 @@ play_status:
         ld hl,s_coins
         call print_str
         ld a,(p_coins)
+        call print_num3
+        ld hl,s_kills
+        call print_str
+        ld a,(p_kills)
         call print_num3
         ld hl,2
         ld (GRPACX),hl
@@ -887,9 +897,13 @@ ps_attr:
         ld a,(p_dead)
         or a
         jr z,ps_vis
-        ld a,216                ; morto: lo sprite sparisce
-        out (0x98),a
-        ret
+        ld hl,hide_attr         ; morto: i 4 sprite dell'eroe spariscono
+        ld bc,0x0898
+        otir
+        ld hl,hide_attr
+        ld bc,0x0898
+        otir
+        jp ent_sprites
 ps_vis: ld hl,(p_x)
         ld de,(p_cam)
         or a
@@ -919,11 +933,10 @@ ps_pl:  ld a,e
         ld c,a
         cp 16
         jr nz,ps_pl
-        ld a,216                ; fine della lista sprite
-        out (0x98),a
-        ret
+        jp ent_sprites          ; poi i nemici e il terminatore
 
 m_won:    db "  Superato! Validato",0
 m_quit:   db "  Prova interrotta",0
 s_coins:  db "MONETE ",0
+s_kills:  db "  NEMICI ",0
 s_playhelp: db "FRECCE SPAZIO=salta ESC=esci",0

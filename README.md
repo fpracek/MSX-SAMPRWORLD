@@ -22,5 +22,6 @@ Bozza in flash Yamanooto (ROM Konami5 da 256K: `-romtype Yamanooto`, vedi docs/F
 S = salva la bozza, L = ricarica, SELECT = nuovo livello (cancella anche la bozza). All'avvio la bozza salvata viene ripristinata.
 U = pubblica sul server (UNAPI/UDP; richiede il livello superato, vedi docs/VALIDATION.md; V = valida, solo build DEV).
 T = prova il livello (modalita' gioco: frecce + SPAZIO salta, ESC esce). Arrivare al portale valida il livello e salva la bozza.
+Nemici: tile "Goblin" (cammina, si gira ai bordi) e "Pipistrello" (vola ondeggiando) dalla lista blocchi; in prova si schiacciano dall'alto, altrimenti uccidono. Alla fine della prova la mappa viene ripristinata.
 Mappa 128x12 in RAM. Test automatici in `editor/tests/` (openMSX con tastiera vera; prima di ogni prova da zero
 cancellare `Documents/openMSX/persistent/roms/editor.rom`).

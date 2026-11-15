@@ -406,5 +406,21 @@
   "categoria": "decorazioni",
   "classe": "decorazione",
   "descrizione": ""
+ },
+ {
+  "id": 51,
+  "key": "GOBLIN",
+  "nome": "Goblin",
+  "categoria": "nemici",
+  "classe": "marcatore",
+  "descrizione": "Cammina e gira ai bordi; si schiaccia saltandoci sopra"
+ },
+ {
+  "id": 52,
+  "key": "BAT",
+  "nome": "Pipistrello",
+  "categoria": "nemici",
+  "classe": "marcatore",
+  "descrizione": "Vola in orizzontale ondeggiando"
  }
 ]

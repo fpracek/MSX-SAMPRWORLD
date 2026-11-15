@@ -756,6 +756,18 @@ def skull_pillar():
     return t
 
 
+def enemy_icon(frame_index, fill):
+    from gen_sprites import ENEMY_FRAMES
+    t = Tile(SKY)
+    for y, row in enumerate(ENEMY_FRAMES[frame_index]):
+        for x, ch in enumerate(row):
+            if ch == "o":
+                t.px(x, y, BLK)
+            elif ch == "f":
+                t.px(x, y, fill)
+    return t
+
+
 def dragon_statue():
     t = Tile(SKY)
     t.rect(3, 14, 12, 15, DST)
@@ -826,6 +838,8 @@ CATALOG = [
     ("CLOUD", "Nuvola", "decorazioni", DECOR, cloud, ""),
     ("PILLAR", "Colonna", "decorazioni", DECOR, skull_pillar, ""),
     ("DRAGON", "Statua del drago", "decorazioni", DECOR, dragon_statue, ""),
+    ("GOBLIN", "Goblin", "nemici", TRIGGER, lambda: enemy_icon(0, GRN), "Cammina e gira ai bordi; si schiaccia saltandoci sopra"),
+    ("BAT", "Pipistrello", "nemici", TRIGGER, lambda: enemy_icon(4, PUR), "Vola in orizzontale ondeggiando"),
 ]
 
 
@@ -856,6 +870,10 @@ def main():
             for y in range(16):
                 for x in range(0, 16, 2):
                     f.write(bytes([(t.p[y][x] << 4) | t.p[y][x + 1]]))
+    with open(os.path.join(OUT, "tiles_seg.bin"), "wb") as f:       # segmento 5 della ROM (8K)
+        data = open(os.path.join(OUT, "tiles.bin"), "rb").read()
+        assert len(data) <= 8192
+        f.write(data.ljust(8192, bytes([255])))
     with open(os.path.join(OUT, "palette.bin"), "wb") as f:
         for r, g, b in PAL:
             f.write(bytes([(r << 4) | b, g]))

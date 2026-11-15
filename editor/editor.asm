@@ -846,7 +846,9 @@ vram_w_hi:
 
 ; copia il tileset in pagina 2 di VRAM: tile t in (t%16*16, 512+t/16*16)
 upload_tiles:
-        ld hl,tiles
+        ld a,5                  ; il tileset sta nel segmento 5 (finestra A000)
+        ld (0xB000),a
+        ld hl,0xA000
         xor a
         ld (V+0x30),a
 utt:    ld a,(V+0x30)
@@ -893,6 +895,7 @@ utn:    pop bc
         include "draft.asm"
         include "publish.asm"
         include "scroll.asm"
+        include "enemy.asm"
         include "play.asm"
 netrt_rom:
         include "netpub.asm"
@@ -911,13 +914,13 @@ spat:    db 0xFF,0xFF,0xC0,0xC0,0xC0,0xC0,0xC0,0xC0
          db 0xFF,0xFF,0x03,0x03,0x03,0x03,0x03,0x03
          db 0x03,0x03,0x03,0x03,0x03,0x03,0xFF,0xFF
 palette: incbin "../assets/palette.bin"
-tiles:   incbin "../assets/tiles.bin"
         include "../assets/tileset.inc"
         include "../assets/tilenames.inc"
         ds 0x8000-$,0xFF
 ; segmenti 2..31 vuoti (FF). 16..23 = settore impostazioni, 24..31 = settore bozza (64K allineati)
         ds 0x4000,0xFF                          ; segmenti 2 e 3
-        incbin "../assets/hero.bin"             ; segmento 4: sprite dell'eroe (finestra A000)
-        ds 0x20000-0x8000-1536,0xFF
+        incbin "../assets/sprites.bin"          ; segmento 4: sprite eroe + nemici (finestra A000)
+        incbin "../assets/tiles_seg.bin"        ; segmento 5: tileset (finestra A000)
+        ds 0x20000-0xC000,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF
