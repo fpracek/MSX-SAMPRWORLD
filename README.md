@@ -22,6 +22,11 @@ and load `editor.rom` in slot B as `-romtype Yamanooto` (in the openMSX GUI: Car
 - **Test-play**: physics, one-way platforms, ladders, water, springs, checkpoints, coins/gems/keys, crumbling blocks,
   breakable stone, rune blocks, gates, goblins and bats. A level must be cleared by its creator before it can be published
   (`docs/VALIDATION.md`).
+- **Enemy properties**: ENTER on a goblin/bat in the editor opens its properties (behavior, speed, patrol range, health, detection); they are saved with the level and shared on the server (`docs/LEVEL.md`).
+- **Art**: tiles and palette from *Il Maniero* by Nicola Brogelli (`docs/MANIERO.md`).
+- **Two players** on one MSX (title menu: `PLAYERS: 2`): player 1 = cursor keys + SPACE or joystick 1, player 2 = joystick 2
+  or `A` `D` `W` `S` + `Z` (jump). Coins, keys, checkpoints and the portal are shared; the camera follows whoever is ahead and
+  the other one is brought back next to them; a fallen player respawns beside the survivor (`docs/COOP.md`).
 - **Network**: publish the draft, browse the server list, download and play other players' levels
   (`net/server/levelserver.py` is a stdlib-only UDP server, `docs/` has the formats).
 - **Audio**: music and effects on the SCC (`docs/AUDIO.md`).

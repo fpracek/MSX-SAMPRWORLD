@@ -92,6 +92,11 @@ ring_setregs:
 
 ; riempie l'anello per la camera HL
 ring_fill:
+        ld a,(sw_on)
+        or a
+        jp nz,sw_fill           ; sprite software: master + 3 viste
+        xor a
+        ld (bc_pg),a            ; anello hardware: pagina 0
         ld (p_cam),hl
         push hl
         inc hl
@@ -114,9 +119,15 @@ ring_fill:
 ; un passo di camera (nuova camera in HL, differenza <= 7 px)
 ring_move:
         ld (p_cam),hl
+        ld a,(sw_on)
+        or a
+        ret nz                  ; sprite software: la camera la applica sw_update
+        xor a
+        ld (bc_pg),a
         push hl
         call ring_setregs
         pop hl
+ring_strips_to:                 ; HL = camera: strisce da r_lo a (cam+1)&~1 nella pagina bc_pg
         inc hl
         res 0,l
         ld (r_nlo),hl
@@ -275,8 +286,6 @@ ring_seg:
         ld de,(bc_w0)
         add hl,de
         ld (bc_w1),hl
-        xor a
-        ld (bc_pg),a
         ld hl,(r_a)
         call div16
         ld (r_c),a              ; prima colonna di tile
@@ -327,6 +336,12 @@ rsg_n:  ld a,(r_c)
 
 ; una cella (bo_col, bo_row) e' cambiata: la si ridisegna nell'anello se e' visibile
 ring_cell:
+        ld a,(sw_on)
+        or a
+        jp nz,sw_cell           ; sprite software: master e tre viste
+        xor a
+        ld (bc_pg),a
+ring_cell_hw:
         ld a,(bo_col)
         ld l,a
         ld h,0
@@ -461,9 +476,16 @@ hp_glyph:
 ; attributi dei 6 sprite HUD (piani 10-15) e terminatore
 hud_attr:
         ld hl,hud_tab
-        ld bc,0x1898
+        ld a,(p_two)
+        or a
+        jr z,ha_1
+        ld bc,0x1098            ; due giocatori: HUD senza i nemici uccisi (piani 14-15 all'eroe 2)
         otir
-        ld a,216
+        call p2_attrs
+        jr ha_t
+ha_1:   ld bc,0x1898
+        otir
+ha_t:   ld a,216
         out (0x98),a
         ret
 hud_tab: db 3,14,H_ICON,0,  7,32,H_DIG,0

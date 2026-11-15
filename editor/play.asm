@@ -40,6 +40,9 @@ p_cnt   equ V+0xBF
 do_play:
         call play_init
 pl_loop:
+        ld a,(sw_on)
+        or a
+        jp nz,pl_sw             ; sprite software con triplo buffer (swspr.asm)
         call vwait
         ld a,(p_ring)
         or a
@@ -49,10 +52,7 @@ pl_loop:
 pl_v38: call scroll_flip
 pl_vc:
         call snd_tick
-        ld a,8
-        call readrow
-        cpl
-        ld (v_k8),a
+        call read_inputs        ; tastiera + joystick; v_k8 = tasti del giocatore 1
         ld a,7
         call readrow
         bit 2,a                 ; ESC (premuto = 0)
@@ -60,10 +60,16 @@ pl_vc:
         ld a,1
         ld (p_exit),a
 pl_noesc:
-        call play_physics
+        ld a,(p_two)
+        or a
+        jr z,pl_1p
+        call play_2p            ; due giocatori (coop.asm): ogni eroe a turno nel blocco attivo
+        jr pl_cam
+pl_1p:  call play_physics
         call ent_update
         call ent_hit
         call play_sprite
+pl_cam:
         ld a,(p_ring)
         or a
         call z,scroll_update
@@ -73,6 +79,15 @@ pl_noesc:
         jp play_end
 
 play_init:
+        ld a,(p_two)            ; sprite software: solo V9958 e un giocatore, se abilitati
+        or a
+        ld a,0
+        jr nz,pi_sw
+        ld a,(p_ring)
+        ld b,a
+        ld a,(p_sw)
+        and b
+pi_sw:  ld (sw_on),a
         ld hl,MAP               ; cerca il tile di partenza
         ld bc,MAPW*MAPH
         ld a,T_START
@@ -159,7 +174,25 @@ pi_up:  push hl
         ld a,0xFF
         ld (p_lastf),a
         call respawn
-        call play_status
+        ld a,(p_two)
+        or a
+        jr z,pi_one
+        xor a
+        ld (p_cur),a
+        call hero_save          ; eroe 1 -> HS0; l'eroe 2 parte 8 px piu' avanti
+        ld hl,(p_x)
+        ld de,8
+        add hl,de
+        ld (p_x),hl
+        ld a,1
+        call hero_save
+        ld a,0xFF
+        ld (p_lastf),a
+        ld a,1
+        call hero_save          ; HS1 con lastf = 0xFF: i pattern si caricano al primo fotogramma
+        xor a
+        call hero_load
+pi_one: call play_status
         ret
 
 respawn:
@@ -214,6 +247,8 @@ rs_c:
         jp redraw_view
 
 play_end:
+        xor a
+        ld (sw_on),a
         ld a,(p_ring)
         or a
         call nz,ring_off
@@ -393,7 +428,7 @@ play_physics:
         dec a
         ld (p_dead),a
         ret nz
-        jp respawn
+        jp respawn_hero
 pp_alive:
         ; --- ambiente: acqua / scala (punto centrale) ---
         ld bc,0x0808
@@ -913,6 +948,10 @@ tpk_d:  ld a,SFX_COIN
 
 ; ------------------------------------------------------------------------- sprite
 play_sprite:
+        call hero_calcframe
+        jr ps_cf
+; sceglie il frame dell'animazione (A = frame, anche in p_frame)
+hero_calcframe:
         ld a,(p_ground)
         or a
         ld b,3
@@ -941,6 +980,8 @@ ps_f:   ld a,(p_face)
         ld b,a
 ps_nf:  ld a,b
         ld (p_frame),a
+        ret
+ps_cf:  ld a,(p_frame)
         ld hl,p_lastf
         cp (hl)
         jr z,ps_attr

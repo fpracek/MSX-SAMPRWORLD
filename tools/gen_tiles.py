@@ -901,11 +901,45 @@ EN = {
 CATALOG = [(c[0], EN[c[0]][0], EN[c[0]][1], c[3], c[4], EN[c[0]][2]) for c in CATALOG]
 
 
+CLASS_BY_NAME = {"empty": EMPTY, "solid": SOLID, "oneway": ONEWAY, "hazard": HAZARD, "liquid": LIQUID,
+                 "climb": CLIMB, "hit": HIT, "pickup": PICKUP, "trigger": TRIGGER, "decor": DECOR}
+
+
+def add_maniero(tiles):
+    """Aggiunge l'arte de Il Maniero (assets/maniero, vedi tools/gen_maniero.py e docs/MANIERO.md): i tile con
+    "replaces" prendono il posto del tile legacy omonimo (stessi id, il codice non cambia), gli altri si accodano.
+    La palette di tutto il gioco diventa quella del Maniero, con gli slot compatibili coi ruoli dei vecchi colori."""
+    man = os.path.join(OUT, "maniero")
+    tj = os.path.join(man, "tiles.json")
+    if not os.path.exists(tj):
+        return
+    PAL[:] = [tuple(c) for c in json.load(open(os.path.join(man, "palette.json")))["colors"]]
+    sheet = Image.open(os.path.join(man, "tiles.png"))
+    key_idx = {c[0]: i for i, c in enumerate(CATALOG)}
+    global CATALOG_N
+    for m in json.load(open(tj)):
+        if m["class"] in ("", "drop"):
+            continue
+        i = m["id"]
+        ox, oy = (i % 16) * 16, (i // 16) * 16
+        t = Tile(SKY)
+        for y in range(16):
+            for x in range(16):
+                t.p[y][x] = sheet.getpixel((ox + x, oy + y))
+        if m["replaces"]:
+            tiles[key_idx[m["replaces"]]] = t
+        else:
+            key = "M%02d" % i
+            CATALOG.append((key, m["name"], "castle", CLASS_BY_NAME[m["class"]], None, "Il Maniero (N. Brogelli)"))
+            tiles.append(t)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
-    n = len(CATALOG)
-    assert n <= 256
     tiles = [c[4]() for c in CATALOG]
+    add_maniero(tiles)
+    n = len(CATALOG)
+    assert n == len(tiles) and n <= 144
 
     # --- png indicizzato, 16 tile per riga ---
     cols = 16
@@ -928,10 +962,10 @@ def main():
             for y in range(16):
                 for x in range(0, 16, 2):
                     f.write(bytes([(t.p[y][x] << 4) | t.p[y][x + 1]]))
-    with open(os.path.join(OUT, "tiles_seg.bin"), "wb") as f:       # segmento 5 della ROM (8K)
-        data = open(os.path.join(OUT, "tiles.bin"), "rb").read()
-        assert len(data) <= 8192
-        f.write(data.ljust(8192, bytes([255])))
+    data = open(os.path.join(OUT, "tiles.bin"), "rb").read()
+    for k, name in enumerate(("tiles_seg.bin", "tiles_seg2.bin", "tiles_seg3.bin")):   # segmenti 5, 7, 8 della ROM (8K = 64 tile)
+        with open(os.path.join(OUT, name), "wb") as f:
+            f.write(data[k * 8192:(k + 1) * 8192].ljust(8192, bytes([255])))
     with open(os.path.join(OUT, "palette.bin"), "wb") as f:
         for r, g, b in PAL:
             f.write(bytes([(r << 4) | b, g]))

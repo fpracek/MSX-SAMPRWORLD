@@ -196,6 +196,41 @@ def mirror(rows):
     return [r[::-1] for r in rows]
 
 
+# ---- giocatore 2: 2 layer soli (contorno + riempimento) per non superare gli 8 sprite per riga con eroe 1 + nemici ----
+P2MAP = {"b": 12, "B": 5, "S": 4, "s": 3}      # tunica rossa, cintura bruna, elmo verde chiaro, bordo verde
+P2OFF = 3328
+
+
+def p2_bin():
+    frames = FRAMES + [mirror(f) for f in FRAMES]
+    out = bytearray()
+    for fr in frames:
+        pat = [[0] * 16 for _ in range(2)]
+        col = [[0] * 16 for _ in range(2)]
+        for y, row in enumerate(fr):
+            cnt = {}
+            for ch in row:
+                if ch not in ".o":
+                    c = P2MAP.get(ch, C[ch])
+                    cnt[c] = cnt.get(c, 0) + 1
+            fill = max(cnt, key=lambda k: cnt[k]) if cnt else 0
+            for x, ch in enumerate(row):
+                bit = 0x8000 >> x
+                if ch == "o":
+                    pat[0][y] |= bit
+                elif ch != ".":
+                    pat[1][y] |= bit
+            col[0][y] = 1 if pat[0][y] else 0
+            col[1][y] = fill
+        quad = []
+        for li in range(2):
+            p_ = pat[li]
+            quad += [(b >> 8) & 255 for b in p_[:8]] + [(b >> 8) & 255 for b in p_[8:]] +                     [b & 255 for b in p_[:8]] + [b & 255 for b in p_[8:]]
+        out += bytes(quad) + bytes(col[0]) + bytes(col[1])      # 64 byte pattern (2 layer), 32 byte colori
+    assert len(out) == 8 * 96
+    return bytes(out)
+
+
 def build():
     frames = FRAMES + [mirror(f) for f in FRAMES]
     out = bytearray()
@@ -235,6 +270,7 @@ def main():
     audio, _ = gen_music.build()
     seg = (blob + eb).ljust(2048, bytes([255])) + audio       # audio a offset 2048
     seg = seg.ljust(3072, bytes([255])) + hud_bin()           # HUD a sprite a offset 3072
+    seg = seg.ljust(P2OFF, bytes([255])) + p2_bin()           # giocatore 2 (2 layer) a offset 3328
     assert len(seg) <= 8192
     open(os.path.join(OUT, "sprites.bin"), "wb").write(seg.ljust(8192, bytes([255])))   # segmento 4 della ROM
     sys_pal = [(2, 4, 7), (0, 0, 1), (0, 3, 1), (2, 5, 1), (4, 7, 2), (2, 1, 0), (4, 2, 1), (6, 4, 2), (2, 2, 3),

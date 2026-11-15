@@ -163,6 +163,17 @@ st_nf:  ld (v_flash),a
         ld (v_bcol),a
         ld a,10
         ld (v_cury),a
+        xor a
+        ld (p_two),a            ; un giocatore (il menu lo cambia)
+        ld (p_tin1),a           ; (solo TESTBUILD: tasti forzati da Tcl) la RAM all'accensione non e' azzerata
+        ld (p_tin2),a
+        ld (p_sw),a             ; sprite software disabilitati (per ora: si abilita da test)
+        ld (sw_on),a
+        ld (sw_dbg),a
+        ld (sw_ovr),a
+        ld (sw_ovr+1),a
+        ld (sw_fn),a
+        ld (sw_fn+1),a
         call cp_load            ; progressi della campagna dalla flash
         call load_draft         ; se c'e' una bozza in flash, si riparte da li'
         ld a,(v_flash)
@@ -320,7 +331,17 @@ nnext:  ld a,(v_e4)
         ld (v_tile),a
         ld a,1
         ld (v_dirty),a
-nopick: ld a,(v_e6)
+nopick: ld a,(v_e7)
+        bit 7,a                 ; INVIO su un nemico = proprieta' (props.asm)
+        jr z,noprop
+        call cur_addr
+        ld a,(hl)
+        cp T_GOBLIN
+        jr z,doprop
+        cp T_BAT
+        jr nz,noprop
+doprop: call do_eprops
+noprop: ld a,(v_e6)
         bit 5,a                 ; F1 = menu (salva prima la bozza se serve)
         jr z,nomenu
         call autosave
@@ -538,17 +559,10 @@ draw_tile:
         xor a
         ld (P+1),a
         ld a,e
-        rrca
-        rrca
-        rrca
-        rrca
-        and 15
-        add a,a
-        add a,a
-        add a,a
-        add a,a
-        ld (P+2),a              ; SY (pagina 1: +256)
-        ld a,2
+        call tile_sy            ; SY dalla tabella delle righe del tileset
+        ld a,l
+        ld (P+2),a
+        ld a,h
         ld (P+3),a
         ld a,b
         add a,a
@@ -751,6 +765,8 @@ dst1:   ld e,a
         add hl,de               ; *24
         ld de,tile_names
         add hl,de
+        ld a,2                  ; i nomi stanno nel segmento 2 (finestra A000)
+        ld (0xB000),a
         call print_str
         ld a,(v_valid)
         or a
@@ -902,39 +918,113 @@ vram_w_hi:
         out (0x99),a
         ret
 
-; copia il tileset in pagina 2 di VRAM: tile t in (t%16*16, 512+t/16*16)
+; Geometria del tileset in VRAM: i tile (16x16) stanno in righe da 16 tile (16 righe di pixel); la riga r del tileset
+; (tile 16r..16r+15) sta alla y assoluta trow_tab[r] (0..1023 = pagina*256 + riga). Le righe stanno negli spazi liberi
+; delle pagine (le pagine 0-2 sono viste di gioco, la 3 e' il master): vedi docs/SWSPRITES.md. Fino a 9 righe = 144 tile.
+; Con -DTILETEST due righe vengono spostate altrove (prova della tabella).
+trow_tab:
+        IFDEF TILETEST
+        dw 960,976,720,480,720+32,752,480,496,212
+        ELSE
+        dw 960,976,992,1008,720,752,480,496,212
+        ENDIF
+; segmento dei dati per ogni gruppo di 64 tile (128 byte ciascuno = 8 KB)
+tileseg_tab: db 5,7,8,9
+
+; A = id del tile -> HL = y assoluta (pagina*256 + riga) del suo bordo superiore nel tileset (clobbera A, DE)
+tile_sy:
+        rrca
+        rrca
+        rrca
+        rrca
+        and 15
+        add a,a
+        ld e,a
+        ld d,0
+        ld hl,trow_tab
+        add hl,de
+        ld e,(hl)
+        inc hl
+        ld d,(hl)
+        ex de,hl
+        ret
+
+; imposta l'indirizzo VRAM di scrittura DE (16 bit bassi) con A16 in A (0/1)
+vram_w17:
+        add a,a
+        add a,a
+        ld b,a
+        ld a,d
+        rlca
+        rlca
+        and 3
+        or b
+        out (0x99),a
+        ld a,0x8E
+        out (0x99),a
+        ld a,e
+        out (0x99),a
+        ld a,d
+        and 0x3F
+        or 0x40
+        out (0x99),a
+        ret
+
+; copia il tileset in VRAM secondo trow_tab: i dati dei tile stanno nei segmenti di tileseg_tab (finestra A000)
 upload_tiles:
-        ld a,5                  ; il tileset sta nel segmento 5 (finestra A000)
-        ld (0xB000),a
-        ld hl,0xA000
         xor a
         ld (V+0x30),a
 utt:    ld a,(V+0x30)
-        ld c,a
-        and 15
-        add a,a
-        add a,a
-        add a,a
+        and 63
+        jr nz,uts
+        ld a,(V+0x30)           ; ogni 64 tile si cambia segmento
+        rlca
+        rlca
+        and 3
         ld e,a
-        ld a,c
+        ld d,0
+        ld hl,tileseg_tab
+        add hl,de
+        ld a,(hl)
+        ld (0xB000),a
+        ld hl,0xA000
+        ld (V+0x32),hl
+uts:    ld a,(V+0x30)           ; DE = y assoluta della riga del tile
+        call tile_sy
+        ex de,hl
+        ld a,d                  ; A16 = y >> 9
+        and 2
         rrca
+        ld (V+0x31),a
+        ld a,d                  ; indirizzo = (y & 511) * 128 + colonna * 8
+        and 1
         rrca
+        ld h,a
+        ld a,e
+        srl a
+        or h
+        ld h,a
+        ld a,e
+        and 1
         rrca
-        rrca
+        ld l,a
+        ld a,(V+0x30)
         and 15
         add a,a
         add a,a
         add a,a
-        ld d,a
+        add a,l
+        ld e,a
+        ld d,h                  ; DE = indirizzo a 16 bit
         ld b,16
 utr:    push bc
         push de
-        push hl
-        ex de,hl
-        call vram_w_hi
-        pop hl
+        ld a,(V+0x31)
+        call vram_w17
+        ld hl,(V+0x32)
         ld bc,0x0898
         otir
+        ld (V+0x32),hl
         pop de
         ld a,128
         add a,e
@@ -963,6 +1053,9 @@ utn:    pop bc
         include "menu.asm"
         include "campaign.asm"
         include "play.asm"
+        include "coop.asm"
+        include "swspr.asm"
+        include "props.asm"
 netrt_rom:
         include "netpub.asm"
 
@@ -981,13 +1074,28 @@ spat:    db 0xFF,0xFF,0xC0,0xC0,0xC0,0xC0,0xC0,0xC0
          db 0x03,0x03,0x03,0x03,0x03,0x03,0xFF,0xFF
 palette: incbin "../assets/palette.bin"
         include "../assets/tileset.inc"
-        include "../assets/tilenames.inc"
         ds 0x8000-$,0xFF
 ; segmenti 2..31 vuoti (FF). 16..23 = settore impostazioni, 24..31 = settore bozza (64K allineati)
-        ds 0x4000,0xFF                          ; segmenti 2 e 3
+        ; segmento 2: nomi dei tile (finestra A000, registro B000) per liberare spazio nella pagina 1; segmento 3 vuoto
+        disp 0xA000
+        include "../assets/tilenames.inc"
+tile_names_end:
+        ent
+        ds 0x2000-(tile_names_end-tile_names),0xFF
+        ; segmento 3: frame compilati dell'eroe (sprite software), finestra A000
+        disp 0xA000
+        include "swengine.asm"
+        include "swreach.asm"
+        include "swprops.asm"
+        include "swhero.inc"
+swh_end:
+        ent
+        ds 0x2000-(swh_end-0xA000),0xFF
         incbin "../assets/sprites.bin"          ; segmento 4: sprite eroe + nemici (finestra A000)
         incbin "../assets/tiles_seg.bin"        ; segmento 5: tileset (finestra A000)
         incbin "../assets/campaign.bin"         ; segmento 6: i 10 livelli fissi della campagna
-        ds 0x20000-0xE000,0xFF
+        incbin "../assets/tiles_seg2.bin"       ; segmento 7: tile 64..127
+        incbin "../assets/tiles_seg3.bin"       ; segmento 8: tile 128..191
+        ds 0x20000-0x12000,0xFF
         incbin "../assets/settings_dev.bin"     ; segmento 16: record impostazioni di SVILUPPO (segnaposto)
         ds 0x40000-0x20000-128,0xFF

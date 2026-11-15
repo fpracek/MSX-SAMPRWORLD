@@ -422,5 +422,533 @@
   "categoria": "enemies",
   "classe": "marcatore",
   "descrizione": "Flies sideways, bobbing"
+ },
+ {
+  "id": 53,
+  "key": "M02",
+  "nome": "Stone block B",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 54,
+  "key": "M03",
+  "nome": "Stone block C",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 55,
+  "key": "M04",
+  "nome": "Red banner top",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 56,
+  "key": "M05",
+  "nome": "Iron grate",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 57,
+  "key": "M07",
+  "nome": "Stone block D",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 58,
+  "key": "M08",
+  "nome": "Stone block E",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 59,
+  "key": "M09",
+  "nome": "Stone block F",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 60,
+  "key": "M11",
+  "nome": "Chain A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 61,
+  "key": "M13",
+  "nome": "Stone block G",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 62,
+  "key": "M14",
+  "nome": "Stone block H",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 63,
+  "key": "M15",
+  "nome": "Stone block I",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 64,
+  "key": "M16",
+  "nome": "Red banner tip",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 65,
+  "key": "M17",
+  "nome": "Chain B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 66,
+  "key": "M19",
+  "nome": "Dark wall B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 67,
+  "key": "M20",
+  "nome": "Dark wall C",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 68,
+  "key": "M21",
+  "nome": "Dark wall D",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 69,
+  "key": "M22",
+  "nome": "Dark wall E",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 70,
+  "key": "M23",
+  "nome": "Dark wall F",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 71,
+  "key": "M24",
+  "nome": "Chest left",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 72,
+  "key": "M25",
+  "nome": "Chest right",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 73,
+  "key": "M26",
+  "nome": "Drawer unit",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 74,
+  "key": "M27",
+  "nome": "Table left",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 75,
+  "key": "M28",
+  "nome": "Table middle",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 76,
+  "key": "M29",
+  "nome": "Table right",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 77,
+  "key": "M30",
+  "nome": "Shelf left",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 78,
+  "key": "M31",
+  "nome": "Shelf middle",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 79,
+  "key": "M32",
+  "nome": "Table leg",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 80,
+  "key": "M33",
+  "nome": "Wood post A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 81,
+  "key": "M34",
+  "nome": "Wood brace 34",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 82,
+  "key": "M35",
+  "nome": "Wood brace 35",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 83,
+  "key": "M36",
+  "nome": "Wood brace 36",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 84,
+  "key": "M37",
+  "nome": "Wood brace 37",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 85,
+  "key": "M38",
+  "nome": "Wood brace 38",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 86,
+  "key": "M39",
+  "nome": "Wood brace 39",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 87,
+  "key": "M40",
+  "nome": "Wood brace 40",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 88,
+  "key": "M41",
+  "nome": "Wood brace 41",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 89,
+  "key": "M42",
+  "nome": "Wood brace 42",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 90,
+  "key": "M43",
+  "nome": "Wood brace 43",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 91,
+  "key": "M44",
+  "nome": "Wood brace 44",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 92,
+  "key": "M45",
+  "nome": "Wood brace 45",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 93,
+  "key": "M46",
+  "nome": "Wood brace 46",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 94,
+  "key": "M47",
+  "nome": "Wood brace 47",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 95,
+  "key": "M48",
+  "nome": "Wood post B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 96,
+  "key": "M49",
+  "nome": "Wooden frame A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 97,
+  "key": "M51",
+  "nome": "Barrel",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 98,
+  "key": "M52",
+  "nome": "Stool",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 99,
+  "key": "M53",
+  "nome": "Flower vase",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 100,
+  "key": "M54",
+  "nome": "Beam platform L",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 101,
+  "key": "M55",
+  "nome": "Beam platform M",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 102,
+  "key": "M56",
+  "nome": "Beam platform R",
+  "categoria": "castle",
+  "classe": "piattaforma",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 103,
+  "key": "M57",
+  "nome": "Wooden frame B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 104,
+  "key": "M59",
+  "nome": "Rocks A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 105,
+  "key": "M60",
+  "nome": "Rocks B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 106,
+  "key": "M61",
+  "nome": "Chair left",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 107,
+  "key": "M62",
+  "nome": "Chair right",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 108,
+  "key": "M63",
+  "nome": "Roof corner A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 109,
+  "key": "M64",
+  "nome": "Roof corner B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 110,
+  "key": "M65",
+  "nome": "Table drawer",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 111,
+  "key": "M70",
+  "nome": "Iron door top",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 112,
+  "key": "M71",
+  "nome": "Cabinet",
+  "categoria": "castle",
+  "classe": "solido",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 113,
+  "key": "M72",
+  "nome": "Detail A",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 114,
+  "key": "M74",
+  "nome": "Detail B",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 115,
+  "key": "M75",
+  "nome": "Detail C",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 116,
+  "key": "M77",
+  "nome": "Iron door bottom",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 117,
+  "key": "M78",
+  "nome": "Arch frame",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 118,
+  "key": "M80",
+  "nome": "Void",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
  }
 ]

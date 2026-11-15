@@ -4,6 +4,8 @@
 ; pieno o a livello pubblicato/nuovo. Le routine che toccano la flash stanno in RAM (flashrt).
 
 init_map:
+        xor a
+        ld (ept_n),a            ; nessuna proprieta' dei nemici
         ld hl,MAP
         ld de,MAP+1
         ld bc,MAPW*MAPH-1
@@ -179,11 +181,23 @@ sd_nseg:
 
 ; compone il record in REC (mappa -> RLE -> CRC16 -> somma); v_rlen = lunghezza
 build_record:
+        call ept_prune
         ld hl,lvhdr
         ld de,REC+5
         ld bc,25
         ldir
-        ld hl,MAP
+        ld a,(ept_n)
+        ld (REC+5+24),a         ; n_ent
+        or a
+        jr z,br_ne
+        add a,a
+        add a,a
+        add a,a
+        ld c,a
+        ld b,0
+        ld hl,EPT
+        ldir                    ; record dei nemici (8 byte ciascuno)
+br_ne:  ld hl,MAP
         ld bc,MAPW*MAPH
 rl_next:
         ld a,b
@@ -453,13 +467,13 @@ load_draft:
         jp nz,ld_bad
         ld a,(ix+6)
         cp 'V'
-        jr nz,ld_bad
+        jp nz,ld_bad
         ld a,(ix+8)
         cp MAPW
-        jr nz,ld_inc
+        jp nz,ld_inc
         ld a,(ix+9)
         cp MAPH
-        jr nz,ld_inc
+        jp nz,ld_inc
         ld e,(ix+3)
         ld d,(ix+4)             ; DE = lunghezza blob
         push ix
@@ -489,11 +503,24 @@ load_draft:
         ld a,(hl)               ; byte 'superato'
         and 1
         ld (v_valid),a
+        ld a,(ix+5+24)          ; n_ent
+        cp EP_MAX+1
+        jp nc,ld_bad
         push ix                 ; decodifica RLE
         pop hl
         ld bc,5+25
         add hl,bc
-        ld de,MAP
+        ld (ept_n),a
+        or a
+        jr z,ld_ne
+        add a,a
+        add a,a
+        add a,a
+        ld c,a
+        ld b,0
+        ld de,EPT
+        ldir                    ; record dei nemici
+ld_ne:  ld de,MAP
         ld bc,MAPW*MAPH
 ld_lp:  ld a,(hl)
         inc hl
@@ -506,7 +533,7 @@ ld_lp:  ld a,(hl)
         or c
         jr nz,ld_lp
         jr ld_ok
-ld_run: and 0x3F
+ld_run: and 0x7F
         ld (v_rt),a
         ld a,(hl)
         inc hl

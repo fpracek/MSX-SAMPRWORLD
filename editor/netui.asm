@@ -335,6 +335,9 @@ blob_check:
         ld a,(REC+4)
         cp MAPH
         jr nz,bk_bad
+        ld a,(REC+24)
+        cp EP_MAX+1
+        jr nc,bk_bad
         ld bc,(n_glen)
         dec bc
         dec bc
@@ -357,15 +360,23 @@ bk_bad: ld a,8
 
 ; REC -> MAP (RLE); i tile fuori dal catalogo diventano vuoti
 blob_decode:
-        ld a,(REC+24)
-        ld c,a
+        ld a,(REC+24)           ; n_ent (<= EP_MAX: lo garantisce blob_check)
+        ld (ept_n),a
         add a,a
-        add a,c
+        add a,a
+        add a,a
         ld c,a
         ld b,0
         ld hl,REC+25
-        add hl,bc
-        ld de,MAP
+        or a
+        jr z,bd2_ne
+        ld de,EPT
+        push bc
+        ldir                    ; record dei nemici
+        pop bc
+        jr bd2_go
+bd2_ne: add hl,bc
+bd2_go: ld de,MAP
         ld bc,MAPW*MAPH
 bd2_lp: ld a,(hl)
         inc hl
@@ -379,7 +390,7 @@ bd2_lp: ld a,(hl)
         jr nz,bd2_lp
         jr bd2_san
 bd2_run:
-        and 0x3F
+        and 0x7F
         ld (v_rt),a
         ld a,(hl)
         inc hl
@@ -441,14 +452,16 @@ play_foreign:
         ret
 
 ; mappa dell'editor <-> VRAM 0x19000
+; la mappa dell'editor + la tabella dei nemici (C000-C6FF) si salvano in VRAM durante la prova di un livello altrui:
+; la mappa in pagina 1 righe 212..223 (0xEA00), la tabella in pagina 0 riga 228 (0x7200)
 emap_save:
-        ld a,6
+        ld a,3
         out (0x99),a
         ld a,0x8E
         out (0x99),a
         xor a
         out (0x99),a
-        ld a,0x50
+        ld a,0x6A
         out (0x99),a
         ld hl,MAP
         ld b,6
@@ -457,16 +470,26 @@ es2_l:  push bc
         otir
         pop bc
         djnz es2_l
-        ret
-
-emap_load:
-        ld a,6
+        ld a,1
         out (0x99),a
         ld a,0x8E
         out (0x99),a
         xor a
         out (0x99),a
-        ld a,0x10
+        ld a,0x72
+        out (0x99),a
+        ld bc,0x0098
+        otir                    ; HL = EPT (subito dopo la mappa): 256 byte
+        ret
+
+emap_load:
+        ld a,3
+        out (0x99),a
+        ld a,0x8E
+        out (0x99),a
+        xor a
+        out (0x99),a
+        ld a,0x2A
         out (0x99),a
         ld hl,MAP
         ld b,6
@@ -475,6 +498,16 @@ el2_l:  push bc
         inir
         pop bc
         djnz el2_l
+        ld a,1
+        out (0x99),a
+        ld a,0x8E
+        out (0x99),a
+        xor a
+        out (0x99),a
+        ld a,0x32
+        out (0x99),a
+        ld bc,0x0098
+        inir
         ret
 
 hide_cursor:

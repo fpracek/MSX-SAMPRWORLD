@@ -1,5 +1,5 @@
 ; scroll.asm - scorrimento a pagine per MSX2 puro (V9938: niente R#26/R#27): doppio buffer su pagine 0/1.
-; Il tileset sta in pagina 2 (y=512..). Ogni passo di camera (2 o 4 px, sempre pari: HMMM lavora a byte):
+; Il tileset sta nelle righe 192.. della pagina 3 (y=960..). Ogni passo di camera (2 o 4 px, sempre pari: HMMM lavora a byte):
 ;   1) HMMM asincrona dell'intera area di gioco (256x192) dalla pagina visibile a quella nascosta, spostata di d px
 ;   2) le colonne scoperte (striscia a destra o a sinistra) si disegnano dalla cache tile, cella per cella
 ;   3) al vblank successivo si scambia la pagina (R#2).
@@ -100,17 +100,10 @@ bcv1:   ld (bc_v1),hl
         xor a
         ld (P+1),a
         ld a,(bc_t)
-        rrca
-        rrca
-        rrca
-        rrca
-        and 15
-        add a,a
-        add a,a
-        add a,a
-        add a,a
-        ld (P+2),a              ; SY = 512 + riga*16
-        ld a,2
+        call tile_sy            ; SY dalla tabella delle righe del tileset (editor.asm)
+        ld a,l
+        ld (P+2),a
+        ld a,h
         ld (P+3),a
         ld a,(bc_r)
         add a,a

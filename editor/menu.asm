@@ -1,6 +1,6 @@
 ; menu.asm - schermata iniziale (all'avvio e con F1): creare/continuare la bozza, livelli del server, impostazioni di rete.
 mn_sel  equ FBUF+0xB0
-mn_n    equ 4
+mn_n    equ 5
 
 do_menu:
         call hide_cursor
@@ -56,7 +56,13 @@ mn_go:  ld a,(mn_sel)
         jr mn_back
 mg_1:   cp 1
         jr z,mn_exit            ; CREATE LEVELS: si entra nell'editor
-        cp 2
+        cp 4
+        jr nz,mg_2
+        ld a,(p_two)            ; PLAYERS: 1 <-> 2
+        xor 1
+        ld (p_two),a
+        jr mn_back
+mg_2:   cp 2
         jr nz,mn_set
         call do_browse
         jr mn_back
@@ -157,8 +163,25 @@ mi_m:   call print_char
         pop bc
         inc b
         ld a,b
-        cp mn_n
+        cp mn_n-1
         jr nz,mn_i
+        ld hl,40                ; ultima voce: PLAYERS: 1 / 2
+        ld (GRPACX),hl
+        ld hl,190
+        ld (GRPACY),hl
+        ld a,(mn_sel)
+        cp mn_n-1
+        ld a,' '
+        jr nz,mp_m
+        ld a,'>'
+mp_m:   call print_char
+        ld hl,56
+        ld (GRPACX),hl
+        ld hl,s_mpl
+        call print_str
+        ld a,(p_two)
+        add a,'1'
+        call print_char
         ld hl,16
         ld (GRPACX),hl
         ld hl,200
@@ -194,5 +217,6 @@ s_mi0:    db "PLAY THE CAMPAIGN",0
 s_mi1:    db "CREATE LEVELS",0
 s_mi2:    db "SERVER LEVELS",0
 s_mi3:    db "NETWORK SETTINGS",0
+s_mpl:    db "PLAYERS: ",0
 s_mfoot:  db "UP/DOWN select  ENTER confirm",0
 s_mnoflash: db "NO FLASH - use Yamanooto ROM",0

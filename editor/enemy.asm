@@ -14,15 +14,15 @@ e_nx    equ V+0xED              ; 2 byte
 e_buf   equ V+0xF0              ; 8 byte: attributi di due piani
 ENPAT   equ 132                 ; primo numero di pattern degli sprite nemici (VRAM 0x7C20)
 
-; copia la mappa in VRAM (pagina 3, 0x18000) e la ripristina
+; copia la mappa in VRAM (pagina 2, 0x16000: la pagina 3 e' il master degli sprite software) e la ripristina
 map_save:
-        ld a,6
+        ld a,5                  ; 0x16000: righe 192.. della pagina 2 (libere)
         out (0x99),a
         ld a,0x8E
         out (0x99),a
         xor a
         out (0x99),a
-        ld a,0x40
+        ld a,0x60
         out (0x99),a
         ld hl,MAP
         ld b,6
@@ -34,12 +34,13 @@ ms_l:   push bc
         ret
 
 map_load:
-        ld a,6
+        ld a,5
         out (0x99),a
         ld a,0x8E
         out (0x99),a
         xor a
         out (0x99),a
+        ld a,0x20
         out (0x99),a
         ld hl,MAP
         ld b,6
@@ -107,6 +108,7 @@ es_mk:  ld a,(p_ne)
         ld (ix+3),a
         ld (ix+6),a
         ld (ix+7),96
+        call ep_spawn           ; proprieta' dal record della bozza/livello (props.asm)
         pop bc
         pop hl
         ld a,(p_ne)
@@ -167,9 +169,70 @@ eu_l:   push bc
         ret
 
 gob_update:
+        push ix                 ; IY = proprieta' di questa entita' (ENP ha lo stesso passo di ENT)
+        pop hl
+        ld de,ENP-ENT
+        add hl,de
+        push hl
+        pop iy
+        ld a,(iy+0)
+        or a
+        jr z,gb_mv              ; pattuglia
+        call ep_near            ; C = 1 se l'eroe e' entro il raggio di rilevamento, B = 1 se e' a sinistra
+        ld a,(iy+0)
+        cp 1
+        jr nz,gb_ch
+        ld a,c
+        or a
+        jr nz,gb_mv             ; dormiglione: sveglio solo se l'eroe e' vicino
+        jp gb_grav
+gb_ch:  ld d,a
+        ld a,c
+        or a
+        jr z,gb_mv              ; inseguitore / pauroso: lontano = pattuglia normale
+        ld a,d
+        cp 2
+        ld a,b
+        jr z,gb_dir             ; inseguitore: verso l'eroe
+        xor 1                   ; pauroso: via dall'eroe
+gb_dir: ld (ix+4),a
+gb_mv:  ld a,(iy+1)
+        cp 1
+        jr nz,gb_ng             ; velocita' 1: un passo ogni 2 fotogrammi
         ld a,(p_tick)
         and 1
-        jr nz,gb_grav
+        jp nz,gb_grav
+gb_ng:  call gb_step
+        ld a,(iy+1)
+        cp 3
+        call z,gb_step          ; velocita' 3: due passi per fotogramma
+        ld a,(iy+2)
+        or a
+        jp z,gb_grav            ; raggio illimitato
+        ld l,(ix+1)             ; oltre il raggio dalla posizione di partenza: si torna indietro
+        ld h,(ix+2)
+        ld e,(iy+5)
+        ld d,(iy+6)
+        or a
+        sbc hl,de
+        ld c,0
+        bit 7,h
+        jr z,gb_r1
+        ld c,1
+        call neg_hl
+gb_r1:  ld a,h
+        or a
+        jr nz,gb_ro
+        ld a,l
+        cp (iy+2)
+        jp c,gb_grav
+gb_ro:  ld a,c
+        xor 1
+        ld (ix+4),a
+        jp gb_grav
+
+; un passo orizzontale del goblin: si ferma davanti a muri e bordi
+gb_step:
         ld e,(ix+1)
         ld d,(ix+2)
         bit 0,(ix+4)
@@ -205,11 +268,111 @@ gb_f:   ld (e_nx),de
 gb_go:  ld hl,(e_nx)
         ld (ix+1),l
         ld (ix+2),h
-        jr gb_grav
+        ret
 gb_turn:
         ld a,(ix+4)
         xor 1
         ld (ix+4),a
+        ret
+
+; eroe entro il raggio di rilevamento (IY+4 px)? C = 1 si'; B = 1 se l'eroe sta a sinistra del nemico
+ep_near:
+        ld hl,(p_x)
+        ld e,(ix+1)
+        ld d,(ix+2)
+        or a
+        sbc hl,de
+        ld b,0
+        bit 7,h
+        jr z,epn_p
+        ld b,1
+        call neg_hl
+epn_p:  ld a,h
+        or a
+        jr nz,epn_f
+        ld a,l
+        cp (iy+4)
+        jr nc,epn_f
+        ld c,1
+        ret
+epn_f:  ld c,0
+        ret
+
+; IX = entita' appena creata (indice p_ne): riempie ENP dal record della tabella EPT (o coi valori predefiniti)
+ep_spawn:
+        ld a,(ix+1)             ; colonna e riga del nemico
+        rrca
+        rrca
+        rrca
+        rrca
+        and 15
+        ld b,a
+        ld a,(ix+2)
+        add a,a
+        add a,a
+        add a,a
+        add a,a
+        or b
+        ld b,a
+        ld a,(ix+3)
+        rrca
+        rrca
+        rrca
+        rrca
+        and 15
+        ld c,a
+        ld a,(p_ne)
+        add a,a
+        add a,a
+        add a,a
+        ld e,a
+        ld d,0
+        ld hl,ENP
+        add hl,de
+        push hl
+        pop iy
+        ld (iy+0),0             ; IA: pattuglia
+        ld (iy+1),1             ; velocita'
+        ld (iy+2),0             ; raggio: illimitato
+        ld (iy+3),1             ; vita
+        ld (iy+4),96            ; rilevamento 6 tile
+        ld (iy+7),96            ; durata della pattuglia dei pipistrelli
+        ld a,(ix+1)
+        ld (iy+5),a             ; posizione di partenza
+        ld a,(ix+2)
+        ld (iy+6),a
+        call ept_find
+        ret c
+        inc hl
+        inc hl
+        ld a,(hl)
+        ld (iy+0),a
+        inc hl
+        ld a,(hl)
+        ld (iy+1),a
+        inc hl
+        ld a,(hl)
+        add a,a
+        add a,a
+        add a,a
+        add a,a
+        ld (iy+2),a             ; raggio in px
+        or a
+        jr z,eps_h
+        ld (ix+7),a             ; i pipistrelli: durata della pattuglia = raggio
+        ld (iy+7),a
+eps_h:  inc hl
+        ld a,(hl)
+        ld (iy+3),a
+        inc hl
+        ld a,(hl)
+        add a,a
+        add a,a
+        add a,a
+        add a,a
+        ld (iy+4),a
+        ret
+
 gb_grav:
         ld l,(ix+1)
         ld h,(ix+2)
@@ -235,6 +398,12 @@ gb_grav:
         ret
 
 bat_update:
+        push ix
+        pop hl
+        ld de,ENP-ENT
+        add hl,de
+        push hl
+        pop iy
         ld e,(ix+1)
         ld d,(ix+2)
         bit 0,(ix+4)
@@ -267,7 +436,8 @@ bt_turn:
         ld a,(ix+4)
         xor 1
         ld (ix+4),a
-        ld (ix+7),96
+        ld a,(iy+7)
+        ld (ix+7),a
 bt_y:   ld a,(p_tick)
         srl a
         and 31
@@ -290,7 +460,7 @@ ent_hit:
 eh_l:   push bc
         ld a,(ix+0)
         or a
-        jr z,eh_n
+        jp z,eh_n
         ld hl,(p_x)             ; |dx| < 11 ?
         ld e,(ix+1)
         ld d,(ix+2)
@@ -328,11 +498,19 @@ eh_q:   ld a,h
         add hl,de
         bit 7,h
         jr z,eh_hurt
+        push ix                 ; vita del nemico (ENP+3): con piu' vite serve piu' di un balzo
+        pop hl
+        ld de,ENP-ENT
+        add hl,de
+        push hl
+        pop iy
+        dec (iy+3)
+        jr nz,eh_wd
         ld (ix+0),0             ; il nemico muore
         ld a,(p_kills)
         inc a
         ld (p_kills),a
-        ld a,SFX_STOMP
+eh_wd:  ld a,SFX_STOMP
         call sfx_a
         ld hl,0xFC80            ; rimbalzo
         ld (p_vy),hl
@@ -486,6 +664,7 @@ es_out: push bc
         call hud_attr           ; V9958: sei sprite HUD (piani 10-15) e terminatore
         jr es_col
 es_term:
+        call p2_attrs           ; due giocatori: sprite dell'eroe 2 (piani 10-11)
         ld a,216                ; fine della lista sprite
         out (0x98),a
 es_col: ld c,0                  ; tabelle colore dei riempimenti, solo se il tipo dello slot e' cambiato

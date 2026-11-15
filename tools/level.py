@@ -15,7 +15,7 @@ def rle_encode(tiles: bytes) -> bytes:
     out, i = bytearray(), 0
     while i < len(tiles):
         t, n = tiles[i], 1
-        assert t < 0x40
+        assert t < 0x80
         while i + n < len(tiles) and tiles[i + n] == t and n < 255:
             n += 1
         if n >= 3:
@@ -31,7 +31,7 @@ def rle_decode(data: bytes, count: int) -> bytes:
     while len(out) < count:
         b = data[i]
         if b & 0x80:
-            out += bytes([b & 0x3F]) * data[i + 1]
+            out += bytes([b & 0x7F]) * data[i + 1]
             i += 2
         else:
             out.append(b)
@@ -41,7 +41,8 @@ def rle_decode(data: bytes, count: int) -> bytes:
 
 
 def encode(w, h, tiles, start=(0, 0), theme=0, title="", ents=()):
-    assert len(tiles) == w * h and 1 <= h <= 16 and 1 <= w <= 255
+    """ents: fino a 16 record da 8 byte (colonna, riga, IA, velocita', raggio, vita, rilevamento, 0): docs/LEVEL.md"""
+    assert len(tiles) == w * h and 1 <= h <= 16 and 1 <= w <= 255 and len(ents) <= 16
     hdr = b"LV" + bytes([1, w, h, start[0], start[1], theme])
     hdr += title.encode("ascii")[:16].ljust(16, b"\0")
     hdr += bytes([len(ents)]) + b"".join(bytes(e) for e in ents)
@@ -55,8 +56,8 @@ def decode(blob: bytes):
     w, h, sx, sy, theme = blob[3:8]
     title = blob[8:24].split(b"\0")[0].decode("ascii")
     n = blob[24]
-    ents = [tuple(blob[25 + 3 * i:28 + 3 * i]) for i in range(n)]
-    tiles = rle_decode(blob[25 + 3 * n:-2], w * h)
+    ents = [tuple(blob[25 + 8 * i:33 + 8 * i]) for i in range(n)]
+    tiles = rle_decode(blob[25 + 8 * n:-2], w * h)
     return dict(w=w, h=h, start=(sx, sy), theme=theme, title=title, ents=ents, tiles=tiles)
 
 
@@ -73,9 +74,9 @@ if __name__ == "__main__":
         t[10 * w + x] = 2 if x % 9 else 3
     for _ in range(60):
         t[r.randrange(w * h)] = r.randrange(0, 51)
-    b = encode(w, h, bytes(t), (2, 9), 0, "Prova", [(1, 20, 9), (2, 40, 9)])
+    b = encode(w, h, bytes(t), (2, 9), 0, "Prova", [(20, 9, 0, 1, 0, 1, 6, 0), (40, 9, 2, 3, 4, 2, 8, 0)])
     d = decode(b)
-    assert d["tiles"] == bytes(t) and d["title"] == "Prova" and d["ents"][1] == (2, 40, 9)
+    assert d["tiles"] == bytes(t) and d["title"] == "Prova" and d["ents"][1] == (40, 9, 2, 3, 4, 2, 8, 0)
     assert ls.valid_blob(b), "il server deve accettarlo"
     worst = encode(w, h, bytes(r.randrange(0, 51) for _ in range(w * h)))
     assert len(worst) < ls.MAX_SIZE
