@@ -8,7 +8,7 @@ sono quelli della ROM: `assets/maniero/rom/` (mappe estratte), `tools/import_rom
 ## Finestra verticale (`editor/tall.asm`, segmento 3)
 - Il livello intero sta in RAM (`BIG`, 0xD800: 32 righe x 64 colonne); il motore lavora su `MAP`, una **finestra di 12 righe**
   (11 visibili) copiata da BIG a partire dalla riga `p_cr`. Fisica, collisioni, nemici, camera orizzontale non cambiano.
-- Quando un eroe supera 32 px dal bordo alto (o 144 dal basso) la finestra scorre di 6 righe: `win_save` (MAP -> BIG: le monete
+- Quando un eroe sale sopra y=80 (o scende oltre 144) la finestra scorre di 4 righe (`WSTEP`, `WUP` in tall.asm: l'eroe resta nella meta' bassa dello schermo): `win_save` (MAP -> BIG: le monete
   prese restano prese; i marcatori dei nemici restano in BIG), `win_load`, ribasamento delle y (eroi, checkpoint, nemici nelle
   righe in comune), nemici delle righe nuove creati da BIG, ridisegno completo (`sw_fill`). Lo scorrimento e' "a scatti"
   (non fluido come nel V9990): costo di qualche fotogramma.
@@ -25,10 +25,10 @@ sono quelli della ROM: `assets/maniero/rom/` (mappe estratte), `tools/import_rom
   UNA VOLTA nelle tre viste (righe 0-7 e 184-191; gioco nelle righe 8-183: `p_voff`, `p_vh`, `p_vmax`, `p_vr1`, `view_geo_i`).
 - **HUD fermo con l'interruzione di linea** (`editor/irq.asm`): lo scorrimento hardware R#26/R#27 vale per tutto lo schermo; la
   ISR (IM 2, vettori a 0xEC00, gestore a 0xEDED, solo IRQ di linea, IE0 spento: il vblank resta a polling) porta lo scroll a 0
-  alla riga 8 -> camera, alla riga 184 -> 0 (R#19 = 7 / 183). Prima le fasce si ricopiavano ruotate della camera a ogni fotogramma
+  alla riga 8 -> camera, alla riga 184 -> 0 (R#19 = 6 / 183: la ISR parte sul filetto blu, dove lo scroll cambia senza che si veda). Prima le fasce si ricopiavano ruotate della camera a ogni fotogramma
   (2 KB di HMMM, ~20% del tempo durante lo scorrimento). Misura (`t_frames.tcl`, 8 s di corsa): 307 -> 371 fotogrammi.
   Atomicita' sulla porta 0x99: ogni coppia di byte del codice normale sta fra `di` e `call vei` (`vei` riabilita le IRQ solo se
-  `irq_on`); `vdp_wait` rilegge S#2 a ogni giro dentro DI. I frame compilati degli sprite hanno centinaia di coppie non protette:
+  `irq_on`); `vdp_wait` imposta R#15=2 una volta sola e tiene le IRQ attive durante l'attesa: la ISR (che legge S#1) ripristina R#15 da `vdp_r15`. I frame compilati degli sprite hanno centinaia di coppie non protette:
   la ISR guarda il PC interrotto (`sw_inframe`, opcode ld a,d / adc a,0 / ld d,a / out dopo ld d,a), se e' fra i due out legge S#0
   per azzerare il latch (ricorda il flag di vblank in `isr_vb`, che `sw_vwait` considera visto) e alla fine rimanda E.
   Attiva solo nei livelli alti (`irq_start` in `play_init`, `irq_stop` in `play_end`). Su hardware vero serve il vettore IM 2

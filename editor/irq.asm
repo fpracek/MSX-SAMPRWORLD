@@ -10,7 +10,7 @@
 RG0SAV  equ 0xF3DF
 ISRADR  equ 0xEDED              ; indirizzo del gestore = valore di ogni byte della tabella (0xED) x2
 ISRTAB  equ 0xEC00              ; 257 byte di vettori: I = 0xEC
-LTOP    equ 7                   ; R#19: IRQ all'inizio della riga 8 (fine HUD alto)
+LTOP    equ 6                   ; R#19: la ISR parte all'inizio della riga 7 (il filetto blu: lo scroll cambia li', invisibile)
 LBOT    equ 183                 ; IRQ all'inizio della riga 184 (inizio HUD basso)
 
 irq_start_i:
@@ -26,6 +26,7 @@ irq_start_i:
         ldir
         xor a
         ld (isr_st),a
+        ld (vdp_r15),a
         ld (isr_c26),a
         ld (isr_c27),a
         ld (sw_inframe),a
@@ -101,15 +102,15 @@ irq_regs:
         ret
 
 ; ---- il gestore: copiato in RAM a ISRADR (solo salti relativi e indirizzi assoluti)
+; Percorso veloce (codice normale: le coppie sulla 0x99 sono protette da DI): scroll subito, poi si azzera il flag FH.
+; Dentro un frame compilato (sw_inframe) si controlla prima se il PC e' fra i due out di una coppia.
 isr_rom:
         push af
-        push hl
-        xor a
-        ld (isr_mp),a
         ld a,(sw_inframe)
         or a
-        jr z,isr_c
-        ld hl,4                 ; PC interrotto: SP+4 (HL, AF, poi l'indirizzo di ritorno)
+        jr z,isr_g
+isr_f:  push hl                 ; dentro un frame compilato: il PC interrotto e' a SP+4 (HL, AF, ritorno)
+        ld hl,4
         add hl,sp
         ld a,(hl)
         inc hl
@@ -123,11 +124,11 @@ isr_rom:
         cp 0x57
         jr z,isr_m
         cp 0xD3                 ; out (0x99),a preceduto da ld d,a: e' il secondo
-        jr nz,isr_c
+        jr nz,isr_n
         dec hl
         ld a,(hl)
         cp 0x57
-        jr nz,isr_c
+        jr nz,isr_n
 isr_m:  ld a,1
         ld (isr_mp),a
         in a,(0x99)             ; il primo byte e' in sospeso: leggere lo stato azzera il latch (ma consuma il flag di vblank: lo si ricorda)
@@ -135,16 +136,8 @@ isr_m:  ld a,1
         ld hl,isr_vb
         or (hl)
         ld (hl),a
-isr_c:  ld a,1                  ; S#1: azzera il flag FH (spegne la richiesta)
-        out (0x99),a
-        ld a,0x8F
-        out (0x99),a
-        in a,(0x99)
-        xor a
-        out (0x99),a
-        ld a,0x8F
-        out (0x99),a
-        ld a,(isr_st)
+isr_n:  pop hl
+isr_g:  ld a,(isr_st)
         or a
         jr nz,isr_b
         ld a,(isr_c27)          ; riga alta raggiunta: scroll della camera
@@ -161,7 +154,7 @@ isr_c:  ld a,1                  ; S#1: azzera il flag FH (spegne la richiesta)
         out (0x99),a
         ld a,1
         ld (isr_st),a
-        jr isr_x
+        jr isr_c
 isr_b:  xor a                   ; riga bassa raggiunta: scroll 0 (HUD fermo)
         out (0x99),a
         ld a,0x9B
@@ -176,13 +169,23 @@ isr_b:  xor a                   ; riga bassa raggiunta: scroll 0 (HUD fermo)
         out (0x99),a
         xor a
         ld (isr_st),a
-isr_x:  ld a,(isr_mp)
+isr_c:  ld a,1                  ; S#1: azzera il flag FH (spegne la richiesta); poi R#15 torna al valore del codice interrotto
+        out (0x99),a
+        ld a,0x8F
+        out (0x99),a
+        in a,(0x99)
+        ld a,(vdp_r15)
+        out (0x99),a
+        ld a,0x8F
+        out (0x99),a
+        ld a,(isr_mp)
         or a
         jr z,isr_e
+        xor a
+        ld (isr_mp),a
         ld a,e                  ; coppia interrotta: si rimanda il primo byte (E: lo stesso gia' inviato)
         out (0x99),a
-isr_e:  pop hl
-        pop af
+isr_e:  pop af
         ei
         reti
 isr_end:

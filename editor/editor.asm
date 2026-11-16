@@ -880,22 +880,23 @@ vwl:    in a,(0x99)
         ret
 
 vdp_wait:
-vwc:    di
+        di
         ld a,2
+        ld (vdp_r15),a          ; la ISR (che legge S#1) ripristina R#15 da questa variabile: durante l'attesa le IRQ entrano subito
         out (0x99),a
         ld a,0x8F
         out (0x99),a
-        in a,(0x99)
-        push af
-        xor a
-        out (0x99),a
-        ld a,0x8F
-        out (0x99),a
-        pop af
-        call vei                ; (le IRQ entrano fra un giro e l'altro)
+        call vei
+vwc:    in a,(0x99)
         rrca
         jr c,vwc
-        ret
+        di
+        xor a
+        ld (vdp_r15),a
+        out (0x99),a
+        ld a,0x8F
+        out (0x99),a
+        jp vei
 
 ; esegue il comando VDP descritto da 15 byte in (HL), a partire da R#32
 vdp_cmd:

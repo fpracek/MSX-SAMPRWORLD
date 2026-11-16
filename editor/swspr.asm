@@ -78,6 +78,7 @@ sw_inframe equ PXV+0x95         ; 1 = si sta eseguendo un frame compilato (coppi
 isr_l1  equ PXV+0x96            ; R#19 per la riga alta
 isr_l2  equ PXV+0x97            ; R#19 per la riga bassa
 isr_r1  equ PXV+0x98            ; RG1SAV originale
+vdp_r15 equ PXV+0x9A            ; valore di R#15 (selezione del registro di stato) che la ISR deve ripristinare
 isr_vb  equ PXV+0x99            ; bit7 = la ISR ha consumato il flag di vblank (sw_vwait lo deve considerare visto)
 sw_wy   equ PXV+0x89            ; y dell'oggetto nella finestra (la y nella vista e' sw_ry = sw_wy + p_voff)
 sw_t    equ PXV+0x3B            ; 2 byte

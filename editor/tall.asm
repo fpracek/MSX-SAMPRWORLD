@@ -12,7 +12,8 @@ BIG     equ 0xD800              ; 2 KB: dopo REC (blob, max ~700 byte per i live
 BIGW    equ 64
 BIGH    equ 32
 CRMAX   equ BIGH-MAPH           ; riga massima della finestra
-WSTEP   equ 6                   ; righe per scorrimento
+WSTEP   equ 4                   ; righe per scorrimento
+WUP     equ 80                  ; sopra questa y (top dell'eroe) la finestra sale: l'eroe resta nella meta' bassa dello schermo
 ; variabili: p_needk/p_cr/p_tall/p_tkey sono in swspr.asm
 p_ncr   equ PXV+0x52
 p_dlt   equ PXV+0x53            ; 2 byte: variazione delle y (px) dovuta allo scorrimento
@@ -432,7 +433,7 @@ wc_2:   ld ix,HS0
         sbc hl,de
         ret z                   ; entrambi morti
 wc_go:  ld hl,(p_ymin)          ; verso l'alto?
-        ld de,32
+        ld de,WUP
         or a
         sbc hl,de
         jp p,wc_dn
@@ -486,7 +487,7 @@ wc_d1:  ld b,a                  ; nuova riga
         ld hl,(p_ymin)
         or a
         sbc hl,de
-        ld de,32                ; chi sta in alto deve restare sotto 32
+        ld de,WUP               ; chi sta in alto deve restare sotto WUP
         or a
         sbc hl,de
         ret m
