@@ -61,6 +61,7 @@ ent_spawn:
         xor a
         ld (p_ne),a
         ld (p_kills),a
+ent_spawn_scan:                 ; (anche da tall.asm: nemici delle righe nuove)
         ld hl,MAP
         ld bc,MAPW*MAPH
 es_l:   ld a,(hl)
@@ -321,6 +322,9 @@ ep_spawn:
         rrca
         and 15
         ld c,a
+        ld a,(p_cr)             ; livelli alti: la riga del record e' quella di BIG
+        add a,c
+        ld c,a
         ld a,(p_ne)
         add a,a
         add a,a
@@ -514,6 +518,7 @@ eh_q:   ld a,h
         ld a,(p_kills)
         inc a
         ld (p_kills),a
+        call hud_kill
 eh_wd:  ld a,SFX_STOMP
         call sfx_a
         ld hl,0xFC80            ; rimbalzo
@@ -525,6 +530,9 @@ eh_wd:  ld a,SFX_STOMP
         pop ix
         jr eh_n
 eh_hurt:
+        ld a,(p_dead)
+        or a
+        call z,hud_die
         ld a,40
         ld (p_dead),a
         ld a,SFX_DIE

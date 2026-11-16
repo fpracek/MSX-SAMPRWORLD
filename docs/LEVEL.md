@@ -4,7 +4,7 @@
 00 'L','V'
 02 ver = 1
 03 w         colonne (1-255)
-04 h         righe (1-16)
+04 h         righe (1-16); h = 32 = livello alto (docs/TALL.md): mappa RLE di 64x32 tile invece di 128x12
 05 start_x   colonna di partenza
 06 start_y   riga di partenza
 07 theme     0 = prato, 1 = caverna, 2 = castello (sfondo/musica)

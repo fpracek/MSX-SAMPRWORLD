@@ -360,6 +360,11 @@ bk_bad: ld a,8
 
 ; REC -> MAP (RLE); i tile fuori dal catalogo diventano vuoti
 blob_decode:
+        xor a
+        ld (p_tall),a
+        ld a,(REC+4)            ; h > 12: livello alto (tall.asm)
+        cp MAPH+1
+        jp nc,tall_decode
         ld a,(REC+24)           ; n_ent (<= EP_MAX: lo garantisce blob_check)
         ld (ept_n),a
         add a,a

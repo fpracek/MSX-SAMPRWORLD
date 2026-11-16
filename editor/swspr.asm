@@ -32,6 +32,42 @@ sw_rx   equ PXV+0x37
 sw_ry   equ PXV+0x38
 sx_t    equ PXV+0x39
 sx_n2   equ PXV+0x3A
+p_cmax  equ PXV+0x4B            ; 2 byte: camera massima = larghezza del livello (ultima colonna non vuota + 1) * 16 - 256
+p_needk equ PXV+0x4D            ; 1 byte: il livello ha una chiave (serve per uscire)
+p_cr    equ PXV+0x4E            ; livelli alti (tall.asm): riga di BIG in cima alla finestra MAP
+p_tall  equ PXV+0x4F            ; 1 = livello alto (32 righe) in BIG
+p_tkey  equ PXV+0x50            ; 1 = c'e' una chiave in BIG
+; HUD dei livelli alti (hud.asm) e geometria delle viste
+h_init  equ PXV+0x5E            ; 0xA5 = punteggi inizializzati
+h_sc1   equ PXV+0x5F            ; 3 byte BCD (LSB per primo)
+h_sc2   equ PXV+0x62
+h_hi    equ PXV+0x65
+h_life  equ PXV+0x68
+h_dirty equ PXV+0x69            ; bit0 = fascia alta da ridisegnare, bit1 = bassa
+p_voff  equ PXV+0x6A            ; riga della vista dove inizia il gioco: 0 normale, 8 con l'HUD
+p_vh    equ PXV+0x6B            ; altezza del gioco in righe: 192 / 176
+p_vmax  equ PXV+0x6C            ; y massima (esclusa) di un oggetto interamente visibile: 177 / 161
+p_vr1   equ PXV+0x6D            ; ultima riga di tile disegnata nel master: MAPH-1 / 10
+h_nrow  equ PXV+0x6E
+h_tmp   equ PXV+0x6F
+h_f1    equ PXV+0x70
+h_f2    equ PXV+0x71
+h_fill  equ PXV+0x72
+h_line  equ PXV+0x73
+h_col   equ PXV+0x74
+h_rm    equ PXV+0x75
+h_ad    equ PXV+0x76            ; 2 byte
+h_rows  equ PXV+0x78
+h_pg    equ PXV+0x79
+h_rot   equ PXV+0x7A
+h_sx    equ PXV+0x7B
+h_dx    equ PXV+0x7C
+h_nx    equ PXV+0x7D
+h_nh    equ PXV+0x7E
+h_sy    equ PXV+0x7F
+h_dy    equ PXV+0x80
+h_buf   equ PXV+0x81            ; 8 byte
+sw_wy   equ PXV+0x89            ; y dell'oggetto nella finestra (la y nella vista e' sw_ry = sw_wy + p_voff)
 sw_t    equ PXV+0x3B            ; 2 byte
 sw_j    equ PXV+0x3E            ; oggetto corrente
 sw_fr   equ PXV+0x3F            ; frame dell'oggetto corrente
@@ -61,7 +97,8 @@ pls_ne: ld a,(sw_dbg)
 pls_nl: call hero_calcframe
         jr pls_cm
 pls_2:  call play_2p_sw         ; due giocatori: fisica e frame di entrambi, camera sul leader
-pls_cm: call ring_frame         ; politica di camera (in sw_on aggiorna solo p_cam)
+pls_cm: call win_check
+        call ring_frame         ; politica di camera (in sw_on aggiorna solo p_cam)
         ld a,(sw_dbg)
         bit 0,a
         call z,sw_update
@@ -106,6 +143,24 @@ sw_update: ld bc,sw_update_i
 sw_fill:   ld bc,sw_fill_i
            jr sw_tr
 sw_cell:   ld bc,sw_cell_i
+           jr sw_tr
+win_check: ld bc,win_check_i
+           jr sw_tr
+win_fit:   ld bc,win_fit_i
+           jr sw_tr
+tall_init: ld bc,tall_init_i
+           jr sw_tr
+tall_decode: ld bc,tall_decode_i
+           jr sw_tr
+hud_item:  ld bc,hud_item_i             ; A = tile raccolto
+           jp seg3_tr
+hud_kill:  ld bc,hud_kill_i
+           jp seg3_tr
+hud_win:   ld bc,hud_win_i
+           jp seg3_tr
+hud_die:   ld bc,hud_die_i
+           jp seg3_tr
+view_geo:  ld bc,view_geo_i
 sw_tr:     ld a,3
            ld (0xB000),a
            call sw_jbc
@@ -126,5 +181,8 @@ ssb_l:  push bc
         otir
         pop bc
         djnz ssb_l
+        ld a,(p_tall)           ; livelli alti: l'HUD e' quello nelle viste (hud.asm)
+        or a
+        ret nz
         jp hud_attr
 

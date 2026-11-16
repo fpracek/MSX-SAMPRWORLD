@@ -1,13 +1,16 @@
-; campaign.asm - i 10 livelli fissi della campagna, sempre presenti nella ROM (segmento 6, tools/make_levels.py).
+; campaign.asm - i 7 livelli fissi della campagna, sempre presenti nella ROM (segmento 6, tools/make_levels.py).
 ; Directory: byte 0 = numero di livelli, poi voci da 20 byte: offset(2), lunghezza(2), titolo(16).
 ; Si giocano come i livelli scaricati (play_foreign): non toccano il lavoro dell'editor.
 CAMPSEG equ 6
-cp_n    equ 10
+cp_n    equ 4
 cp_sel  equ FBUF+0xB1
 cp_done equ FBUF+0xB2           ; 2 byte: bit i = livello i superato (solo in questa sessione)
 
 do_campaign:
         call hide_cursor
+        ld a,(p_ring)
+        or a
+        jp z,cp_nov             ; i livelli alti (scorrimento verticale, HUD) richiedono il V9958
         xor a
         ld (cp_sel),a
         call cp_draw
@@ -219,7 +222,35 @@ cd_n:   pop bc
         ld hl,s_cph2
         jp print_str
 
-s_cptitle: db "CAMPAIGN - 10 LEVELS",0
+; MSX2 (V9938): la campagna usa sprite software e scorrimento hardware, solo V9958
+cp_nov: ld hl,p_clear
+        call vdp_cmd
+        ld a,15
+        ld (FORCLR),a
+        ld a,1
+        ld (BAKCLR),a
+        ld hl,8
+        ld (GRPACX),hl
+        ld hl,80
+        ld (GRPACY),hl
+        ld hl,s_nov1
+        call print_str
+        ld hl,8
+        ld (GRPACX),hl
+        ld hl,96
+        ld (GRPACY),hl
+        ld hl,s_nov2
+        call print_str
+cn_w:   call vwait
+        ld a,7
+        call readrow
+        and 0x84                ; ESC o INVIO (premuti = 0)
+        cp 0x84
+        jr z,cn_w
+        ret
+s_nov1: db "The campaign needs an MSX2+",0
+s_nov2: db "(V9958). Press ESC.",0
+s_cptitle: db "CAMPAIGN - 4 LEVELS",0
 s_cpdone:  db "[X]",0
 s_cph1:    db "UP/DOWN select  ENTER play",0
 s_cph2:    db "ESC back  [X] = cleared",0

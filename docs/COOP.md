@@ -39,3 +39,8 @@ pagina 1; il livello di rete per il gioco remoto richiedera' un'ulteriore riloca
 ## Test
 `editor/tests/t_coop.tcl` (corsa, camera, riporto), `t_coop2.tcl` (rinascite, V9958 e V9938 con `TAG`/`-machine`),
 `t_menu2p.tcl` (voce di menu). Il ROM di test accetta tasti forzati scrivendo in 0xC765 (P1) e 0xC764 (P2).
+
+## Livelli alti (scorrimento verticale)
+Nei livelli alti (docs/TALL.md) la finestra verticale scorre solo se entrambi gli eroi restano visibili: chi sale verso il bordo
+alto mentre l'altro e' piu' in basso di ~7 righe resta bloccato al bordo finche' l'altro non si avvicina (stessa regola della
+camera orizzontale).

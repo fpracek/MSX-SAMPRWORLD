@@ -1,0 +1,218 @@
+[
+ {
+  "stage": 1,
+  "segment": 20,
+  "rom_offset": 327680,
+  "coins": [
+   [
+    270,
+    80
+   ]
+  ],
+  "blocks": [],
+  "enemies": [
+   {
+    "type": 1,
+    "x": 256,
+    "y": 144,
+    "range": 190,
+    "frameL": 34,
+    "frameR": 26,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 128,
+    "detect": 800,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 2,
+    "x": 250,
+    "y": 464,
+    "range": 100,
+    "frameL": 88,
+    "frameR": 80,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 230,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   }
+  ]
+ },
+ {
+  "stage": 2,
+  "segment": 28,
+  "rom_offset": 458752,
+  "coins": [],
+  "blocks": [],
+  "enemies": [
+   {
+    "type": 1,
+    "x": 264,
+    "y": 416,
+    "range": 40,
+    "frameL": 88,
+    "frameR": 80,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 2,
+    "x": 352,
+    "y": 464,
+    "range": 64,
+    "frameL": 34,
+    "frameR": 26,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 3,
+    "x": 240,
+    "y": 144,
+    "range": 100,
+    "frameL": 34,
+    "frameR": 26,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 800,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   }
+  ]
+ },
+ {
+  "stage": 3,
+  "segment": 23,
+  "rom_offset": 376832,
+  "coins": [
+   [
+    240,
+    272
+   ]
+  ],
+  "blocks": [],
+  "enemies": [
+   {
+    "type": 1,
+    "x": 240,
+    "y": 368,
+    "range": 120,
+    "frameL": 72,
+    "frameR": 64,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 2,
+    "x": 220,
+    "y": 176,
+    "range": 120,
+    "frameL": 120,
+    "frameR": 112,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 3,
+    "x": 288,
+    "y": 464,
+    "range": 120,
+    "frameL": 88,
+    "frameR": 80,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 4,
+    "x": 184,
+    "y": 424,
+    "range": 15,
+    "frameL": 72,
+    "frameR": 64,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 400,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   }
+  ]
+ },
+ {
+  "stage": 4,
+  "segment": 24,
+  "rom_offset": 393216,
+  "coins": [
+   [
+    264,
+    80
+   ]
+  ],
+  "blocks": [],
+  "enemies": [
+   {
+    "type": 1,
+    "x": 250,
+    "y": 272,
+    "range": 100,
+    "frameL": 34,
+    "frameR": 26,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   },
+   {
+    "type": 2,
+    "x": 288,
+    "y": 464,
+    "range": 120,
+    "frameL": 88,
+    "frameR": 80,
+    "ai": 0,
+    "speed": 1,
+    "aggr": 160,
+    "detect": 4096,
+    "health": 1,
+    "leader": 0,
+    "follow": 0
+   }
+  ]
+ }
+]

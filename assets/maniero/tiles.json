@@ -495,8 +495,8 @@
    0,
    7
   ],
-  "name": "Wooden frame A",
-  "class": "decor",
+  "name": "Wooden ladder B",
+  "class": "climb",
   "replaces": ""
  },
  {
@@ -575,9 +575,9 @@
    0,
    8
   ],
-  "name": "Wooden frame B",
-  "class": "decor",
-  "replaces": ""
+  "name": "Wooden ladder",
+  "class": "climb",
+  "replaces": "LADDER"
  },
  {
   "id": 58,
@@ -815,8 +815,18 @@
    0,
    12
   ],
-  "name": "Wooden ladder",
-  "class": "climb",
-  "replaces": "LADDER"
+  "name": "Dark ladder (decor)",
+  "class": "decor",
+  "replaces": ""
+ },
+ {
+  "id": 82,
+  "cell": [
+   -1,
+   83
+  ],
+  "name": "Heart",
+  "class": "pickup",
+  "replaces": "POTION"
  }
 ]

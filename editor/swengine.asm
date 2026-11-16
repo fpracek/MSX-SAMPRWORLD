@@ -40,7 +40,7 @@ sw_fill_i:                        ; HL = camera
         ld e,c                  ; DE = lo, HL = lo+256
         xor a
         ld (r_r0),a
-        ld a,MAPH-1
+        ld a,(p_vr1)
         ld (r_r1),a
         call ring_strip
         ld hl,(sw_t)
@@ -63,6 +63,7 @@ sf_cp:  ld hl,P                 ; HMMM master (0,768) -> pagina sx_pg, 256x192
         inc hl
         ld (hl),a
         inc hl
+        ld a,(p_voff)
         ld (hl),a
         inc hl
         ld a,(sx_pg)
@@ -73,7 +74,8 @@ sf_cp:  ld hl,P                 ; HMMM master (0,768) -> pagina sx_pg, 256x192
         inc hl
         ld (hl),1
         inc hl
-        ld (hl),192
+        ld a,(p_vh)
+        ld (hl),a
         inc hl
         xor a
         ld (hl),a
@@ -90,6 +92,7 @@ sf_cp:  ld hl,P                 ; HMMM master (0,768) -> pagina sx_pg, 256x192
         ld (sx_pg),a
         cp 3
         jr nz,sf_cp
+        call hud_fill_all_i     ; HUD dei livelli alti nelle tre viste
         ld hl,(p_cam)
         ld (sw_cam),hl
         ld (sw_cam+2),hl
@@ -126,6 +129,7 @@ su2:    ld (sw_E),a
         ld hl,(r_lo)
         ld (sw_lo+6),hl
         call sw_view_strip      ; vista D: le stesse colonne, copiate dal master
+        call hud_frame_i        ; HUD dei livelli alti (hud.asm)
         call vdp_wait           ; (le strisce di D devono essere finite prima di disegnarci)
         call sw_objs            ; lista degli oggetti: nemici, eroe
         xor a
@@ -319,7 +323,7 @@ svs_left:
         ld (sx_x),a
 svs_do: xor a
         ld (sx_y),a
-        ld a,192
+        ld a,(p_vh)
         ld (sx_h),a
         ld a,(sw_D)
         ld (sx_pg),a
@@ -374,6 +378,9 @@ sx_do:  ld (sx_t),a
         ld (hl),0
         inc hl
         ld a,(sx_y)
+        ld c,a
+        ld a,(p_voff)
+        add a,c
         ld (hl),a
         inc hl
         ld a,(sx_pg)
@@ -455,10 +462,14 @@ sw_draw:
         inc hl
         ld b,(hl)               ; BC = x del mondo
         inc hl
-        ld a,(hl)               ; y
-        cp 177
+        ld a,(hl)               ; y (nella finestra)
+        ld hl,p_vmax
+        cp (hl)
         ret nc                  ; fuori schermo (sopra/sotto)
-        ld (sw_ry),a
+        ld (sw_wy),a
+        ld hl,p_voff
+        add a,(hl)
+        ld (sw_ry),a            ; y nella vista
         ld h,b
         ld l,c
         ld de,(p_cam)
@@ -484,7 +495,7 @@ sw_draw:
         ld (hl),a
         ld hl,SWY
         add hl,de
-        ld a,(sw_ry)
+        ld a,(sw_wy)
         ld (hl),a
         ld a,(sw_rx)
         cp 241
@@ -667,6 +678,10 @@ sw_jphl:
 
 ; una cella della mappa e' cambiata: master e le tre viste
 sw_cell_i:
+        ld a,(p_vr1)            ; le righe sotto l'area di gioco (HUD) non si disegnano
+        ld hl,bo_row
+        cp (hl)
+        ret c
         ld a,3
 sc_l:   ld (sx_pg),a
         ld (bc_pg),a

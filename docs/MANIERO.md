@@ -36,5 +36,5 @@ Eroe, giocatore 2 (abiti rossi), soldato, medico e poliziotto usano i frame del 
 ## Cosa manca
 1. L'operaio e le animazioni di colpo/morte; nemici che usano le scale.
 2. Ridisegnare con la nuova palette i tile funzionali che l'arte non ha (molla, spuntoni, acqua, lava, checkpoint, blocchi).
-3. Ricostruire i 10 livelli della campagna con i nuovi blocchi (`tools/make_levels.py` usa ancora i tile legacy).
+3. Ricostruiti i 7 livelli originali (`tools/import_maniero_levels.py`, `docs/CAMPAIGN.md`).
 4. Le 8 IA complete: oggi pattuglia, dormiglione, inseguitore e pauroso (goblin); il pipistrello usa raggio e vita.

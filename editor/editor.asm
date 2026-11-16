@@ -104,10 +104,14 @@ start:  di
         ld de,FLRT
         ld bc,flashrt_end-flashrt_rom
         ldir
-        ld hl,netrt_rom
+        ld a,9                  ; il modulo di rete sta nel segmento 9 (finestra A000)
+        ld (0xB000),a
+        ld hl,0xA000
         ld de,NETRT
         ld bc,netrt_end-netrt_rom
         ldir
+        ld a,HEROSEG
+        ld (0xB000),a
         ld a,DRAFTSEG           ; rileva la flash (e se manca non si tenta di salvare)
         ld (BANKW),a
         call ram_probe
@@ -167,6 +171,8 @@ st_nf:  ld (v_flash),a
         ld (p_two),a            ; un giocatore (il menu lo cambia)
         ld (p_tin1),a           ; (solo TESTBUILD: tasti forzati da Tcl) la RAM all'accensione non e' azzerata
         ld (p_tin2),a
+        ld (p_tall),a
+        ld (p_cr),a
         ld (p_sw),a
         ld (sw_on),a
         ld (sw_dbg),a
@@ -1058,8 +1064,6 @@ utn:    pop bc
         include "coop.asm"
         include "swspr.asm"
         include "props.asm"
-netrt_rom:
-        include "netpub.asm"
 
 ; ------------------------------------------------------------------------- dati
 p_clear: db 0,0,0,0, 0,0,0,0, 0,1, 212,0, 0x11,0,0xC0
@@ -1090,16 +1094,20 @@ tile_names_end:
         include "swreach.asm"
         include "swprops.asm"
         include "swcam.asm"
+        include "tall.asm"
+        include "hud.asm"
         include "swtab.inc"
 swh_end:
         ent
         ds 0x2000-(swh_end-0xA000),0xFF
         incbin "../assets/sprites.bin"          ; segmento 4: sprite eroe + nemici (finestra A000)
         incbin "../assets/tiles_seg.bin"        ; segmento 5: tileset (finestra A000)
-        incbin "../assets/campaign.bin"         ; segmento 6: i 10 livelli fissi della campagna
+        incbin "../assets/campaign.bin"         ; segmento 6: i 7 livelli fissi della campagna
         incbin "../assets/tiles_seg2.bin"       ; segmento 7: tile 64..127
         incbin "../assets/tiles_seg3.bin"       ; segmento 8: tile 128..191
-        ds 0x2000,0xFF                          ; segmento 9 (riservato ai tile 192..)
+netrt_rom:                                              ; segmento 9 (i tile 192.. non servono): modulo di rete, copiato in RAM all'avvio
+        include "netpub.asm"
+        ds 0x2000-(netrt_end-netrt_rom),0xFF
         include "swfr10.inc"                    ; segmento 10: frame compilati degli sprite software (finestra 8000)
         ds 0x2000-(swfr10_end-0x8000),0xFF
         include "swfr11.inc"                    ; segmento 11

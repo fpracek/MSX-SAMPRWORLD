@@ -770,9 +770,9 @@
  {
   "id": 96,
   "key": "M49",
-  "nome": "Wooden frame A",
+  "nome": "Wooden ladder B",
   "categoria": "castle",
-  "classe": "decorazione",
+  "classe": "scalabile",
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
@@ -825,14 +825,6 @@
  },
  {
   "id": 103,
-  "key": "M57",
-  "nome": "Wooden frame B",
-  "categoria": "castle",
-  "classe": "decorazione",
-  "descrizione": "Il Maniero (N. Brogelli)"
- },
- {
-  "id": 104,
   "key": "M59",
   "nome": "Rocks A",
   "categoria": "castle",
@@ -840,7 +832,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 105,
+  "id": 104,
   "key": "M60",
   "nome": "Rocks B",
   "categoria": "castle",
@@ -848,7 +840,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 106,
+  "id": 105,
   "key": "M61",
   "nome": "Chair left",
   "categoria": "castle",
@@ -856,7 +848,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 107,
+  "id": 106,
   "key": "M62",
   "nome": "Chair right",
   "categoria": "castle",
@@ -864,7 +856,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 108,
+  "id": 107,
   "key": "M63",
   "nome": "Roof corner A",
   "categoria": "castle",
@@ -872,7 +864,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 109,
+  "id": 108,
   "key": "M64",
   "nome": "Roof corner B",
   "categoria": "castle",
@@ -880,7 +872,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 110,
+  "id": 109,
   "key": "M65",
   "nome": "Table drawer",
   "categoria": "castle",
@@ -888,7 +880,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 111,
+  "id": 110,
   "key": "M70",
   "nome": "Iron door top",
   "categoria": "castle",
@@ -896,7 +888,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 112,
+  "id": 111,
   "key": "M71",
   "nome": "Cabinet",
   "categoria": "castle",
@@ -904,7 +896,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 113,
+  "id": 112,
   "key": "M72",
   "nome": "Detail A",
   "categoria": "castle",
@@ -912,7 +904,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 114,
+  "id": 113,
   "key": "M74",
   "nome": "Detail B",
   "categoria": "castle",
@@ -920,7 +912,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 115,
+  "id": 114,
   "key": "M75",
   "nome": "Detail C",
   "categoria": "castle",
@@ -928,7 +920,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 116,
+  "id": 115,
   "key": "M77",
   "nome": "Iron door bottom",
   "categoria": "castle",
@@ -936,7 +928,7 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 117,
+  "id": 116,
   "key": "M78",
   "nome": "Arch frame",
   "categoria": "castle",
@@ -944,9 +936,17 @@
   "descrizione": "Il Maniero (N. Brogelli)"
  },
  {
-  "id": 118,
+  "id": 117,
   "key": "M80",
   "nome": "Void",
+  "categoria": "castle",
+  "classe": "decorazione",
+  "descrizione": "Il Maniero (N. Brogelli)"
+ },
+ {
+  "id": 118,
+  "key": "M81",
+  "nome": "Dark ladder (decor)",
   "categoria": "castle",
   "classe": "decorazione",
   "descrizione": "Il Maniero (N. Brogelli)"

@@ -1,6 +1,6 @@
 # SamPr World
 
-A fantasy platformer for **MSX2+** (SCREEN 5, V9958 hardware scrolling; a plain MSX2/V9938 still works with a slower step-scroll fallback) with a built-in level editor, ten fixed campaign levels, and
+A fantasy platformer for **MSX2+** (SCREEN 5, V9958 hardware scrolling; a plain MSX2/V9938 still works with a slower step-scroll fallback) with a built-in level editor, the seven original Il Maniero levels as the campaign, and
 level sharing over the network: levels made by other players are downloaded from a server through **UNAPI** (UDP).
 Runs from a **Yamanooto** cartridge (Konami5/SCC mapper, flash for saving a draft and the network settings).
 
@@ -16,7 +16,7 @@ and load `editor.rom` in slot B as `-romtype Yamanooto` (in the openMSX GUI: Car
 
 ## What is in the game
 - **Title menu**: Play the campaign - Create levels - Server levels - Network settings (F1 reopens it from the editor).
-- **Campaign**: 10 fixed levels (meadows, caves, castle) always available in the ROM (`tools/make_levels.py`).
+- **Campaign**: the levels of the *current* Il Maniero ROM (512x512 px, vertical scrolling, ladders between floors), with an arcade-style HUD above and below the playfield (1UP/HI/2UP, LIFE/AMMO/KEY, scores, lives); always available in the ROM (`tools/make_tall.py`, `docs/TALL.md`, `docs/CAMPAIGN.md`). MSX2+ (V9958) only.
 - **Editor** (arrows move, SPACE places, X/DEL erases, `,` `.` previous/next block, TAB block list, P pick, S save the
   draft to flash (it is also saved automatically before F1 menu and T test-play), L reload it, SELECT new level, T test-play, U publish, D server levels, N network settings).
 - **Test-play**: physics, one-way platforms, ladders, water, springs, checkpoints, coins/gems/keys, crumbling blocks,
@@ -39,6 +39,6 @@ and load `editor.rom` in slot B as `-romtype Yamanooto` (in the openMSX GUI: Car
 - `docs/` - flash layout, level format, validation, scrolling and audio notes (Italian)
 
 ## Status
-Everything is verified in openMSX (including a scripted bot that clears all 10 campaign levels), but not yet on real
+Everything is verified in openMSX (including a scripted bot that clears all 7 campaign levels), but not yet on real
 hardware: flash timing and 64 KB alignment on the Yamanooto, real UNAPI cards and the static-IP calls still need testing.
 Scrolling: on MSX2+ (V9958, detected at start-up) the map scrolls smoothly at 60 Hz with the hardware registers R#26/R#27 and a 256-px ring buffer; the score is drawn with sprites. On a plain MSX2 (V9938) a step-scroll with page copies is used instead (`docs/SCROLL.md`).

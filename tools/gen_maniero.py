@@ -25,7 +25,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "assets", "maniero")
 SRC = os.path.join(ROOT, "src")
-SKY = (2, 4, 7)            # come il resto del gioco (assets/tiles): il livello e' su cielo azzurro
+SKY = (0, 0, 1)            # sfondo del livello (trasparente): notte nel castello, come nel Maniero
 TRANSP = (255, 0, 255)
 
 
@@ -172,6 +172,17 @@ def main():
         seen[key] = len(tiles)
         tiles.append(idx)
         tmeta.append({"id": len(tiles) - 1, "cell": [cx, cy], "name": "", "class": "", "replaces": ""})
+    # ---- tile extra composti da 4 tile 8x8 della tavola MANIERO.png (cuore: id 36,37 / 38,39) ----
+    msheet = Image.open(os.path.join(SRC, "MANIERO.png")).convert("RGBA")
+    for name, ids in (("Heart", (36, 37, 38, 39)),):
+        im16 = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        for k, t in enumerate(ids):
+            im16.alpha_composite(msheet.crop(((t % 32) * 8, (t // 32) * 8, (t % 32) * 8 + 8, (t // 32) * 8 + 8)), ((k % 2) * 8, (k // 2) * 8))
+        arr = np.array(im16)
+        op = (arr[:, :, 3] > 0) & ~((arr[:, :, 0] == 255) & (arr[:, :, 1] == 0) & (arr[:, :, 2] == 255))
+        idx = quantize(arr, op, pal, cache)
+        tiles.append(idx)
+        tmeta.append({"id": len(tiles) - 1, "cell": [-1, len(tiles)], "name": name, "class": "pickup", "replaces": "POTION"})
     nt = len(tiles)
     rows = (nt + 15) // 16
     sheet = np.zeros((rows * 16, 256), np.uint8)

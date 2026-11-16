@@ -79,6 +79,48 @@ pl_cam:
         jp play_end
 
 play_init:
+        ld a,(p_tall)
+        or a
+        call nz,tall_init       ; livello alto: finestra attorno alla partenza (tall.asm)
+        call view_geo           ; geometria delle viste (con l'HUD dei livelli alti: gioco a 176 righe)
+        ld hl,MAP               ; larghezza del livello: ultima colonna con un tile (i livelli corti hanno il resto vuoto)
+        ld bc,MAPW*MAPH
+        ld d,0
+        ld e,0                  ; e = 1 se il livello contiene una chiave (allora l'uscita si apre solo con la chiave)
+pw_l:   ld a,(hl)
+        or a
+        jr z,pw_n
+        cp T_KEY
+        jr nz,pw_k
+        ld e,1
+pw_k:
+        ld a,l
+        and 0x7F
+        cp d
+        jr c,pw_n
+        ld d,a
+pw_n:   inc hl
+        dec bc
+        ld a,b
+        or c
+        jr nz,pw_l
+        ld a,d
+        inc a
+        ld l,a
+        ld h,0
+        add hl,hl
+        add hl,hl
+        add hl,hl
+        add hl,hl
+        ld de,256
+        or a
+        sbc hl,de
+        jr nc,pw_s
+        ld hl,0
+pw_s:   ld (p_cmax),hl
+        ld a,(p_tkey)
+        or e
+        ld (p_needk),a
         ld a,(p_ring)           ; sprite software: solo V9958, se abilitati
         ld b,a
         ld a,(p_sw)
@@ -197,6 +239,7 @@ respawn:
         ld hl,(p_sy)
         ld (p_y),hl
         ld (p_oy),hl
+        call win_fit            ; livello alto: la finestra deve contenere il punto di ripartenza
         ld hl,0
         ld (p_vx),hl
         ld (p_vy),hl
@@ -223,12 +266,12 @@ rs_p:   ld a,l
         and 0x80
         ld l,a                  ; multiplo di 128
         push hl
-        ld de,MAPW*16-256
+        ld de,(p_cmax)
         or a
         sbc hl,de
         pop hl
         jr c,rs_c
-        ld hl,MAPW*16-256
+        ld hl,(p_cmax)
 rs_c:
         ld (p_cam),hl
         xor a
@@ -245,6 +288,8 @@ rs_c:
 play_end:
         xor a
         ld (sw_on),a
+        ld (p_tall),a
+        ld (p_cr),a
         ld a,(p_ring)
         or a
         call nz,ring_off
@@ -883,7 +928,14 @@ touch:  cp 3
         add hl,hl
         ld (p_sy),hl
         ret
-t_win:  ld a,1
+t_win:  ld a,(p_needk)          ; con una chiave nel livello l'uscita funziona solo a chiave raccolta
+        or a
+        jr z,tw_ok
+        ld a,(p_keys)
+        or a
+        ret z
+tw_ok:  call hud_win
+        ld a,1
         ld (p_win),a
         ld (p_exit),a
         call snd_music_off
@@ -903,6 +955,7 @@ t_die:  ld a,(p_dead)
         ret nz
         ld a,40
         ld (p_dead),a
+        call hud_die
         ld a,SFX_DIE
         jp sfx_a
 t_pick: ld a,e
@@ -921,7 +974,9 @@ tpk_a:  ld a,(p_coins)
         jr nc,tpk_s
         ld a,255
 tpk_s:  ld (p_coins),a
-tpk_d:  ld a,SFX_COIN
+tpk_d:  ld a,e
+        call hud_item           ; punteggio / vita (livelli alti)
+        ld a,SFX_COIN
         call sfx_a
         ld a,(p_trow)           ; il tile sparisce dalla mappa
         ld h,a

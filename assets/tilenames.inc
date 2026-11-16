@@ -96,14 +96,13 @@ tile_names:
         db "Wood brace 46",0,0,0,0,0,0,0,0,0,0,0
         db "Wood brace 47",0,0,0,0,0,0,0,0,0,0,0
         db "Wood post B",0,0,0,0,0,0,0,0,0,0,0,0,0
-        db "Wooden frame A",0,0,0,0,0,0,0,0,0,0
+        db "Wooden ladder B",0,0,0,0,0,0,0,0,0
         db "Barrel",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Stool",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Flower vase",0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Beam platform L",0,0,0,0,0,0,0,0,0
         db "Beam platform M",0,0,0,0,0,0,0,0,0
         db "Beam platform R",0,0,0,0,0,0,0,0,0
-        db "Wooden frame B",0,0,0,0,0,0,0,0,0,0
         db "Rocks A",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Rocks B",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Chair left",0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -119,3 +118,4 @@ tile_names:
         db "Iron door bottom",0,0,0,0,0,0,0,0
         db "Arch frame",0,0,0,0,0,0,0,0,0,0,0,0,0,0
         db "Void",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        db "Dark ladder (decor)",0,0,0,0,0

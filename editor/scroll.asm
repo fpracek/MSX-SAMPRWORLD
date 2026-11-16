@@ -415,7 +415,7 @@ su_fr:  ld hl,16
 su_r8:  ld hl,8
 su_r:   ld (p_d),hl
         ld hl,(p_cam)
-        ld de,MAPW*16-256
+        ld de,(p_cmax)
         or a
         sbc hl,de               ; camera - massimo (negativo se c'e' spazio)
         ret nc

@@ -137,7 +137,7 @@ ring_strips_to:                 ; HL = camera: strisce da r_lo a (cam+1)&~1 nell
         jr z,rm_end
         xor a
         ld (r_r0),a
-        ld a,MAPH-1
+        ld a,(p_vr1)
         ld (r_r1),a
         bit 7,h
         jr nz,rm_left
@@ -168,12 +168,12 @@ ring_frame:
         jr z,rf_p
         ld hl,0
 rf_p:   push hl
-        ld de,MAPW*16-256
+        ld de,(p_cmax)
         or a
         sbc hl,de
         pop hl
         jr c,rf_c
-        ld hl,MAPW*16-256
+        ld hl,(p_cmax)
 rf_c:   ld de,(p_cam)
         or a
         sbc hl,de               ; differenza obiettivo - camera
@@ -232,12 +232,12 @@ ring_respawn_cam:
         jr z,rr_p
         ld hl,0
 rr_p:   push hl
-        ld de,MAPW*16-256
+        ld de,(p_cmax)
         or a
         sbc hl,de
         pop hl
         jr c,rr_c
-        ld hl,MAPW*16-256
+        ld hl,(p_cmax)
 rr_c:   call ring_fill
         xor a
         ld (p_page),a

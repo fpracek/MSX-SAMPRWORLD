@@ -102,22 +102,22 @@ T_M53     equ 99
 T_M54     equ 100
 T_M55     equ 101
 T_M56     equ 102
-T_M57     equ 103
-T_M59     equ 104
-T_M60     equ 105
-T_M61     equ 106
-T_M62     equ 107
-T_M63     equ 108
-T_M64     equ 109
-T_M65     equ 110
-T_M70     equ 111
-T_M71     equ 112
-T_M72     equ 113
-T_M74     equ 114
-T_M75     equ 115
-T_M77     equ 116
-T_M78     equ 117
-T_M80     equ 118
+T_M59     equ 103
+T_M60     equ 104
+T_M61     equ 105
+T_M62     equ 106
+T_M63     equ 107
+T_M64     equ 108
+T_M65     equ 109
+T_M70     equ 110
+T_M71     equ 111
+T_M72     equ 112
+T_M74     equ 113
+T_M75     equ 114
+T_M77     equ 115
+T_M78     equ 116
+T_M80     equ 117
+T_M81     equ 118
 T_COUNT   equ 119
 
 C_VUOTO    equ 0
@@ -139,5 +139,5 @@ tile_class:
         db 9,9,9,8,8,1,1,9,9,1,1,1,9,1,1,1
         db 9,9,9,9,9,9,9,1,1,1,2,2,2,2,2,9
         db 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9
-        db 9,1,2,9,2,2,2,9,9,9,9,9,9,9,9,9
-        db 1,9,9,9,9,9,9
+        db 5,1,2,9,2,2,2,9,9,9,9,9,9,9,9,1
+        db 9,9,9,9,9,9,9
