@@ -68,6 +68,17 @@ h_sy    equ PXV+0x7F
 h_dy    equ PXV+0x80
 h_buf   equ PXV+0x81            ; 8 byte
 h_lr    equ PXV+0x8A            ; 3 byte: rotazione dell'ultima copia dell'HUD in ogni vista (0xFF = da rifare)
+; interruzione di linea per l'HUD fermo (irq.asm): vettori IM2 a 0xEC00, gestore a 0xEDED
+isr_st  equ PXV+0x90            ; 0 = prossima IRQ alla riga alta (scroll di gioco), 1 = alla riga bassa (scroll 0)
+isr_c26 equ PXV+0x91            ; valori R#26/R#27 della vista mostrata (scritti da sw_show)
+isr_c27 equ PXV+0x92
+irq_on  equ PXV+0x93            ; 1 = interrupt abilitati (solo durante la prova di un livello alto)
+isr_mp  equ PXV+0x94
+sw_inframe equ PXV+0x95         ; 1 = si sta eseguendo un frame compilato (coppie di indirizzo non interrompibili)
+isr_l1  equ PXV+0x96            ; R#19 per la riga alta
+isr_l2  equ PXV+0x97            ; R#19 per la riga bassa
+isr_r1  equ PXV+0x98            ; RG1SAV originale
+isr_vb  equ PXV+0x99            ; bit7 = la ISR ha consumato il flag di vblank (sw_vwait lo deve considerare visto)
 sw_wy   equ PXV+0x89            ; y dell'oggetto nella finestra (la y nella vista e' sw_ry = sw_wy + p_voff)
 sw_t    equ PXV+0x3B            ; 2 byte
 sw_j    equ PXV+0x3E            ; oggetto corrente
@@ -118,6 +129,12 @@ pls_s:  ld (sw_S),a
 ; attesa del vblank misurando i giri a vuoto
 sw_vwait:
         ld hl,0
+        ld a,(isr_vb)
+        or a
+        jr z,swv_l
+        xor a
+        ld (isr_vb),a
+        jr swv_d
 swv_l:  in a,(0x99)
         rlca
         jr c,swv_d
@@ -155,6 +172,10 @@ tall_decode: ld bc,tall_decode_i
            jr sw_tr
 hud_item:  ld bc,hud_item_i             ; A = tile raccolto
            jp seg3_tr
+irq_start: ld bc,irq_start_i
+           jr sw_tr
+irq_stop:  ld bc,irq_stop_i
+           jr sw_tr
 hud_kill:  ld bc,hud_kill_i
            jp seg3_tr
 hud_win:   ld bc,hud_win_i

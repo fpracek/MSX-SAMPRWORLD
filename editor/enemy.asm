@@ -17,6 +17,7 @@ ENPAT   equ 132                 ; primo numero di pattern degli sprite nemici (V
 ; copia la mappa in VRAM (pagina 2, 0x16000: la pagina 3 e' il master degli sprite software) e la ripristina
 map_save:
         ld a,5                  ; 0x16000: righe 192.. della pagina 2 (libere)
+        di
         out (0x99),a
         ld a,0x8E
         out (0x99),a
@@ -24,6 +25,7 @@ map_save:
         out (0x99),a
         ld a,0x60
         out (0x99),a
+        call vei
         ld hl,MAP
         ld b,6
 ms_l:   push bc
@@ -35,6 +37,7 @@ ms_l:   push bc
 
 map_load:
         ld a,5
+        di
         out (0x99),a
         ld a,0x8E
         out (0x99),a
@@ -42,6 +45,7 @@ map_load:
         out (0x99),a
         ld a,0x20
         out (0x99),a
+        call vei
         ld hl,MAP
         ld b,6
 ml_l:   push bc

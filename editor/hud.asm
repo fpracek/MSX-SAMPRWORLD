@@ -233,9 +233,11 @@ hud_draw_i:
         call hud_fill
         call vdp_wait
         ld a,7                  ; R#14 = 7: pagina 3, riga >= 128
+        di
         out (0x99),a
         ld a,0x8E
         out (0x99),a
+        call vei
         ; ---- fascia alta: 1UP 000000 HI 000500 2UP 000000
         ld hl,s_1up
         ld bc,0x0100
@@ -416,10 +418,12 @@ hg_r:   ld a,(h_rows)
 hg_f:   ld (h_fill),a
         ld de,(h_ad)
         ld a,e
+        di
         out (0x99),a
         ld a,d
         or 0x40
         out (0x99),a
+        call vei
         ld b,4
 hg_b:   ld a,(hl)
         inc hl
@@ -482,7 +486,11 @@ hud_blit_i:
         ld (h_pg),a
         ld a,(p_cam)            ; rotazione = camera mod 256 (pari)
         and 0xFE
-        ld (h_rot),a
+        ld hl,irq_on
+        bit 0,(hl)
+        jr z,hb_nz
+        xor a                   ; con l'interruzione di linea l'HUD sta fermo: nessuna rotazione
+hb_nz:  ld (h_rot),a
         ld a,(h_pg)             ; stessa rotazione e fascia invariata: la vista e' gia' a posto (risparmia 2-4 copie VDP)
         ld e,a
         ld d,0

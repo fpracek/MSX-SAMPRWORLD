@@ -8,11 +8,19 @@ proc wr {a v} { debug write memory [expr {$a}] $v }
 proc wr16 {a v} { wr $a [expr {$v & 255}]; wr [expr {$a+1}] [expr {($v >> 8) & 255}] }
 proc tap {row mask} { keymatrixdown $row $mask; after time 0.25 [list keymatrixup $row $mask] }
 set log [open "$R/perf_result.txt" w]
-proc st {tag} { puts $::log "$tag: ovr=[rd16 0xC78C] fn=[rd16 0xC78E] idle=[rd16 0xC78A] cr=[rd 0xC7AE] x=[rd16 0xC8A0] ne=[rd 0xC8EA]"; flush $::log }
+proc st {tag} { puts $::log "PC=[format %04X [reg PC]] SP=[format %04X [reg SP]] $tag: ovr=[rd16 0xC78C] fn=[rd16 0xC78E] idle=[rd16 0xC78A] cr=[rd 0xC7AE] x=[rd16 0xC8A0] ne=[rd 0xC8EA]"; flush $::log }
 after time 24 { tap 7 0x80 }
 after time 40 { tap 7 0x80 }
 after time 50 { st s0; keymatrixdown 8 0x80 }
 foreach {t n} {52 a 54 b 56 c 58 d 60 e} { after time $t [list st $n] }
-after time 61 { keymatrixup 8 0x80; wr16 0xC8A0 400; wr16 0xC8A5 20; wr16 0xC8AA 20 }
+after time 61 { screenshot $R/perf_61.png; keymatrixup 8 0x80; wr16 0xC8A0 400; wr16 0xC8A5 20; wr16 0xC8AA 20 }
 foreach {t n} {63 f 65 g 67 h} { after time $t [list st $n] }
-after time 68 { close $log; exit }
+after time 66 { screenshot $R/perf_66.png }
+after time 68 {
+  set r {}
+  for {set i 0} {$i<48} {incr i} { lappend r [format %02X [debug read "VDP regs" $i]] }
+  puts $log "REGS $r"
+  puts $log "S2=[debug read "VDP status regs" 2] S1=[debug read "VDP status regs" 1] S0=[debug read "VDP status regs" 0]"
+  puts $log "tall=[rd 0xC7AF] life=[rd 0xC7C8] dead=[rd 0xC8B1] cr=[rd 0xC7AE] x=[rd16 0xC8A0] y=[rd16 0xC8A5]"
+  puts $log "st=[rd 0xC7F0] vb=[rd 0xC7F9] on=[rd 0xC7F3] inframe=[rd 0xC7F5]"
+  close $log; exit }

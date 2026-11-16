@@ -855,11 +855,23 @@ pnl:    inc c
         ret
 
 ; ------------------------------------------------------------------------- VDP
-wrreg:  out (0x99),a
+; con l'interruzione di linea (irq_on) ogni coppia di byte sulla porta 0x99 e' atomica: DI ... vei
+vei:    push af
+        ld a,(irq_on)
+        or a
+        jr z,vei_n
+        pop af
+        ei
+        ret
+vei_n:  pop af
+        ret
+
+wrreg:  di
+        out (0x99),a
         ld a,e
         or 0x80
         out (0x99),a
-        ret
+        jp vei
 
 vwait:  in a,(0x99)
 vwl:    in a,(0x99)
@@ -868,32 +880,39 @@ vwl:    in a,(0x99)
         ret
 
 vdp_wait:
+vwc:    di
         ld a,2
         out (0x99),a
         ld a,0x8F
         out (0x99),a
-vwc:    in a,(0x99)
-        rrca
-        jr c,vwc
+        in a,(0x99)
+        push af
         xor a
         out (0x99),a
         ld a,0x8F
         out (0x99),a
+        pop af
+        call vei                ; (le IRQ entrano fra un giro e l'altro)
+        rrca
+        jr c,vwc
         ret
 
 ; esegue il comando VDP descritto da 15 byte in (HL), a partire da R#32
 vdp_cmd:
         call vdp_wait
+        di
         ld a,32
         out (0x99),a
         ld a,0x91
         out (0x99),a
+        call vei
         ld bc,0x0F9B
         otir
         ret
 
 ; imposta l'indirizzo VRAM di scrittura HL (bit 16 = 0)
-vram_w: ld a,h
+vram_w: di
+        ld a,h
         rlca
         rlca
         and 3
@@ -906,10 +925,11 @@ vram_w: ld a,h
         and 0x3F
         or 0x40
         out (0x99),a
-        ret
+        jp vei
 
 ; imposta l'indirizzo VRAM di scrittura 0x10000+HL (pagina 2)
 vram_w_hi:
+        di
         ld a,h
         rlca
         rlca
@@ -924,7 +944,7 @@ vram_w_hi:
         and 0x3F
         or 0x40
         out (0x99),a
-        ret
+        jp vei
 
 ; Geometria del tileset in VRAM: i tile (16x16) stanno in righe da 16 tile (16 righe di pixel); la riga r del tileset
 ; (tile 16r..16r+15) sta alla y assoluta trow_tab[r] (0..1023 = pagina*256 + riga). Le righe stanno negli spazi liberi
@@ -959,6 +979,7 @@ tile_sy:
 
 ; imposta l'indirizzo VRAM di scrittura DE (16 bit bassi) con A16 in A (0/1)
 vram_w17:
+        di
         add a,a
         add a,a
         ld b,a
@@ -976,7 +997,7 @@ vram_w17:
         and 0x3F
         or 0x40
         out (0x99),a
-        ret
+        jp vei
 
 ; copia il tileset in VRAM secondo trow_tab: i dati dei tile stanno nei segmenti di tileseg_tab (finestra A000)
 upload_tiles:
@@ -1096,6 +1117,7 @@ tile_names_end:
         include "swcam.asm"
         include "tall.asm"
         include "hud.asm"
+        include "irq.asm"
         include "swtab.inc"
 swh_end:
         ent

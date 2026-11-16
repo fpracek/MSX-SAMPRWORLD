@@ -231,7 +231,13 @@ pi_up:  push hl
         xor a
         call hero_load
 pi_one: call play_status
-        ret
+        ld a,(p_tall)
+        or a
+        ret z
+        ld a,(sw_on)
+        or a
+        ret z
+        jp irq_start            ; HUD fermo con l'interruzione di linea (irq.asm)
 
 respawn:
         ld hl,(p_sx)
@@ -286,6 +292,7 @@ rs_c:
         jp redraw_view
 
 play_end:
+        call irq_stop           ; (se attiva) interrupt di nuovo disabilitati
         xor a
         ld (sw_on),a
         ld (p_tall),a

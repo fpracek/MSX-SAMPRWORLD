@@ -20,7 +20,24 @@ sw_show_i:
         inc hl
         ld h,(hl)
         ld l,a
-        jp ring_setregs
+        ld a,(irq_on)
+        or a
+        jp z,ring_setregs
+        call irq_regs           ; HUD fermo: la ISR applica lo scroll alla riga alta
+        di
+        ld a,c
+        ld (isr_c27),a
+        ld a,b
+        ld (isr_c26),a
+        ld a,(isr_st)
+        or a
+        jp z,vei                ; (la prossima IRQ e' quella alta: la applichera' lei)
+        ld a,c                  ; le righe di gioco sono gia' in corso (ritardo): scroll subito
+        ld e,27
+        call wrreg
+        ld a,(isr_c26)
+        ld e,26
+        jp wrreg
 
 ; ------------------------------------------------------------------------- riempimento (inizio prova, rinascita)
 sw_fill_i:                        ; HL = camera
@@ -525,9 +542,11 @@ sw_draw:
         ld a,(sw_D)
         add a,a
         add a,b
+        di
         out (0x99),a            ; R#14 = A16..A14
         ld a,0x8E
         out (0x99),a
+        call vei
         ld a,h
         and 0x3F
         or 0x40
@@ -556,9 +575,11 @@ sds_z:  ld (hl),a
         call vdp_cmd
         call vdp_wait
         ld a,5                  ; 0x17000: R#14 = 5, indirizzo 14 bit = 0x3000
+        di
         out (0x99),a
         ld a,0x8E
         out (0x99),a
+        call vei
         ld de,0x7000
         call sw_callframe
         ld a,(sw_rx)            ; prima parte: n1 = min(16, 256 - x)
@@ -669,7 +690,11 @@ sw_callframe:
         ld h,(hl)
         ld l,a
         ld c,0x98
+        ld a,1
+        ld (sw_inframe),a
         call sw_jphl
+        xor a
+        ld (sw_inframe),a
         ld a,SCCMAP             ; la finestra 8000 serve all'SCC (audio ed effetti)
         ld (BANKW),a
         ret

@@ -21,10 +21,18 @@ sono quelli della ROM: `assets/maniero/rom/` (mappe estratte), `tools/import_rom
 ## HUD "da sala giochi" (`editor/hud.asm`, segmento 3)
 - Schermo da 192 righe: **8 righe di HUD in alto**, 176 di gioco (11 righe di tile) e 8 di HUD in basso (come Il Maniero, fuori
   dall'area di gioco): `1UP 000000 HI 000500 2UP 000000` / `LIFE ♥♥♥ AMMO □□□□□ KEY ⚷00`.
-- Le fasce (256x8) si disegnano con il font ridefinito (`tools/gen_hudfont.py`, schemi di colore: etichette arancio/giallo, HI
-  rosso, 2UP azzurro, cifre bianche) nel master (pagina 3 righe 176-191) e a ogni fotogramma si copiano (HMMM) nella vista D
-  **ruotate della camera**, cosi' lo scorrimento orizzontale hardware le lascia ferme. Gioco nelle righe 8-183 di ogni vista
-  (`p_voff`, `p_vh`, `p_vmax`, `p_vr1` impostati da `view_geo_i`).
+- Le fasce (256x8) si disegnano con il font ridefinito (`tools/gen_hudfont.py`) nel master (pagina 3 righe 176-191) e si copiano
+  UNA VOLTA nelle tre viste (righe 0-7 e 184-191; gioco nelle righe 8-183: `p_voff`, `p_vh`, `p_vmax`, `p_vr1`, `view_geo_i`).
+- **HUD fermo con l'interruzione di linea** (`editor/irq.asm`): lo scorrimento hardware R#26/R#27 vale per tutto lo schermo; la
+  ISR (IM 2, vettori a 0xEC00, gestore a 0xEDED, solo IRQ di linea, IE0 spento: il vblank resta a polling) porta lo scroll a 0
+  alla riga 8 -> camera, alla riga 184 -> 0 (R#19 = 7 / 183). Prima le fasce si ricopiavano ruotate della camera a ogni fotogramma
+  (2 KB di HMMM, ~20% del tempo durante lo scorrimento). Misura (`t_frames.tcl`, 8 s di corsa): 307 -> 371 fotogrammi.
+  Atomicita' sulla porta 0x99: ogni coppia di byte del codice normale sta fra `di` e `call vei` (`vei` riabilita le IRQ solo se
+  `irq_on`); `vdp_wait` rilegge S#2 a ogni giro dentro DI. I frame compilati degli sprite hanno centinaia di coppie non protette:
+  la ISR guarda il PC interrotto (`sw_inframe`, opcode ld a,d / adc a,0 / ld d,a / out dopo ld d,a), se e' fra i due out legge S#0
+  per azzerare il latch (ricorda il flag di vblank in `isr_vb`, che `sw_vwait` considera visto) e alla fine rimanda E.
+  Attiva solo nei livelli alti (`irq_start` in `play_init`, `irq_stop` in `play_end`). Su hardware vero serve il vettore IM 2
+  letto dal bus (0xFF o qualunque valore: la tabella di 257 byte e' tutta 0xED).
 - Punteggi (BCD): moneta 10, gemma 50, chiave 100, nemico schiacciato 50, livello 1000; il cuore da' una vita (max 5). Tre vite
   per livello; a zero vite game over (menu, punteggi azzerati). HI resta per tutta la sessione.
 - Munizioni: caselle vuote (le armi non sono ancora implementate).

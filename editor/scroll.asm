@@ -31,6 +31,7 @@ bo_row  equ V+0xE4
 
 ; VDP occupato? NZ se un comando e' in corso
 vdp_busy:
+        di
         ld a,2
         out (0x99),a
         ld a,0x8F
@@ -43,7 +44,7 @@ vdp_busy:
         ld a,0x8F
         out (0x99),a
         pop af
-        ret
+        jp vei
 
 ; ---- una cella: tile A in riga bc_r, x biased bc_x, pagina bc_pg, finestra bc_w0..bc_w1 (biased +16) ----
 blit_cell:
