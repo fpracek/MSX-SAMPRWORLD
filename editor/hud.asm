@@ -222,6 +222,10 @@ hf_z:   ld (hl),a
         jp vdp_cmd
 
 hud_draw_i:
+        ld a,0xFF               ; le fasce cambiano: tutte le viste da ricopiare
+        ld (h_lr),a
+        ld (h_lr+1),a
+        ld (h_lr+2),a
         ld a,16                 ; sfondo nero: 16 righe (le due fasce)
         ld (h_nrow),a
         ld c,0x11
@@ -479,6 +483,15 @@ hud_blit_i:
         ld a,(p_cam)            ; rotazione = camera mod 256 (pari)
         and 0xFE
         ld (h_rot),a
+        ld a,(h_pg)             ; stessa rotazione e fascia invariata: la vista e' gia' a posto (risparmia 2-4 copie VDP)
+        ld e,a
+        ld d,0
+        ld hl,h_lr
+        add hl,de
+        ld a,(h_rot)
+        cp (hl)
+        ret z
+        ld (hl),a
         ld a,176
         ld (h_sy),a
         xor a

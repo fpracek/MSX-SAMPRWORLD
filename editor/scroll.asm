@@ -110,7 +110,14 @@ bcv1:   ld (bc_v1),hl
         add a,a
         add a,a
         add a,a
-        ld (P+6),a              ; DY = riga*16 + pagina*256
+        ld c,a
+        ld a,(bc_pg)
+        cp 3
+        ld a,c
+        jr z,bcm                ; master (pagina 3): senza scarto
+        ld hl,p_voff            ; viste: il gioco parte alla riga p_voff (HUD dei livelli alti)
+        add a,(hl)
+bcm:    ld (P+6),a              ; DY = riga*16 + pagina*256
         ld a,(bc_pg)
         ld (P+7),a
         ld a,16

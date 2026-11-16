@@ -67,6 +67,7 @@ h_nh    equ PXV+0x7E
 h_sy    equ PXV+0x7F
 h_dy    equ PXV+0x80
 h_buf   equ PXV+0x81            ; 8 byte
+h_lr    equ PXV+0x8A            ; 3 byte: rotazione dell'ultima copia dell'HUD in ogni vista (0xFF = da rifare)
 sw_wy   equ PXV+0x89            ; y dell'oggetto nella finestra (la y nella vista e' sw_ry = sw_wy + p_voff)
 sw_t    equ PXV+0x3B            ; 2 byte
 sw_j    equ PXV+0x3E            ; oggetto corrente
